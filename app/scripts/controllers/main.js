@@ -227,7 +227,7 @@ HarvardApp.controller('MainCtrl', ['$scope', '$http', '$timeout', '$log', '$moda
                         directiveScope.tasksOnMachine = $modal({
                             scope: directiveScope,
                             title: 'Machine',
-                            template: 'scripts/templates/machine.tpl.html',
+                            template: 'views/machine.tpl.html',
                             backdrop: false,
                             placement: 'center',
                             show: false
@@ -291,7 +291,7 @@ HarvardApp.controller('MainCtrl', ['$scope', '$http', '$timeout', '$log', '$moda
             data: rawData,
             params: {
                 calculate: true,
-                calculateFrom: 0,// moment($scope.gantt.getFirstColumn().date).format(dateFormat),  // Gantt start time
+                calculateFrom: 0,// moment.utc($scope.gantt.getFirstColumn().date).format(dateFormat),  // Gantt start time
                 calculateWeeks: 52,
                 save: isSave
             }
@@ -589,7 +589,7 @@ HarvardApp.controller('MainCtrl', ['$scope', '$http', '$timeout', '$log', '$moda
     // Event handler
     var logScrollEvent = function(left, date, direction) {
         if (date !== undefined) {
-            $log.info('[Event] api.on.scroll: ' + left + ', ' + (date === undefined ? 'undefined' : date.format()) + ', ' + direction);
+            $log.info('[Event] api.on.scroll: ' + left + ', ' + (date === undefined ? 'undefined' : date.format()) + ', ' + direction, $scope.api.gantt.columnsManager.getFirstColumn());
         }
     };
 
@@ -648,7 +648,7 @@ HarvardApp.controller('MainCtrl', ['$scope', '$http', '$timeout', '$log', '$moda
                     $modal({
                         scope: $scope,
                         title: 'Task Editor',
-                        template: 'scripts/templates/editor.tpl.html',
+                        template: 'views/editor.tpl.html',
                         backdrop: false,
                         placement: 'center',
                         show: true
@@ -693,7 +693,7 @@ HarvardApp.controller('MainCtrl', ['$scope', '$http', '$timeout', '$log', '$moda
                         nextTask: 0
                     };
                     $scope.modifyType = data.type;
-                    $modal({scope: $scope, title: 'Task Creator', template: 'scripts/templates/editor.tpl.html', backdrop: false, show: true});
+                    $modal({scope: $scope, title: 'Task Creator', template: 'views/editor.tpl.html', backdrop: false, show: true});
                 break;
                 case 'delete':
                     $scope.tasksMap['t'+data.task.id].isDelete = true;

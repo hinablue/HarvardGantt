@@ -1358,5 +1358,3 @@ angular.module('gantt.tooltips.templates', []).run(['$templateCache', function($
         '</div>\n' +
         '');
 }]);
-
-//# sourceMappingURL=angular-gantt-plugins.js.map
