@@ -6,3 +6,5 @@ Development
 npm install
 bower install
 ```
+
+Special gantt-angular version in `app/scripts`.

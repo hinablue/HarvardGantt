@@ -14,8 +14,7 @@
     "font-awesome": "~4.2.0",
     "angular-native-dragdrop": "https://github.com/ganarajpr/angular-dragdrop.git#master",
     "ng-context-menu": "https://github.com/ianwalter/ng-context-menu.git#master",
-    "ng-sortable": "https://github.com/a5hik/ng-sortable.git#master",
-    "angular-gantt": "~1.0.0"
+    "ng-sortable": "https://github.com/a5hik/ng-sortable.git#master"
   },
   "devDependencies": {
     "angular-mocks": "~1.3"
