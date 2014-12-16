@@ -1,0 +1,37 @@
+<div class="modal" id="machineTasks" tabindex="-1" role="dialog">
+  <div class="modal-dialog" style="width: 90%;">
+    <div class="modal-content">
+      <div class="modal-header" ng-show="title">
+        <button type="button" class="close" ng-click="$hide()">&times;</button>
+        <h4 class="modal-title" ng-bind-html="title"></h4>
+      </div>
+      <div class="modal-body clearfix">
+      	<div class="machine" ng-style="autoExpand">
+	      	<div class="header">
+	  			<span class="column multiple">&nbsp;</span>
+	  			<span class="column data" ng-repeat="title in row.model.UI2Title">{{ title }}</span>
+	  			<span class="column from">From</span>
+	  			<span class="column to">To</span>
+	  			<span class="column during">During(Min)</span>
+	  			<span class="column pin">Pin</span>
+	  		</div>
+	  	</div>
+      	<div class="machine ng-scope" ng-style="autoExpand" ng-model="row.tasks" as-sortable="dragControlListeners">
+      		<div class="tasks ng-scope" ng-repeat="task in row.tasks" as-sortable-item>
+      			<div class="task ng-scope" ng-style="taskColoured(task.model.color, task.model.textColor)" as-sortable-item-handle>
+	      			<span class="column ng-binding multiple"><i class="multiple-tasks fa {{ multipleTasksCheck(task.model.id) === true && 'fa-check-square-o' || 'fa-square-o' }}" ng-click="multipleTasksToggle(task.model.id)"></i></span>
+	      			<span class="column ng-binding data" ng-repeat="data in task.model.data.UI2 track by $index">{{ data }}</span>
+					<span class="column ng-binding from">{{ task.model.from.utc().format("YYYY/MM/DD HH:mm") }}</span>
+					<span class="column ng-binding to">{{ task.model.to.utc().format("YYYY/MM/DD HH:mm") }}</span>
+					<span class="column ng-binding during">{{ (task.model.to.utc() - task.model.from.utc()) / 60 / 1000 }}</span>
+					<span class="column ng-binding pin"><button type="button" class="btn {{ task.isPin === true && 'btn-warning' || 'btn-default' }} pin" ng-model="task.isPin" bs-checkbox><i class="fa {{ task.isPin === true && 'fa-check' || 'fa-close' }}"></i></button></span>
+				</div>
+      		</div>
+      	</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" ng-click="$hide()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
