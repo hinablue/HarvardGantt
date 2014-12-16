@@ -7,7 +7,7 @@
  * # MainCtrl
  * Controller of the HarvardApp
  */
-HarvardApp.controller('MainCtrl', ['$scope', '$timeout', '$log', '$modal', 'ganttUtils', 'GanttObjectModel', 'Coloured', 'Harvard', 'Matt', 'ganttMouseOffset', 'ganttDebounce', 'moment', function($scope, $timeout, $log, $modal, utils, ObjectModel, Coloured, Harvard, Matt, mouseOffset, debounce, moment) {
+HarvardApp.controller('MainCtrl', ['$scope', '$http', '$timeout', '$log', '$modal', '$alert', 'ganttUtils', 'GanttObjectModel', 'Coloured', 'Harvard', 'Matt', 'ganttMouseOffset', 'ganttDebounce', 'moment', function($scope, $http, $timeout, $log, $modal, $alert, utils, ObjectModel, Coloured, Harvard, Matt, mouseOffset, debounce, moment) {
     var objectModel;
     var dataToRemove;
 
@@ -280,135 +280,217 @@ HarvardApp.controller('MainCtrl', ['$scope', '$timeout', '$log', '$modal', 'gant
         return 40;
     };
 
-    // Reload data action
-    $scope.load = function() {
-        var originalData = Harvard.getGanttData(), obj, task, i, j, l, m, q, t, p;
+    $scope.saveGanttData = function() {
+        var mattCallback = Matt.saveOrCalcGanttData();
+
+        $http({
+            method: 'post',
+            responseType: 'json',
+            url: $scope.configuration.serverLocation + $scope.configuration.confirmGanttUrl,
+            timeout: $scope.configuration.getGanttDataTimeout * 1000,
+            data: rawData,
+            params: {
+                calculate: true,
+                calculateFrom: 0,// moment($scope.gantt.getFirstColumn().date).format(dateFormat),  // Gantt start time
+                calculateWeeks: 52,
+                save: isSave
+            }
+        }).then(function(response) {
+            var result = mattCallback.success(response);
+            if (result.state === 'ok' && result.data.machines !== undefined && result.data.machines.length > 0) {
+                $scope.readyToGo(result.data);
+            } else {
+                $alert({
+                    title: result.messages.title,
+                    content: result.messages.content,
+                    placement: 'top',
+                    type: 'info',
+                    duration: 3,
+                    container: '#gantt-chart-alert',
+                    show: true
+                });
+            }
+        }, function(response) {
+            var result = mattCallback.error(response);
+            $alert({
+                title: result.messages.title,
+                content: result.messages.content,
+                placement: 'top',
+                type: 'info',
+                duration: 3,
+                container: '#gantt-chart-alert',
+                show: true
+            });
+        });
+    };
+
+    $scope.readyToGo = function(originalData) {
+        var obj, task, i, j, l, m, q, t, p;
 
         $scope.clear();
-
         $scope.tasksMap = {};
         $scope.processesMap = {};
         $scope.jobsMap = {};
         $scope.machinesMap = {};
 
-        if (originalData.machines.length > 0) {
-            for(i = 0, m = originalData.machines, l = m.length; i < l; i++) {
-                if (('m'+m[i].machine.id in $scope.machinesMap) === false) {
-                    $scope.machinesMap['m'+m[i].machine.id] = m[i].machine;
-                }
-
-                // Prepare row machine data
-                obj = {
-                    id: m[i].machine.id,
-                    name: m[i].machine.settingsMachine.name,
-                    dept: m[i].machine.settingsMachine.dept,
-                    settings: m[i].machine.settingsMachine,
-                    factoryOperation: m[i].machine.factoryOperation,
-                    UI2Title: m[i].machine.title.split('|'),
-                    tasks: []
-                };
-
-                if (m[i].operationQueue.length > 0) {
-                    for(j = 0, t = m[i].operationQueue, q = t.length; j < q; j++) {
-                        // Prepare and cleanup the task data.
-                        //
-                        task = {
-                            name: t[j].operationCode,
-                            color: t[j].color,
-                            from: moment.utc(t[j].expectedStartTime, 'YYYY-MM-DDTHH:mm:ss'),
-                            to: moment.utc(t[j].expectedFinishTime, 'YYYY-MM-DDTHH:mm:ss'),
-                            id: t[j].id,
-                            oid: t[j].oid,
-                            textColor: Coloured.isDarkColoured(t[j].color) ? '#ffffff' : '#000000',
-                            operationCode: t[j].operationCode,
-                            processingType: t[j].processingType,
-                            quantity: t[j].quantity,
-                            group: t[j].taskGroup,
-                            isNew: false,
-                            // isParallel: t[j].parallel,
-                            isDelete: t[j].delete,
-                            isFinish: t[j].finished,
-                            isPin: t[j].pin,
-                            inProcessing: t[j].inProcessing,
-                            factoryOperation: t[j].factoryOperation,
-                            job: t[j].job,
-                            process: t[j].process,
-                            movable: {
-                                enabled: true,
-                                allowMoving: true,
-                                allowResizing: false,
-                                allowRowSwitching: false
-                            },
-                            data: {
-                                previousOperations: [t[j].previousOperation],
-                                nextOperations: t[j].nextOperations,
-                                runOnMachineId: t[j].runOnMachineId,
-                                actualRunOnMachineId: t[j].actualRunOnMachineId,
-                                machineShiftLabel: t[j].machineShiftLabel,
-                                parallelCode: t[j].parallelCode,
-                                pendingMinutes: t[j].pendingMinutes,
-                                expectedMoldId: t[j].expectedMoldId,
-                                capacity: t[j].capacity,
-                                face: t[j].face,
-                                priority: t[j].priority,
-                                rounds: t[j].rounds,
-                                up: t[j].up,
-                                sheetUp: t[j].sheetUp,
-                                part: t[j].part,
-                                s2sMins: t[j].s2sMins,
-                                timeclockEmployeeId: t[j].timeclockEmployeeId,
-                                expectedStartTime: moment.utc(t[j].expectedStartTime, 'YYYY-MM-DDTHH:mm:ss'),
-                                expectedSetupFinishTime: moment.utc(t[j].expectedSetupFinishTime, 'YYYY-MM-DDTHH:mm:ss'),
-                                expectedFinishTime: moment.utc(t[j].expectedFinishTime, 'YYYY-MM-DDTHH:mm:ss'),
-                                actualStartTime: (t[j].actualStartTime === null) ? null : moment.utc(t[j].actualStartTime, 'YYYY-MM-DDTHH:mm:ss'),
-                                actualSetupFinishTime: (t[j].actualSetupFinishTime === null) ? null : moment.utc(t[j].actualSetupFinishTime, 'YYYY-MM-DDTHH:mm:ss'),
-                                actualFinishTime: (t[j].actualFinishTime === null) ? null : moment.utc(t[j].actualFinishTime, 'YYYY-MM-DDTHH:mm:ss'),
-                                actualQuantity: t[j].actualQuantity,
-                                UI2: t[j].tooltip.split('|')
-                            }
-                        };
-
-                        if (('t'+t[j].id in $scope.tasksMap) === false) {
-                            $scope.tasksMap['t'+t[j].id] = task;
-                        }
-
-                        // Prepare processesMap
-                        if (('p'+t[j].process.id in $scope.processesMap) === false) {
-                            $scope.processesMap['p'+t[j].process.id] = {
-                                id: t[j].process.id,
-                                needWaitPrevProcess: t[j].process.needWaitPrevProcess,
-                                operations: t[j].process.operations,
-                                previousProcesses: t[j].process.previousProcesses,
-                                nextProcesses: [],
-                                productId: t[j].process.productId
-                            };
-                        }
-
-                        // Prepare jobsMap
-                        if (('j'+t[j].job.id in $scope.jobsMap) === false) {
-                            $scope.jobsMap['j'+t[j].job.id] = t[j].job;
-                        }
-
-                        obj.tasks.push(task);
-                    }
-                }
-                $scope.data.push(obj);
+        for(i = 0, m = originalData.machines, l = m.length; i < l; i++) {
+            if (('m'+m[i].machine.id in $scope.machinesMap) === false) {
+                $scope.machinesMap['m'+m[i].machine.id] = m[i].machine;
             }
 
-            // Connect the processesMap
-            for(p in $scope.processesMap) {
-                if ($scope.processesMap[p].previousProcesses.length > 0) {
-                    for(i = 0, m = $scope.processesMap[p].previousProcesses, l = m.length; i < l; i++) {
-                        if ('p'+m[i].id in $scope.processesMap) {
-                            $scope.processesMap['p'+m[i].id].nextProcesses.push($scope.processesMap[p].id);
+            // Prepare row machine data
+            obj = {
+                id: m[i].machine.id,
+                name: m[i].machine.settingsMachine.name,
+                dept: m[i].machine.settingsMachine.dept,
+                settings: m[i].machine.settingsMachine,
+                factoryOperation: m[i].machine.factoryOperation,
+                UI2Title: m[i].machine.title.split('|'),
+                tasks: []
+            };
+
+            if (m[i].operationQueue.length > 0) {
+                for(j = 0, t = m[i].operationQueue, q = t.length; j < q; j++) {
+                    // Prepare and cleanup the task data.
+                    task = {
+                        name: t[j].operationCode,
+                        color: t[j].color,
+                        from: moment.utc(t[j].expectedStartTime, 'YYYY-MM-DDTHH:mm:ss'),
+                        to: moment.utc(t[j].expectedFinishTime, 'YYYY-MM-DDTHH:mm:ss'),
+                        id: t[j].id,
+                        oid: t[j].oid,
+                        textColor: Coloured.isDarkColoured(t[j].color) ? '#ffffff' : '#000000',
+                        operationCode: t[j].operationCode,
+                        processingType: t[j].processingType,
+                        quantity: t[j].quantity,
+                        group: t[j].taskGroup,
+                        isNew: false,
+                        // isParallel: t[j].parallel,
+                        isDelete: t[j].delete,
+                        isFinish: t[j].finished,
+                        isPin: t[j].pin,
+                        inProcessing: t[j].inProcessing,
+                        factoryOperation: t[j].factoryOperation,
+                        job: t[j].job,
+                        process: t[j].process,
+                        movable: {
+                            enabled: true,
+                            allowMoving: true,
+                            allowResizing: false,
+                            allowRowSwitching: false
+                        },
+                        data: {
+                            previousOperations: [t[j].previousOperation],
+                            nextOperations: t[j].nextOperations,
+                            runOnMachineId: t[j].runOnMachineId,
+                            actualRunOnMachineId: t[j].actualRunOnMachineId,
+                            machineShiftLabel: t[j].machineShiftLabel,
+                            parallelCode: t[j].parallelCode,
+                            pendingMinutes: t[j].pendingMinutes,
+                            expectedMoldId: t[j].expectedMoldId,
+                            capacity: t[j].capacity,
+                            face: t[j].face,
+                            priority: t[j].priority,
+                            rounds: t[j].rounds,
+                            up: t[j].up,
+                            sheetUp: t[j].sheetUp,
+                            part: t[j].part,
+                            s2sMins: t[j].s2sMins,
+                            timeclockEmployeeId: t[j].timeclockEmployeeId,
+                            expectedStartTime: moment.utc(t[j].expectedStartTime, 'YYYY-MM-DDTHH:mm:ss'),
+                            expectedSetupFinishTime: moment.utc(t[j].expectedSetupFinishTime, 'YYYY-MM-DDTHH:mm:ss'),
+                            expectedFinishTime: moment.utc(t[j].expectedFinishTime, 'YYYY-MM-DDTHH:mm:ss'),
+                            actualStartTime: (t[j].actualStartTime === null) ? null : moment.utc(t[j].actualStartTime, 'YYYY-MM-DDTHH:mm:ss'),
+                            actualSetupFinishTime: (t[j].actualSetupFinishTime === null) ? null : moment.utc(t[j].actualSetupFinishTime, 'YYYY-MM-DDTHH:mm:ss'),
+                            actualFinishTime: (t[j].actualFinishTime === null) ? null : moment.utc(t[j].actualFinishTime, 'YYYY-MM-DDTHH:mm:ss'),
+                            actualQuantity: t[j].actualQuantity,
+                            UI2: t[j].tooltip.split('|')
                         }
+                    };
+
+                    if (('t'+t[j].id in $scope.tasksMap) === false) {
+                        $scope.tasksMap['t'+t[j].id] = task;
+                    }
+
+                    // Prepare processesMap
+                    if (('p'+t[j].process.id in $scope.processesMap) === false) {
+                        $scope.processesMap['p'+t[j].process.id] = {
+                            id: t[j].process.id,
+                            needWaitPrevProcess: t[j].process.needWaitPrevProcess,
+                            operations: t[j].process.operations,
+                            previousProcesses: t[j].process.previousProcesses,
+                            nextProcesses: [],
+                            productId: t[j].process.productId
+                        };
+                    }
+
+                    // Prepare jobsMap
+                    if (('j'+t[j].job.id in $scope.jobsMap) === false) {
+                        $scope.jobsMap['j'+t[j].job.id] = t[j].job;
+                    }
+
+                    obj.tasks.push(task);
+                }
+            }
+            $scope.data.push(obj);
+        }
+        // Connect the processesMap
+        for(p in $scope.processesMap) {
+            if ($scope.processesMap[p].previousProcesses.length > 0) {
+                for(i = 0, m = $scope.processesMap[p].previousProcesses, l = m.length; i < l; i++) {
+                    if ('p'+m[i].id in $scope.processesMap) {
+                        $scope.processesMap['p'+m[i].id].nextProcesses.push($scope.processesMap[p].id);
                     }
                 }
             }
         }
+
         dataToRemove = undefined;
 
         $scope.timespans = Harvard.getGanttTimespans();
+    };
+
+    // Reload data action
+    $scope.load = function() {
+        var mattCallback = Matt.getGanttData();
+
+        $http({
+            method: 'get',
+            responseType: 'json',
+            url: $scope.configuration.getGanttUrl,
+            params: {},
+            timeout: $scope.configuration.getGanttDataTimeout * 1000
+        }).then(function(response) {
+            var result = mattCallback.success(response);
+            if (result.state === 'ok' && result.data.machines !== undefined && result.data.machines.length > 0) {
+                $scope.readyToGo(result.data);
+            } else {
+                $alert({
+                    title: result.messages.title,
+                    content: result.messages.content,
+                    placement: 'top',
+                    type: 'info',
+                    duration: 3,
+                    container: '#gantt-chart-alert',
+                    show: true
+                });
+
+                $scope.readyToGo(Harvard.getGanttData());
+            }
+        }, function(response) {
+            var result = mattCallback.error(response);
+            $alert({
+                title: result.messages.title,
+                content: result.messages.content,
+                placement: 'top',
+                type: 'info',
+                duration: 3,
+                container: '#gantt-chart-alert',
+                show: true
+            });
+
+            $scope.readyToGo(Harvard.getGanttData());
+        });
     };
 
     $scope.reload = function() {
