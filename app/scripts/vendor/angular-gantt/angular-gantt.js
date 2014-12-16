@@ -2711,6 +2711,7 @@ Github: https://github.com/angular-gantt/angular-gantt.git
         RowsManager.prototype.updateVisibleRows = function() {
             var oldFilteredRows = this.filteredRows;
             var filterRow = this.gantt.options.value('filterRow');
+
             if (filterRow) {
                 if (typeof(filterRow) === 'object') {
                     filterRow = {model: filterRow};
@@ -2719,10 +2720,9 @@ Github: https://github.com/angular-gantt/angular-gantt.git
                 var filterRowComparator = this.gantt.options.value('filterRowComparator');
                 if (typeof(filterRowComparator) === 'function') {
                     filterRowComparator = function(actual, expected) {
-                        return this.gantt.options.value('filterRowComparator')(actual.model, expected.model);
-                    };
+                        return this.gantt.options.value('filterRowComparator')(actual, expected);
+                    }.bind(this);
                 }
-
                 this.filteredRows = $filter('filter')(this.sortedRows, filterRow, filterRowComparator);
             } else {
                 this.filteredRows = this.sortedRows.slice(0);

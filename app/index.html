@@ -73,8 +73,12 @@
                                                             <input type="text" class="form-control" style="width: 8em; text-align: left" ng-model="options.filterTask">
                                                         </div>
                                                         <div class="form-group input-append text-center">
-                                                            <label class="control-label"><i class="fa fa-filter"></i> Filter Rows</label><br>
-                                                            <input type="text" class="form-control" style="width: 8em; text-align: left" ng-model="options.filterRow">
+                                                            <label class="control-label"><i class="fa fa-filter"></i> Filter Department</label><br>
+                                                            <button type="button" style="width: 12em; text-align: left" class="btn btn-default" ng-model="departmentMenuDefault" ng-options="e for e in departmentMenu" bs-select></button>
+                                                        </div>
+                                                        <div class="form-group input-append text-center">
+                                                            <label class="control-label"><i class="fa fa-filter"></i> Filter Sub-Department</label><br>
+                                                            <button type="button" style="width: 12em; text-align: left" class="btn btn-default" ng-model="subDepartmentMenuDefault" ng-options="e for e in subDepartmentMenu" bs-select></button>
                                                         </div>
 
                                                         <div class="form-group text-center">
@@ -142,6 +146,15 @@
                                                                 <button class="btn btn-default" ng-click="clear()">Clear</button>
                                                             </div>
                                                         </div>
+
+                                                        <div class="form-group text-center">
+                                                            <label class="control-label"><i class="fa fa-th-large"></i> Pagination</label><br>
+                                                            <div class="btn-group">
+                                                                <a class="btn btn-default" ng-click="paginationFilter(0, -1)"><i class="fa fa-chevron-left"></i></a>
+                                                                <a class="btn {{ currentPage === p && 'btn-info' || 'btn-default' }}" ng-repeat="p in pagination" ng-click="paginationFilter(p, 0)">{{ p }}</a>
+                                                                <a class="btn btn-default" ng-click="paginationFilter(0, 1)"><i class="fa fa-chevron-right"></i></a>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -169,7 +182,8 @@
                                                timespans="timespans"
                                                show-side="options.labelsEnabled"
                                                filter-task="{'name': options.filterTask}"
-                                               filter-row="{'name': options.filterRow}"
+                                               filter-row="{'dept': options.filterRow}"
+                                               filter-row-comparator="options.filterRowComparator"
                                                sort-mode="options.sortMode"
                                                view-scale="options.scale"
                                                column-width="getColumnWidth(options.width, options.scale)"

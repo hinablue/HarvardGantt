@@ -11,6 +11,13 @@ HarvardApp.controller('MainCtrl', ['$scope', '$http', '$timeout', '$log', '$moda
     var objectModel;
     var dataToRemove;
 
+    $scope.departmentMenu = ['Select'];
+    $scope.subDepartmentMenu = ['Select'];
+    $scope.departmentMenuDefault = 'Select';
+    $scope.subDepartmentMenuDefault = 'Select';
+    $scope.pagination = [1];
+    $scope.currentPage = 1;
+
     $scope.configuration = Matt.configuration();
 
     $scope.defaultScale = ['minute', '5 minutes', 'hour', '3 hours', '6 hours', '8 hours', 'day', 'week', '2 weeks', 'month', 'quarter', '6 months', 'year'];
@@ -25,7 +32,7 @@ HarvardApp.controller('MainCtrl', ['$scope', '$http', '$timeout', '$log', '$moda
         taskOutOfRange: 'expand',
         fromDate: undefined,
         toDate: undefined,
-        allowSideResizing: false,
+        allowSideResizing: true,
         labelsEnabled: true,
         currentDate: 'line',
         currentDateValue: moment.utc(),
@@ -33,6 +40,10 @@ HarvardApp.controller('MainCtrl', ['$scope', '$http', '$timeout', '$log', '$moda
         readOnly: false,
         filterTask: '',
         filterRow: '',
+        filterRowComparator: function(actual, expected) {
+            if (expected === '' || true === new RegExp(expected, 'i').test(actual.name) || true === new RegExp(expected, 'i').test(actual.subDept)) return true;
+            return false;
+        },
         timeFrames: {
             'day': {
                 start: moment.utc('8:00', 'HH:mm'),
@@ -280,6 +291,58 @@ HarvardApp.controller('MainCtrl', ['$scope', '$http', '$timeout', '$log', '$moda
         return 40;
     };
 
+    $scope.$watch('departmentMenuDefault', function(newValue, oldValue) {
+        $scope.subDepartmentMenu = ['Select'];
+        $scope.subDepartmentMenuDefault = 'Select';
+        $scope.currentPage = 1;
+
+        if (newValue !== oldValue) {
+            if (newValue !== 'Select') {
+                $scope.options.filterRow = newValue;
+
+                if (Object.keys($scope.departmentsMap[newValue.replace(/ /gi, '-')].sub).length > 0) {
+                    for(var x in $scope.departmentsMap[newValue.replace(/ /gi, '-')].sub) {
+                        $scope.subDepartmentMenu.push($scope.departmentsMap[newValue.replace(/ /gi, '-')].sub[x].name);
+                    }
+                }
+            } else {
+                $scope.options.filterRow = '-Page 00001';
+            }
+        }
+    });
+    $scope.$watch('subDepartmentMenuDefault', function(newValue, oldValue) {
+        $scope.currentPage = 1;
+        if (newValue !== 'Select' && newValue !== oldValue) {
+            $scope.options.filterRow = newValue;
+        }
+    });
+
+    $scope.paginationFilter = function(page, direction) {
+        page = parseInt(page, 10);
+        direction = parseInt(direction, 10);
+
+        if (page === 0) {
+            if (direction === 1) {
+                if ($scope.currentPage < $scope.pagination.length) {
+                    $scope.currentPage++;
+
+                    $scope.options.filterRow = '-Page ' + ('00000' + $scope.currentPage.toString()).substr(-5);
+                }
+            } else {
+                if ($scope.currentPage > 1) {
+                    $scope.currentPage--;
+
+                    $scope.options.filterRow = '-Page ' + ('00000' + $scope.currentPage.toString()).substr(-5);
+                }
+            }
+        } else {
+            if ($scope.currentPage !== page) {
+                $scope.currentPage = page;
+                $scope.options.filterRow = '-Page ' + ('00000' + $scope.currentPage.toString()).substr(-5);
+            }
+        }
+    };
+
     $scope.saveGanttData = function() {
         var mattCallback = Matt.saveOrCalcGanttData();
 
@@ -330,13 +393,14 @@ HarvardApp.controller('MainCtrl', ['$scope', '$http', '$timeout', '$log', '$moda
         $scope.clear();
         $scope.tasksMap = {};
         $scope.processesMap = {};
+        $scope.departmentsMap = {};
         $scope.jobsMap = {};
         $scope.machinesMap = {};
 
+        $log.info(originalData.machines.length);
+
         for(i = 0, m = originalData.machines, l = m.length; i < l; i++) {
-            if (('m'+m[i].machine.id in $scope.machinesMap) === false) {
-                $scope.machinesMap['m'+m[i].machine.id] = m[i].machine;
-            }
+            // if (m[i].operationQueue.length === 0) continue;
 
             // Prepare row machine data
             obj = {
@@ -348,6 +412,28 @@ HarvardApp.controller('MainCtrl', ['$scope', '$http', '$timeout', '$log', '$moda
                 UI2Title: m[i].machine.title.split('|'),
                 tasks: []
             };
+
+            if (('m'+m[i].machine.id in $scope.machinesMap) === false) {
+                $scope.machinesMap['m'+m[i].machine.id] = obj;
+            }
+
+            // Prepare department data
+            if ((obj.dept.name.replace(/ /gi, '-') in $scope.departmentsMap) === false) {
+                $scope.departmentsMap[obj.dept.name.replace(/ /gi, '-')] = {
+                    id: obj.dept.id,
+                    name: obj.dept.name,
+                    order: obj.dept.sortBy,
+                    sub: {}
+                };
+                $scope.departmentMenu.push(obj.dept.name);
+            }
+            if (obj.dept.subDept !== '' && (obj.dept.subDept.replace(/ /gi, '-') in $scope.departmentsMap[obj.dept.name.replace(/ /gi, '-')].sub) === false) {
+                $scope.departmentsMap[obj.dept.name.replace(/ /gi, '-')].sub[obj.dept.subDept.replace(/ /gi, '-')] = {
+                    id: obj.dept.id,
+                    name: obj.dept.subDept,
+                    order: obj.dept.sortBy
+                };
+            }
 
             if (m[i].operationQueue.length > 0) {
                 for(j = 0, t = m[i].operationQueue, q = t.length; j < q; j++) {
@@ -434,6 +520,16 @@ HarvardApp.controller('MainCtrl', ['$scope', '$http', '$timeout', '$log', '$moda
             }
             $scope.data.push(obj);
         }
+        // Pagination the machines
+        q = Object.keys($scope.machinesMap).sort(function(a, b) { return $scope.machinesMap[a].id - $scope.machinesMap[b].id });
+        p = 1;
+        for(i = 0, l = q.length; i < l; i++) {
+            if (i > 0 && i % 6 === 0) {
+                p++;
+                $scope.pagination.push(p);
+            }
+            $scope.machinesMap[q[i]].dept.name += '-Page ' + ('00000' + p.toString()).substr(-5);
+        }
         // Connect the processesMap
         for(p in $scope.processesMap) {
             if ($scope.processesMap[p].previousProcesses.length > 0) {
@@ -448,6 +544,8 @@ HarvardApp.controller('MainCtrl', ['$scope', '$http', '$timeout', '$log', '$moda
         dataToRemove = undefined;
 
         $scope.timespans = Harvard.getGanttTimespans();
+
+        $scope.options.filterRow = '-Page ' + '00001';
     };
 
     // Reload data action
@@ -595,8 +693,6 @@ HarvardApp.controller('MainCtrl', ['$scope', '$http', '$timeout', '$log', '$moda
 
     // Event handler
     var logTaskEvent = function(eventName, data) {
-        $log.info('[Event] ' + eventName, data);
-
         var key;
 
         if (data.type !== undefined) {
