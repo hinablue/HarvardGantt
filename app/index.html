@@ -2,7 +2,7 @@
 <html class="no-js">
   <head>
     <meta charset="utf-8">
-    <title>angular-gantt - Gantt chart component for AngularJS</title>
+    <title>HarvardApp - Gantt chart component for AngularJS</title>
     <meta name="description" content="Gantt chart component for AngularJS">
     <meta name="viewport" content="width=device-width">
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
@@ -12,11 +12,11 @@
     <link rel="stylesheet" href="bower_components/angular-motion/dist/angular-motion.css" />
     <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.css" />
     <link rel="stylesheet" href="bower_components/ng-sortable/dist/ng-sortable.css" />
-    <link rel="stylesheet" href="scripts/vender/angular-gantt.css" />
-    <link rel="stylesheet" href="scripts/vender/angular-gantt-plugins.css" />
     <!-- endbower -->
     <!-- endbuild -->
     <!-- build:css(.tmp) styles/main.css -->
+    <link rel="stylesheet" href="scripts/vendor/angular-gantt/angular-gantt-plugins.css">
+    <link rel="stylesheet" href="scripts/vendor/angular-gantt/angular-gantt.css">
     <link rel="stylesheet" href="styles/main.css">
     <!-- endbuild -->
     <link rel="shortcut icon" href="http://www.angular-gantt.com/img/favicon.ico">
@@ -63,7 +63,7 @@
                                                         <label class="control-label"><i class="fa fa-search"></i> Scale</label><br>
                                                         <button type="button" style="width: 5em; text-align: left" class="btn btn-default" ng-model="options.scale" ng-options="s for s in defaultScale" bs-select></button>
                                                     </div>
-                                                    <div style="display: none;">
+                                                    <div style="display: block;">
                                                         <div class="form-group text-center">
                                                             <label class="control-label"><i class="fa fa-sort"></i> Sort</label><br>
                                                             <button type="button" style="width: 6em; text-align: left" class="btn btn-default" ng-model="options.sortMode" ng-options="m.value as m.label for m in [{label: 'disabled', value: undefined}, {label: 'name', value: 'model.name'}, {label: 'from', value: 'from'}, {label: 'to', value: 'to'}]" bs-select></button>
@@ -242,14 +242,14 @@
     <script src="bower_components/angular-animate/angular-animate.js"></script>
     <script src="bower_components/angular-strap/dist/angular-strap.js"></script>
     <script src="bower_components/angular-strap/dist/angular-strap.tpl.js"></script>
+    <script src="bower_components/moment/moment.js"></script>
+    <script src="bower_components/angular-moment/angular-moment.js"></script>
     <script src="bower_components/angular-native-dragdrop/draganddrop.js"></script>
     <script src="bower_components/ng-context-menu/dist/ng-context-menu.js"></script>
     <script src="bower_components/ng-sortable/dist/ng-sortable.js"></script>
-    <script src="bower_components/moment/moment.js"></script>
-    <script src="bower_components/angular-moment/angular-moment.js"></script>
-    <script src="scripts/vender/angular-gantt.js"></script>
-    <script src="scripts/vender/angular-gantt-plugins.js"></script>
     <!-- endbower -->
+    <script src="scripts/vendor/angular-gantt/angular-gantt.js"></script>
+    <script src="scripts/vendor/angular-gantt/angular-gantt-plugins.js"></script>
     <!-- endbuild -->
 
         <!-- build:js({.tmp,app}) scripts/scripts.js -->

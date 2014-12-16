@@ -333,11 +333,6 @@ module.exports = function (grunt) {
           cwd: '.tmp/images',
           dest: '<%= yeoman.dist %>/images',
           src: ['generated/*']
-        }, { // Add angular-gantt template
-            expand: true,
-            cwd: 'bower_components/angular-gantt',
-            dest: '<%= yeoman.dist %>',
-            src: ['template/*']
         }, { // Add font-awesome fonts
             expand: true,
             cwd: 'bower_components/font-awesome',
