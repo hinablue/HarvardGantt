@@ -34,7 +34,7 @@ HarvardApp.controller('MainCtrl', ['$scope', '$element', '$http', '$timeout', '$
         toDate: undefined,
         labelsEnabled: true,
         sideWidth: 200,
-        allowSideResizing: false,
+        allowSideResizing: true,
         currentDate: 'line',
         currentDateValue: moment(),
         draw: false,
@@ -129,27 +129,6 @@ HarvardApp.controller('MainCtrl', ['$scope', '$element', '$http', '$timeout', '$
                 api.rows.on.filter($scope, logRowsFilterEvent);
                 api.tasks.on.filter($scope, logTasksFilterEvent);
 
-                // api.data.on.change($scope, function() {
-                //     $scope.live.row = $scope.data[5];
-
-                //     if (dataToRemove === undefined) {
-                //         dataToRemove = [
-                //             {'id': $scope.data[2].id}, // Remove Kickoff row
-                //             {
-                //                 'id': $scope.data[0].id, 'tasks': [
-                //                 {'id': $scope.data[0].tasks[0].id},
-                //                 {'id': $scope.data[0].tasks[3].id}
-                //             ]
-                //             }, // Remove some Milestones
-                //             {
-                //                 'id': $scope.data[6].id, 'tasks': [
-                //                 {'id': $scope.data[6].tasks[0].id}
-                //             ]
-                //             } // Remove order basket from Sprint 2
-                //         ];
-                //     }
-                // });
-
                 // When gantt is ready, load data.
                 // `data` attribute could have been used too.
                 $scope.load();
@@ -183,7 +162,7 @@ HarvardApp.controller('MainCtrl', ['$scope', '$element', '$http', '$timeout', '$
                         directiveScope.multipleTasks = [];
                         directiveScope.multipleTasksToggle = function(id) {
                             var _multipleTasks = [];
-                            if ($scope.multipleTasks.indexOf(id) >= 0) {
+                            if (directiveScope.multipleTasks.indexOf(id) >= 0) {
                                 for(var i = 0, mt = directiveScope.multipleTasks, l = mt.length; i < l; i += 1) {
                                     if (mt[i] === id) continue;
                                     _multipleTasks.push(mt[i]);
@@ -222,8 +201,31 @@ HarvardApp.controller('MainCtrl', ['$scope', '$element', '$http', '$timeout', '$
                                 } else {
                                     target = event.dest.index > event.source.index ? event.dest.index - 1 : event.dest.index;
                                 }
+                                var _dropTarget = directiveScope.row.tasks[event.dest.index].model, _sortedTasks = [], _shiftDuring = 60 * 1000;
+                                if (directiveScope.multipleTasks.length > 0 && directiveScope.multipleTasks.indexOf(_dropTarget.id) > -1) {
+                                    for (var i = 0, t = directiveScope.multipleTasks, l = t.length; i < l; i += 1) {
+                                        _sortedTasks.push(directiveScope.row.tasksMap[t[i]].model);
+                                    }
+                                    _sortedTasks.sort(function(a, b) { return a.from - b.from; });
+                                    if (target === 0) {
+                                        _shiftDuring += Math.abs(_dropTarget.to - directiveScope.row.tasks[1].model.from);
+                                    } else {
+                                        _shiftDuring += Math.abs(directiveScope.row.tasks[(target - 1)].model.to - _dropTarget.from);
+                                    }
+                                    _shiftDuring = _shiftDuring / 60 / 1000 * (event.dest.index > event.source.index ? 1 : -1);
+                                    for (var i = 0, t = directiveScope.row.tasks, l = t.length; i < l; i += 1) {
+                                        if (directiveScope.multipleTasks.indexOf(t[i].model.id) > -1 && Math.abs(_shiftDuring) > 0) {
+                                            t[i].model.from = t[i].model.from.clone().add(_shiftDuring, 'm');
+                                            t[i].model.to = t[i].model.to.clone().add(_shiftDuring, 'm');
+                                            t[i].model.data.expectedSetupFinishTime = t[i].model.data.expectedSetupFinishTime.clone().add(_shiftDuring, 'm');
+                                        }
+                                    }
+                                    directiveScope.row.tasks.sort(function(a, b) { return a.model.from - b.model.from; });
+                                    target = 0;
+                                }
+
                                 for (var i = target, t = directiveScope.row.tasks, l = t.length; i < l; i += 1) {
-                                    if (t[i].model.id === t[target].model.id) continue;
+                                    if (t[i].model.id === _dropTarget.id || i === target) continue;
 
                                     if (t[i].model.from < t[(i-1)].model.to) {
                                         var during = t[i].model.to.clone() - t[i].model.from.clone(),
@@ -234,6 +236,7 @@ HarvardApp.controller('MainCtrl', ['$scope', '$element', '$http', '$timeout', '$
                                         t[i].model.data.expectedSetupFinishTime = t[i].model.from.clone().add(setupDuring, 'ms');
                                     }
                                 }
+                                directiveScope.row.tasks.sort(function(a, b) { return a.model.from - b.model.from; });
                             }
                         };
                         directiveScope.tasksOnMachine = $modal({
@@ -805,17 +808,17 @@ HarvardApp.controller('MainCtrl', ['$scope', '$element', '$http', '$timeout', '$
 
     // Event handler
     var logRowEvent = function(eventName, row) {
-        $log.info('[Event] ' + eventName + ': ' + row.model.name);
+        // $log.info('[Event] ' + eventName + ': ' + row.model.name);
     };
 
     // Event handler
     var logTimespanEvent = function(eventName, timespan) {
-        $log.info('[Event] ' + eventName + ': ' + timespan.model.name);
+        // $log.info('[Event] ' + eventName + ': ' + timespan.model.name);
     };
 
     // Event handler
     var logLabelsEvent = function(eventName, width) {
-        $log.info('[Event] ' + eventName + ': ' + width);
+        // $log.info('[Event] ' + eventName + ': ' + width);
     };
 
     // Event handler
@@ -823,15 +826,13 @@ HarvardApp.controller('MainCtrl', ['$scope', '$element', '$http', '$timeout', '$
         // Clean up the date range
         $scope.options.fromDate = undefined;
 
-        if (date !== undefined) {
-            $log.info('[Event] api.on.scroll: ' + left + ', ' + (date === undefined ? 'undefined' : date.format()));
-        }
+        // if (date !== undefined) {
+        //     $log.info('[Event] api.on.scroll: ' + left + ', ' + (date === undefined ? 'undefined' : date.format()));
+        // }
     };
 
     // Event handler
     var logColumnsGenerateEvent = function(columns, headers) {
-        $log.info('[Event] ' + 'columns.on.generate' + ': ' + columns.length + ' column(s), ' + headers.length + ' header(s)');
-
         // Regenerate the columns for fill full gantt table
         var splittedViewScale = $scope.options.scale.split(' '), viewScaleUnit, from, to;
         if (splittedViewScale && splittedViewScale.length > 1) {
@@ -842,11 +843,11 @@ HarvardApp.controller('MainCtrl', ['$scope', '$element', '$http', '$timeout', '$
         from = moment($scope.api.gantt.columnsManager.getLastColumn().date.format(), 'YYYY-MM-DDTHH:mm:ssZ');
 
         if ($scope.api.gantt.width + $scope.api.gantt.scroll.getBordersWidth() < $element[0].offsetWidth) {
-            if (['minute', 'hour'].indexOf(viewScaleUnit) > -1) {
+            if (['minute', 'minutes', 'hour', 'hours'].indexOf(viewScaleUnit) > -1) {
                 to = from.clone().add(1, 'h');
-            } else if (['day', 'week'].indexOf(viewScaleUnit) > -1) {
+            } else if (['day', 'week', 'weeks'].indexOf(viewScaleUnit) > -1) {
                 to = from.clone().add(1, 'M');
-            } else if (['month', 'quarter', 'year'].indexOf(viewScaleUnit) > -1) {
+            } else if (['month', 'months', 'quarter', 'year'].indexOf(viewScaleUnit) > -1) {
                 to = from.clone().add(1, 'Q');
             }
             $scope.api.gantt.columnsManager.generateColumns(from, to);
@@ -855,17 +856,17 @@ HarvardApp.controller('MainCtrl', ['$scope', '$element', '$http', '$timeout', '$
 
     // Event handler
     var logRowsFilterEvent = function(rows, filteredRows) {
-        $log.info('[Event] rows.on.filter: ' + filteredRows.length + '/' + rows.length + ' rows displayed.');
+        // $log.info('[Event] rows.on.filter: ' + filteredRows.length + '/' + rows.length + ' rows displayed.');
     };
 
     // Event handler
     var logTasksFilterEvent = function(tasks, filteredTasks) {
-        $log.info('[Event] tasks.on.filter: ' + filteredTasks.length + '/' + tasks.length + ' tasks displayed.');
+        // $log.info('[Event] tasks.on.filter: ' + filteredTasks.length + '/' + tasks.length + ' tasks displayed.');
     };
 
     // Event handler
     var logReadyEvent = function() {
-        $log.info('[Event] core.on.ready');
+        // $log.info('[Event] core.on.ready');
     };
 
     // Event utility function

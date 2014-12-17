@@ -29,7 +29,7 @@ angular.module('HarvardApp')
 					var U = R * -0.168736 + G * -0.331264 + B *  0.500000 + 128;  // determines the chrominance of the color
 					var V = R *  0.500000 + G * -0.418688 + B * -0.081312 + 128;  // determines the chroma of the color
 
-					return Y <= 192;
+					return Y <= 149;
 				}
 			};
 		}

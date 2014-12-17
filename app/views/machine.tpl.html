@@ -24,7 +24,7 @@
 					<span class="column ng-binding from">{{ task.model.from.utc().format("YYYY/MM/DD HH:mm") }}</span>
 					<span class="column ng-binding to">{{ task.model.to.utc().format("YYYY/MM/DD HH:mm") }}</span>
 					<span class="column ng-binding during">{{ (task.model.to.utc() - task.model.from.utc()) / 60 / 1000 }}</span>
-					<span class="column ng-binding pin"><button type="button" class="btn {{ task.isPin === true && 'btn-warning' || 'btn-default' }} pin" ng-model="task.isPin" bs-checkbox><i class="fa {{ task.isPin === true && 'fa-check' || 'fa-close' }}"></i></button></span>
+					<span class="column ng-binding pin"><a class="btn {{ task.isPin === true && 'btn-warning' || 'btn-default' }} pin" ng-model="task.isPin" bs-checkbox><i class="fa {{ task.isPin === true && 'fa-check' || 'fa-close' }}"></i></a></span>
 				</div>
       		</div>
       	</div>
