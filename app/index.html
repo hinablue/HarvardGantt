@@ -180,7 +180,6 @@
                                         <div gantt
                                                data="data"
                                                timespans="timespans"
-                                               show-side="options.labelsEnabled"
                                                filter-task="{'name': options.filterTask}"
                                                filter-row="{'dept': options.filterRow}"
                                                filter-row-comparator="options.filterRowComparator"
@@ -191,7 +190,9 @@
                                                task-out-of-range="options.taskOutOfRange"
                                                from-date = "options.fromDate"
                                                to-date = "options.toDate"
+                                               show-side="options.labelsEnabled"
                                                allow-side-resizing = "options.allowSideResizing"
+                                               side-width = "options.sideWidth"
                                                current-date="options.currentDate"
                                                current-date-value="options.currentDateValue"
                                                headers="options.width && options.shortHeaders || options.longHeaders"

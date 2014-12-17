@@ -7,7 +7,7 @@
  * # MainCtrl
  * Controller of the HarvardApp
  */
-HarvardApp.controller('MainCtrl', ['$scope', '$http', '$timeout', '$log', '$modal', '$alert', 'ganttUtils', 'GanttObjectModel', 'Coloured', 'Harvard', 'Matt', 'ganttMouseOffset', 'ganttDebounce', 'moment', function($scope, $http, $timeout, $log, $modal, $alert, utils, ObjectModel, Coloured, Harvard, Matt, mouseOffset, debounce, moment) {
+HarvardApp.controller('MainCtrl', ['$scope', '$element', '$http', '$timeout', '$log', '$modal', '$alert', 'ganttUtils', 'GanttObjectModel', 'Coloured', 'Harvard', 'Matt', 'ganttMouseOffset', 'ganttDebounce', 'moment', function($scope, $element, $http, $timeout, $log, $modal, $alert, utils, ObjectModel, Coloured, Harvard, Matt, mouseOffset, debounce, moment) {
     var objectModel;
     var dataToRemove;
 
@@ -32,10 +32,11 @@ HarvardApp.controller('MainCtrl', ['$scope', '$http', '$timeout', '$log', '$moda
         taskOutOfRange: 'expand',
         fromDate: undefined,
         toDate: undefined,
-        allowSideResizing: true,
         labelsEnabled: true,
+        sideWidth: 200,
+        allowSideResizing: false,
         currentDate: 'line',
-        currentDateValue: moment.utc(),
+        currentDateValue: moment(),
         draw: false,
         readOnly: false,
         filterTask: '',
@@ -46,14 +47,14 @@ HarvardApp.controller('MainCtrl', ['$scope', '$http', '$timeout', '$log', '$moda
         },
         timeFrames: {
             'day': {
-                start: moment.utc('8:00', 'HH:mm'),
-                end: moment.utc('20:00', 'HH:mm'),
+                start: moment('8:00', 'HH:mm'),
+                end: moment('20:00', 'HH:mm'),
                 working: true,
                 default: true
             },
             'noon': {
-                start: moment.utc('12:00', 'HH:mm'),
-                end: moment.utc('13:30', 'HH:mm'),
+                start: moment('12:00', 'HH:mm'),
+                end: moment('13:30', 'HH:mm'),
                 working: false,
                 default: true
             },
@@ -296,7 +297,7 @@ HarvardApp.controller('MainCtrl', ['$scope', '$http', '$timeout', '$log', '$moda
         $scope.subDepartmentMenuDefault = 'Select';
         $scope.currentPage = 1;
 
-        if (newValue !== oldValue) {
+        if (false === angular.equals(newValue, oldValue)) {
             if (newValue !== 'Select') {
                 $scope.options.filterRow = newValue;
 
@@ -312,7 +313,7 @@ HarvardApp.controller('MainCtrl', ['$scope', '$http', '$timeout', '$log', '$moda
     });
     $scope.$watch('subDepartmentMenuDefault', function(newValue, oldValue) {
         $scope.currentPage = 1;
-        if (newValue !== 'Select' && newValue !== oldValue) {
+        if (newValue !== 'Select' && false === angular.equals(newValue, oldValue)) {
             $scope.options.filterRow = newValue;
         }
     });
@@ -354,7 +355,7 @@ HarvardApp.controller('MainCtrl', ['$scope', '$http', '$timeout', '$log', '$moda
             data: rawData,
             params: {
                 calculate: true,
-                calculateFrom: 0,// moment.utc($scope.gantt.getFirstColumn().date).format(dateFormat),  // Gantt start time
+                calculateFrom: 0,// moment($scope.gantt.getFirstColumn().date).format(dateFormat),  // Gantt start time
                 calculateWeeks: 52,
                 save: isSave
             }
@@ -396,8 +397,6 @@ HarvardApp.controller('MainCtrl', ['$scope', '$http', '$timeout', '$log', '$moda
         $scope.departmentsMap = {};
         $scope.jobsMap = {};
         $scope.machinesMap = {};
-
-        $log.info(originalData.machines.length);
 
         for(i = 0, m = originalData.machines, l = m.length; i < l; i++) {
             // if (m[i].operationQueue.length === 0) continue;
@@ -441,8 +440,8 @@ HarvardApp.controller('MainCtrl', ['$scope', '$http', '$timeout', '$log', '$moda
                     task = {
                         name: t[j].operationCode,
                         color: t[j].color,
-                        from: moment.utc(t[j].expectedStartTime, 'YYYY-MM-DDTHH:mm:ss'),
-                        to: moment.utc(t[j].expectedFinishTime, 'YYYY-MM-DDTHH:mm:ss'),
+                        from: moment(t[j].expectedStartTime, 'YYYY-MM-DDTHH:mm:ssZ'),
+                        to: moment(t[j].expectedFinishTime, 'YYYY-MM-DDTHH:mm:ssZ'),
                         id: t[j].id,
                         oid: t[j].oid,
                         textColor: Coloured.isDarkColoured(t[j].color) ? '#ffffff' : '#000000',
@@ -483,12 +482,12 @@ HarvardApp.controller('MainCtrl', ['$scope', '$http', '$timeout', '$log', '$moda
                             part: t[j].part,
                             s2sMins: t[j].s2sMins,
                             timeclockEmployeeId: t[j].timeclockEmployeeId,
-                            expectedStartTime: moment.utc(t[j].expectedStartTime, 'YYYY-MM-DDTHH:mm:ss'),
-                            expectedSetupFinishTime: moment.utc(t[j].expectedSetupFinishTime, 'YYYY-MM-DDTHH:mm:ss'),
-                            expectedFinishTime: moment.utc(t[j].expectedFinishTime, 'YYYY-MM-DDTHH:mm:ss'),
-                            actualStartTime: (t[j].actualStartTime === null) ? null : moment.utc(t[j].actualStartTime, 'YYYY-MM-DDTHH:mm:ss'),
-                            actualSetupFinishTime: (t[j].actualSetupFinishTime === null) ? null : moment.utc(t[j].actualSetupFinishTime, 'YYYY-MM-DDTHH:mm:ss'),
-                            actualFinishTime: (t[j].actualFinishTime === null) ? null : moment.utc(t[j].actualFinishTime, 'YYYY-MM-DDTHH:mm:ss'),
+                            expectedStartTime: moment(t[j].expectedStartTime, 'YYYY-MM-DDTHH:mm:ssZ'),
+                            expectedSetupFinishTime: moment(t[j].expectedSetupFinishTime, 'YYYY-MM-DDTHH:mm:ssZ'),
+                            expectedFinishTime: moment(t[j].expectedFinishTime, 'YYYY-MM-DDTHH:mm:ssZ'),
+                            actualStartTime: (t[j].actualStartTime === null) ? null : moment(t[j].actualStartTime, 'YYYY-MM-DDTHH:mm:ssZ'),
+                            actualSetupFinishTime: (t[j].actualSetupFinishTime === null) ? null : moment(t[j].actualSetupFinishTime, 'YYYY-MM-DDTHH:mm:ssZ'),
+                            actualFinishTime: (t[j].actualFinishTime === null) ? null : moment(t[j].actualFinishTime, 'YYYY-MM-DDTHH:mm:ssZ'),
                             actualQuantity: t[j].actualQuantity,
                             UI2: t[j].tooltip.split('|')
                         }
@@ -530,6 +529,7 @@ HarvardApp.controller('MainCtrl', ['$scope', '$http', '$timeout', '$log', '$moda
             }
             $scope.machinesMap[q[i]].dept.name += '-Page ' + ('00000' + p.toString()).substr(-5);
         }
+
         // Connect the processesMap
         for(p in $scope.processesMap) {
             if ($scope.processesMap[p].previousProcesses.length > 0) {
@@ -685,13 +685,6 @@ HarvardApp.controller('MainCtrl', ['$scope', '$http', '$timeout', '$log', '$moda
     });
 
     // Event handler
-    var logScrollEvent = function(left, date, direction) {
-        if (date !== undefined) {
-            $log.info('[Event] api.on.scroll: ' + left + ', ' + (date === undefined ? 'undefined' : date.format()) + ', ' + direction, $scope.api.gantt.columnsManager.getFirstColumn());
-        }
-    };
-
-    // Event handler
     var logTaskEvent = function(eventName, data) {
         var key;
 
@@ -701,8 +694,8 @@ HarvardApp.controller('MainCtrl', ['$scope', '$http', '$timeout', '$log', '$moda
                     $log.info(data.task.model.from.format('YYYY/MM/DD HH:mm'));
 
                     // Calculate the expected setup finish datetime.
-                    var _setupFinishTime = moment.utc(data.task.model.data.expectedSetupFinishTime) + (data.task.model.from - moment.utc(data.task.model.data.expectedStartTime));
-                    _setupFinishTime = moment.utc(_setupFinishTime).format('YYYY/MM/DD HH:mm');
+                    var _setupFinishTime = moment(data.task.model.data.expectedSetupFinishTime) + (data.task.model.from - moment(data.task.model.data.expectedStartTime));
+                    _setupFinishTime = moment(_setupFinishTime).format('YYYY/MM/DD HH:mm');
 
                     $scope.editTask = {
                         id: data.task.model.id,
@@ -777,7 +770,7 @@ HarvardApp.controller('MainCtrl', ['$scope', '$http', '$timeout', '$log', '$moda
                         timeclockEmployeeId: 0,
                         runOnMachineId: null,
                         actualRunOnMachineId: null,
-                        expectedStartTime: moment.utc().format('YYYY/MM/DD HH:mm'),
+                        expectedStartTime: moment().format('YYYY/MM/DD HH:mm'),
                         expectedSetupFinishTime: null,
                         expectedFinishTime: null,
                         quantity: 0,
@@ -826,8 +819,38 @@ HarvardApp.controller('MainCtrl', ['$scope', '$http', '$timeout', '$log', '$moda
     };
 
     // Event handler
+    var logScrollEvent = function(left, date, direction) {
+        // Clean up the date range
+        $scope.options.fromDate = undefined;
+
+        if (date !== undefined) {
+            $log.info('[Event] api.on.scroll: ' + left + ', ' + (date === undefined ? 'undefined' : date.format()));
+        }
+    };
+
+    // Event handler
     var logColumnsGenerateEvent = function(columns, headers) {
         $log.info('[Event] ' + 'columns.on.generate' + ': ' + columns.length + ' column(s), ' + headers.length + ' header(s)');
+
+        // Regenerate the columns for fill full gantt table
+        var splittedViewScale = $scope.options.scale.split(' '), viewScaleUnit, from, to;
+        if (splittedViewScale && splittedViewScale.length > 1) {
+            viewScaleUnit = splittedViewScale[splittedViewScale.length - 1];
+        } else {
+            viewScaleUnit = $scope.options.scale;
+        }
+        from = moment($scope.api.gantt.columnsManager.getLastColumn().date.format(), 'YYYY-MM-DDTHH:mm:ssZ');
+
+        if ($scope.api.gantt.width + $scope.api.gantt.scroll.getBordersWidth() < $element[0].offsetWidth) {
+            if (['minute', 'hour'].indexOf(viewScaleUnit) > -1) {
+                to = from.clone().add(1, 'h');
+            } else if (['day', 'week'].indexOf(viewScaleUnit) > -1) {
+                to = from.clone().add(1, 'M');
+            } else if (['month', 'quarter', 'year'].indexOf(viewScaleUnit) > -1) {
+                to = from.clone().add(1, 'Q');
+            }
+            $scope.api.gantt.columnsManager.generateColumns(from, to);
+        }
     };
 
     // Event handler

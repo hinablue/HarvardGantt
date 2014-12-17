@@ -3167,11 +3167,11 @@ Github: https://github.com/angular-gantt/angular-gantt.git
                 if (width === undefined && this.$element !== undefined) {
                     width = this.$element[0].offsetWidth;
                 }
-                if (width !== undefined) {
+                if (width !== undefined || width !== 0) {
                     return width;
                 }
             }
-            return 0;
+            return 200;
         };
         Side.prototype.show = function(value) {
             if (this.$element !== undefined) {
@@ -3755,8 +3755,11 @@ Github: https://github.com/angular-gantt/angular-gantt.git
 
                 $scope.$watch(function() {
                     return getWidth();
-                }, function(newValue) {
-                    $scope.targetElement.css('width', newValue + 'px');
+                }, function(newValue, oldValue) {
+                    if (newValue === 0 || newValue === undefined) return;
+                    if (false === angular.equals(newValue, oldValue)) {
+                        $scope.targetElement.css('width', newValue + 'px');
+                    }
                 });
 
                 function setWidth(width) {
