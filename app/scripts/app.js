@@ -8,7 +8,7 @@
  *
  * Main module of the application.
  */
-var HarvardApp = angular.module('HarvardApp', [
+angular.module('HarvardApp', [
     'gantt', // angular-gantt.
     'gantt.sortable',
     'gantt.drawtask',

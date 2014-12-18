@@ -2,22 +2,20 @@
   <div class="modal-dialog" style="width: 70%;">
     <div class="modal-content">
       <div class="modal-header" ng-show="title">
-        <button type="button" class="close" ng-click="$hide()">&times;</button>
         <h4 class="modal-title" ng-bind-html="title"></h4>
       </div>
       <div class="modal-body clearfix">
         <div class="col-md-1"></div>
-        <form action="#" method="post" class="col-md-10 clearfix" role="form">
+        <form class="col-md-10 clearfix" action="#" method="post" role="form">
           <input type="hidden" name="type" value="{{content}}">
           <input type="hidden" name="rowId" value="{{editTask.rowId}}">
-          <input type="hidden" name="taskId" value="{{modifyType === 'edit' && editTask.id || 0}}">
-
+          <input type="hidden" name="taskId" value="{{editTask.modifyType === 'edit' && editTask.id || 0}}">
           <div class="form-group col-md-12">
             <label for="poNo" class="col-md-3 control-label require_field">PO# </label>
             <div class="form-group col-md-3">
               <div class="input-group">
-                <input type="text" class="form-control" name="modifyTask_poNo" id="modifyTask_poNo" ng-model="editTask.poNo" value="{{ editTask.poNo }}" required ng-disabled="modifyType === 'edit'">
-                <ul class="dropdown-menu" role="menu" aria-labelledby="modifyTask_poNo" id="modifyTask_poNo_dropdown" ng-if="modifyType === 'create'">
+                <input type="text" class="form-control" name="modifyTask_poNo" id="modifyTask_poNo" ng-model="editTask.poNo" value="{{ editTask.poNo }}" required ng-disabled="editTask.modifyType === 'edit'">
+                <ul class="dropdown-menu" role="menu" aria-labelledby="modifyTask_poNo" id="modifyTask_poNo_dropdown" ng-if="editTask.modifyType === 'create'">
                   <li role="presentation" ng-model="poFuzzySearch" ng-repeat="poNo in poFuzzySearch">
                     <a role="menuitem" tabindex="-1" href="#{{ poNo.value }}" ng-click="toggleFuzzyDropdown(poNo.value)">{{ poNo.label }}</a>
                   </li>
@@ -27,7 +25,7 @@
             <label for="ComboId" class="col-md-3 control-label require_field">ComboId </label>
             <div class="form-group col-md-3">
               <div class="input-group">
-                <input class="form-control" name="modifyTask_comboList" ng-model="editTask.comboId" value="{{ editTask.comboId }}" required ng-disabled="modifyType === 'edit'">
+                <input class="form-control" name="modifyTask_comboList" ng-model="editTask.comboId" value="{{ editTask.comboId }}" required ng-disabled="editTask.modifyType === 'edit'">
               </div>
             </div>
           </div>
@@ -49,7 +47,7 @@
             </div>
           </div>
 
-          <div class="form-group col-md-12" ng-if="modifyType === 'create'">
+          <div class="form-group col-md-12" ng-if="editTask.modifyType === 'create'">
             <label for="previousOperation" class="col-md-3 control-label">Previous Task </label>
             <div class="form-group col-md-3">
               <div class="input-group">
@@ -78,7 +76,7 @@
             <label for="priority" class="col-md-6 control-label">Priority </label>
             <div class="form-group col-md-6">
               <div class="input-group">
-                <input type="number" class="form-control" id="priority" name="modifyTask_priority" ng-model="editTask.priority" value="{{ editTask.priority }}" required ng-disabled="modifyType === 'edit'">
+                <input type="number" class="form-control" id="priority" name="modifyTask_priority" ng-model="editTask.priority" value="{{ editTask.priority }}" required ng-disabled="editTask.modifyType === 'edit'">
               </div>
             </div>
           </div>
@@ -155,7 +153,7 @@
           <div class="form-group col-md-3">
             <label for="expectedSetupFinishTime" class="control-label">Expect Setup Finish </label>
             <div class="form-group">
-              <input type="text" class="form-control" size="10" id="expectedSetupFinishDate" name="modifyTask_expectedSetupFinishDate" placeholder="yyyy/MM/dd" ng-model="editTask.expectedSetupFinishTime" value="{{ editTask.expectedSetupFinishTime | date: 'yyyy/MM/dd' }}" ng-required="editTask.inProcessing === true || editTask.isPin === true" data-autoclose="1" data-date-format="yyyy/MM/dd" model-date-format="yyyy/MM/dd" container="body" bs-datepicker>
+              <input type="text" class="form-control" size="10" id="expectedSetupFinishDate" name="modifyTask_expectedSetupFinishDate" placeholder="YYYY/MM/DD" ng-model="editTask.expectedSetupFinishTime" value="{{ editTask.expectedSetupFinishTime | date: 'yyyy/MM/dd' }}" ng-required="editTask.inProcessing === true || editTask.isPin === true" data-autoclose="1" data-date-format="yyyy/MM/dd" model-date-format="yyyy/MM/dd" container="body" bs-datepicker>
             </div>
             <div class="form-group">
               <input type="text" class="form-control" size="8" id="expectedSetupFinishTime" name="modifyTask_expectedSetupFinishTime" placeholder="HH:mm" ng-model="editTask.expectedSetupFinishTime" value="{{ editTask.expectedSetupFinishTime | date: 'HH:mm' }}" ng-required="editTask.inProcessing === true || editTask.isPin === true" data-autoclose="1" data-time-format="HH:mm" model-time-format="HH:mm" data-minute-step="1" container="body" bs-timepicker>
@@ -165,7 +163,7 @@
           <div class="form-group col-md-3">
             <label for="expectedFinishTime" class="control-label require_field">Expect Production Finish </label>
             <div class="form-group">
-              <input type="text" class="form-control" size="10" id="expectedFinishDate" name="modifyTask_expectedFinishDate" placeholder="yyyy/MM/dd" ng-model="editTask.expectedFinishTime" value="{{ editTask.expectedFinishTime | date: 'yyyy/MM/dd' }}" ng-required="editTask.inProcessing === true || editTask.isPin === true" data-autoclose="1" data-date-format="yyyy/MM/dd" model-date-format="yyyy/MM/dd" container="body" bs-datepicker>
+              <input type="text" class="form-control" size="10" id="expectedFinishDate" name="modifyTask_expectedFinishDate" placeholder="YYYY/MM/DD" ng-model="editTask.expectedFinishTime" value="{{ editTask.expectedFinishTime | date: 'yyyy/MM/dd' }}" ng-required="editTask.inProcessing === true || editTask.isPin === true" data-autoclose="1" data-date-format="yyyy/MM/dd" model-date-format="yyyy/MM/dd" container="body" bs-datepicker>
             </div>
             <div class="form-group">
               <input type="text" class="form-control" size="8" id="expectedFinishTime" name="modifyTask_expectedFinishTime" placeholder="HH:mm" ng-model="editTask.expectedFinishTime" value="{{ editTask.expectedFinishTime | date: 'HH:mm' }}" ng-required="editTask.inProcessing === true || editTask.isPin === true" data-autoclose="1" data-time-format="HH:mm" model-time-format="HH:mm" data-minute-step="1" container="body" bs-timepicker>
@@ -184,7 +182,7 @@
           <div class="form-group col-md-3">
             <label for="actualStartTime" class="control-label">Actual Start </label>
             <div class="form-group">
-              <input type="text" class="form-control" size="10" id="actualStartDate" name="modifyTask_actualStartDate" ng-model="editTask.actualStartTime" placeholder="yyyy/MM/dd" value="{{ editTask.actualStartTime | date: 'yyyy/MM/dd' }}" ng-required="editTask.inProcessing === true" data-autoclose="1" data-date-format="yyyy/MM/dd" model-date-format="yyyy/MM/dd" container="body" placement="top-left" bs-datepicker>
+              <input type="text" class="form-control" size="10" id="actualStartDate" name="modifyTask_actualStartDate" ng-model="editTask.actualStartTime" placeholder="YYYY/MM/DD" value="{{ editTask.actualStartTime | date: 'yyyy/MM/dd' }}" ng-required="editTask.inProcessing === true" data-autoclose="1" data-date-format="yyyy/MM/dd" model-date-format="yyyy/MM/dd" container="body" placement="top-left" bs-datepicker>
             </div>
             <div class="form-group">
               <input type="text" class="form-control" size="8" id="actualStartTime" name="modifyTask_actualStartTime" ng-model="editTask.actualStartTime" placeholder="HH:mm" value="{{ editTask.actualStartTime | date: 'HH:mm' }}" ng-required="editTask.inProcessing === true" data-autoclose="1" data-time-format="HH:mm" model-time-format="HH:mm" data-minute-step="1" container="body" placement="top-left" bs-timepicker>
@@ -193,7 +191,7 @@
           <div class="form-group col-md-3">
             <label for="actualSetupFinishTime" class="control-label">Actual Setup Finish </label>
             <div class="form-group">
-              <input type="text" class="form-control" size="10" id="actualSetupFinishDate" name="modifyTask_actualSetupFinishDate" ng-model="editTask.actualSetupFinishTime" placeholder="yyyy/MM/dd" value="{{ editTask.actualSetupFinishTime | date: 'yyyy/MM/dd' }}" ng-required="editTask.inProcessing === true" data-autoclose="1" data-date-format="yyyy/MM/dd" model-date-format="yyyy/MM/dd" container="body" placement="top-left" bs-datepicker>
+              <input type="text" class="form-control" size="10" id="actualSetupFinishDate" name="modifyTask_actualSetupFinishDate" ng-model="editTask.actualSetupFinishTime" placeholder="YYYY/MM/DD" value="{{ editTask.actualSetupFinishTime | date: 'yyyy/MM/dd' }}" ng-required="editTask.inProcessing === true" data-autoclose="1" data-date-format="yyyy/MM/dd" model-date-format="yyyy/MM/dd" container="body" placement="top-left" bs-datepicker>
             </div>
             <div class="form-group">
               <input type="text" class="form-control" size="8" id="actualSetupFinishTime" name="modifyTask_actualSetupFinishTime" ng-model="editTask.actualSetupFinishTime" placeholder="HH:mm" value="{{ editTask.actualSetupFinishTime | date: 'HH:mm' }}" ng-required="editTask.inProcessing === true" data-autoclose="1" data-time-format="HH:mm" model-time-format="HH:mm" data-minute-step="1" container="body" placement="top-left" bs-timepicker>
@@ -203,7 +201,7 @@
           <div class="form-group col-md-3">
             <label for="actualFinishTime" class="control-label">Actual Production Finish </label>
             <div class="form-group">
-              <input type="text" class="form-control" size="10" id="actualFinishDate" name="modifyTask_actualFinishDate" ng-model="editTask.actualFinishTime" placeholder="yyyy/MM/dd" value="{{ editTask.actualFinishTime | date: 'yyyy/MM/dd' }}" ng-required="editTask.inProcessing === true" data-autoclose="1" data-date-format="yyyy/MM/dd" model-date-format="yyyy/MM/dd" container="body" placement="top-left" bs-datepicker>
+              <input type="text" class="form-control" size="10" id="actualFinishDate" name="modifyTask_actualFinishDate" ng-model="editTask.actualFinishTime" placeholder="YYYY/MM/DD" value="{{ editTask.actualFinishTime | date: 'yyyy/MM/dd' }}" ng-required="editTask.inProcessing === true" data-autoclose="1" data-date-format="yyyy/MM/dd" model-date-format="yyyy/MM/dd" container="body" placement="top-left" bs-datepicker>
             </div>
             <div class="form-group">
               <input type="text" class="form-control" size="8" id="actualFinishTime" name="modifyTask_actualFinishTime" ng-model="editTask.actualFinishTime" placeholder="HH:mm" value="{{ editTask.actualFinishTime | date: 'HH:mm' }}" ng-required="editTask.inProcessing === true" data-autoclose="1" data-time-format="HH:mm" model-time-format="HH:mm" data-minute-step="1" container="body" placement="top-left" bs-timepicker>
@@ -220,8 +218,9 @@
         <div class="col-md-1"></div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" ng-click="$hide()">Close</button>
-        <button type="button" class="btn btn-primary" ng-click="$hide()">Save changes</button>
+        <div class="col-md-12" id="gantt-editor-alert"></div>
+        <button type="button" class="btn btn-default" ng-click="closeTaskEditor()">Close</button>
+        <button type="button" class="btn btn-primary" ng-click="checkTaskData()">Save changes</button>
       </div>
     </div>
   </div>
