@@ -523,7 +523,7 @@ angular.module('HarvardApp').controller('MainCtrl', ['$scope', '$element', '$htt
                     expectedSetupFinishTime: typeof($scope.editTask.expectedSetupFinishTime) === 'object' ? moment((new Date($scope.editTask.expectedSetupFinishTime)).getTime(), 'x') : moment($scope.editTask.expectedSetupFinishTime, 'YYYY-MM-DDTHH:mm:ssZ'),
                     expectedFinishTime: typeof($scope.editTask.expectedFinishTime) === 'object' ? moment((new Date($scope.editTask.expectedFinishTime)).getTime(), 'x') : moment($scope.editTask.expectedFinishTime, 'YYYY-MM-DDTHH:mm:ssZ'),
                     actualStartTime: typeof($scope.editTask.actualStartTime) === 'object' ? moment((new Date($scope.editTask.actualStartTime)).getTime(), 'x') : moment($scope.editTask.actualStartTime, 'YYYY-MM-DDTHH:mm:ssZ'),
-                    actualSetupFinishTime: typeof($scope.editTask.actualSetupFinishTime) === 'object' ? moment(new Date($scope.editTask.actualSetupFinishTime)).getTime(), 'x') : moment($scope.editTask.actualSetupFinishTime, 'YYYY-MM-DDTHH:mm:ssZ'),
+                    actualSetupFinishTime: typeof($scope.editTask.actualSetupFinishTime) === 'object' ? moment((new Date($scope.editTask.actualSetupFinishTime)).getTime(), 'x') : moment($scope.editTask.actualSetupFinishTime, 'YYYY-MM-DDTHH:mm:ssZ'),
                     actualFinishTime: typeof($scope.editTask.actualFinishTime) === 'object' ? moment((new Date($scope.editTask.actualFinishTime)).getTime(), 'x') : moment($scope.editTask.actualFinishTime, 'YYYY-MM-DDTHH:mm:ssZ'),
                     actualQuantity: $scope.editTask.actualQuantity,
                     UI2: []
@@ -902,8 +902,6 @@ angular.module('HarvardApp').controller('MainCtrl', ['$scope', '$element', '$htt
     // Event handler
     var logTaskEvent = function(eventName, data) {
         var key;
-
-        $log.info(data);
 
         if (eventName === 'tasks.on.resizeEnd' && data.model.data.expectedStartTime === null) {
             $scope.editTask = editTaskTemplate;
