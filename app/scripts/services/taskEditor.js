@@ -8,7 +8,9 @@
  * Service in the HarvardApp.
  */
 angular.module('HarvardApp')
-    .service('TaskEditor', ['$http', '$timeout', '$log', 'Coloured', 'moment', function TaskEditor($http, $timeout, $log, Coloured, moment) {
+    .service('TaskEditor', ['$http', '$timeout', '$log', '$alert', 'Coloured', 'moment', function TaskEditor($http, $timeout, $log, $alert, Coloured, moment) {
+        var scope = null;
+
         return {
             taskTemplate: {
                 id: 0,
