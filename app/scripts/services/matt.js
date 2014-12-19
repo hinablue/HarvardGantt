@@ -8,7 +8,7 @@
  * Service in the HarvardApp.
  */
 angular.module('HarvardApp')
-    .service('Matt', ['$http', '$timeout', function Matt($http, $timeout) {
+    .service('Matt', ['$http', '$timeout', '$log', function Matt($http, $timeout, $log) {
         var configuration = {
             serverLocation: '',
             jsLocationPrefix: '/',
@@ -70,6 +70,7 @@ angular.module('HarvardApp')
 
         return {
             editTaskData: function(taskData) {
+                $log.info('console.log');
 
                 // 如果檢查通過
                 return {
