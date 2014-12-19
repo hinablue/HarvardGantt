@@ -111,7 +111,8 @@ angular.module('HarvardApp')
                 previousTask: [],
                 nextTask: [],
                 previousTaskId: 0,
-                nextTaskId: 0
+                nextTaskId: 0,
+                check: false
             },
             editTaskModalOptions: {
                 scope: null,

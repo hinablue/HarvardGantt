@@ -695,8 +695,9 @@ angular.module('HarvardApp')
         }
     };
     $scope.closeTaskEditor = function() {
+        $scope.options.draw = false;
         if ($scope.editTask !== undefined) {
-            if ($scope.editTask.modifyType === 'create') {
+            if ($scope.editTask.modifyType === 'create' && $scope.editTask.check === false) {
                 if ('t'+$scope.editTask.id in $scope.tasksMap) {
                     delete $scope.tasksMap['t'+$scope.editTask.id];
                 }
@@ -776,6 +777,7 @@ angular.module('HarvardApp')
 
                 $scope.tasksMap['t'+$scope.editTask.id] = task;
 
+                $scope.editTask.check = true;
                 if ($scope.editTask.drawTask === false) {
                     var rowIndex = (function($scope) {
                         for (var i = 0, l = $scope.data.length; i < l; i++) {
@@ -1271,7 +1273,8 @@ angular.module('HarvardApp')
                         nextTask: 0,
                         modifyType: data.type,
                         drawTask: false,
-                        modal: undefined
+                        modal: undefined,
+                        check: false
                     };
                     $scope.editTask.modal = $modal(editTaskModalOptions);
                 break;
