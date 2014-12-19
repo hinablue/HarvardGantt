@@ -22,6 +22,7 @@ angular.module('HarvardApp')
                 textColor: Coloured.isDarkColoured('#AA8833') ? '#ffffff' : '#000000',
                 operationCode: '',
                 priority: 0,
+                part: 0,
                 job: {},
                 process: {},
                 previousOperations: [],

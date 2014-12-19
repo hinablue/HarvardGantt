@@ -730,12 +730,26 @@ angular.module('HarvardApp')
                 task.processingType = $scope.editTask.processingType;
                 task.quantity = $scope.editTask.quantity;
                 task.new = true;
+                task.job = {
+                    comboId: $scope.editTask.comboId,
+                    comboQuantity: 0,
+                    comboType: null,
+                    id: 0,
+                    poNo: $scope.editTask.poNo
+                };
+                task.process = {
+                    id: $scope.editTask.processId,
+                    needWaitPrevProcess: null,
+                    operations: [],
+                    previousProcesses: [],
+                    productId: $scope.editTask.productId
+                };
                 task.delete = false;
                 task.finished = $scope.editTask.isFinish;
                 task.pin = $scope.editTask.isPin;
                 task.inProcessing = $scope.editTask.inProcessing;
-                task.previousOperations = [$scope.editTask.previousTask];
-                task.nextOperations = $scope.editTask.nextTask;
+                task.previousOperation = $scope.editTask.previousTask;
+                task.nextOperations = [$scope.editTask.nextTask];
                 task.runOnMachineId = $scope.editTask.runOnMachineId;
                 task.actualRunOnMachineId = $scope.editTask.actualRunOnMachineId;
                 task.machineShiftLabel = $scope.editTask.machineShiftLabel;
@@ -793,17 +807,79 @@ angular.module('HarvardApp')
     };
 
     $scope.saveGanttData = function(type) {
-        var mattCallback = Matt.saveOrCalcGanttData(), rawData = {}, isSave = false;
+        var mattCallback = Matt.saveOrCalcGanttData(), machine = {}, machines = [], isSave = false;
+        for (var i = 0, m = $scope.data, l = m.length; i < l; i++) {
+            if (m[i].tasks.length > 0) {
+                machine = {
+                    machine: {
+                        id: m[i].id,
+                        settingsMachine: m[i].settingsMachine,
+                        factoryOperation: m[i].factoryOperation,
+                        title: m[i].title.join('|'),
+                        currentTimeWorks: m[i].currentTimeWorks,
+                        online: m[i].online
+                    },
+                    operationQueue: []
+                };
+                for (var j = 0, t = m[i].tasks, q = t.length; j < q; j++) {
+                    machine.operationQueue.push({
+                        id: t[j].id,
+                        oid: t[j].id,
+                        part: t[j].part,
+                        operationCode: t[j].operationCode,
+                        priority: t[j].priority,
+                        job: t[j].job,
+                        process: t[j].process,
+                        previousOperation: t[j].previousOperation,
+                        nextOperations: t[j].nextOperations,
+                        runOnMachineId: t[j].runOnMachineId,
+                        actualRunOnMachineId: t[j].actualRunOnMachineId,
+                        quantity: t[j].quantity,
+                        actualQuantity: t[j].actualQuantity,
+                        processingType: t[j].processingType,
+                        factoryOperation: t[j].factoryOperation,
+                        pin: t[j].pin,
+                        capacity: t[j].capacity,
+                        s2sMins: t[j].s2sMins,
+                        up: t[j].up,
+                        sheetUp: t[j].sheetUp,
+                        face: t[j].face,
+                        pendingMinutes: t[j].pendingMinutes,
+                        expectedStartTime: t[j].expectedStartTime.utc().format('YYYY-MM-DD HH:mm:ss.SSS'),
+                        expectedSetupFinishTime: t[j].expectedSetupFinishTime.utc().format('YYYY-MM-DD HH:mm:ss.SSS'),
+                        expectedFinishTime: t[j].expectedFinishTime.utc().format('YYYY-MM-DD HH:mm:ss.SSS'),
+                        actualStartTime: t[j].actualStartTime !== null ? t[j].actualStartTime.utc().format('YYYY-MM-DD HH:mm:ss.SSS') : null,
+                        actualSetupFinishTime: t[j].actualSetupFinishTime !== null ? t[j].actualSetupFinishTime.utc().format('YYYY-MM-DD HH:mm:ss.SSS') : null,
+                        actualFinishTime: t[j].actualFinishTime !== null ? t[j].actualFinishTime.utc().format('YYYY-MM-DD HH:mm:ss.SSS') : null,
+                        finished: t[j].finished,
+                        inProcessing: t[j].inProcessing,
+                        delete: t[j].delete,
+                        parallelCode: t[j].parallelCode,
+                        expectedMoldId: t[j].expectedMoldId,
+                        tooltip: t[j].tooltip.join('|'),
+                        color: t[j].color,
+                        timeclockEmployeeId: t[j].timeclockEmployeeId,
+                        rounds: t[j].rounds,
+                        taskGroup: t[j].taskGroup,
+                        machineShiftLabel: t[j].machineShiftLabel,
+                        new: t[j].new
+                    });
+                }
+                machines.push(machine);
+            }
+        }
+
+        $log.info(machines);
 
         $http({
             method: 'post',
             responseType: 'json',
             url: $scope.configuration.serverLocation + $scope.configuration.confirmGanttUrl,
             timeout: $scope.configuration.getGanttDataTimeout * 1000,
-            data: rawData,
+            data: machines,
             params: {
                 calculate: true,
-                calculateFrom: 0,// moment($scope.gantt.getFirstColumn().date).format(dateFormat),  // Gantt start time
+                calculateFrom: moment.utc($scope.api.gantt.columnsManager.getFirstColumn().date.format(), 'YYYY-MM-DD HH:mm:ss.SSS'),
                 calculateWeeks: 52,
                 save: type === 'save' ? true : false
             }
@@ -903,7 +979,7 @@ angular.module('HarvardApp')
                         priority: t[j].priority,
                         job: t[j].job,
                         process: t[j].process,
-                        previousOperations: [t[j].previousOperation],
+                        previousOperation: t[j].previousOperation,
                         nextOperations: t[j].nextOperations,
                         runOnMachineId: t[j].runOnMachineId,
                         actualRunOnMachineId: t[j].actualRunOnMachineId,
