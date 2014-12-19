@@ -164,7 +164,6 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-12" id="gantt-chart-alert"></div>
                 </div>
                 <div class="row top-buffer">
                     <div class="col-md-12" id="gantt-chart">
@@ -214,6 +213,16 @@
                                             </gantt-draw-task>
                                         </div>
                                     </div>
+                                    <div class="panel-body">
+                                        <div class="col-md-12" id="gantt-chart-alert"></div>
+                                        <div class="form-group text-center">
+                                            <div class="btn-group">
+                                                <a class="btn btn-warning btn-lg" ng-click="saveGanttData('recalculate')">Recalculate</a>
+                                                <a class="btn btn-primary btn-lg" ng-click="saveGanttData('save')">Save</a>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div class="panel-body">
                                         <div class="live-table">
                                             <div class="live-cell" ng-show="live.row.tasks.length > 0">

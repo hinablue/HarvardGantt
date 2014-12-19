@@ -8,24 +8,47 @@
         <div class="col-md-1"></div>
         <form class="col-md-10 clearfix" action="#" method="post" role="form">
           <input type="hidden" name="type" value="{{content}}">
-          <input type="hidden" name="rowId" value="{{editTask.rowId}}">
+          <input type="hidden" name="rowId" ng-model="editTask.rowId" value="{{editTask.rowId}}">
+          <input type="hidden" name="fuzzyPoNo" ng-model="editTask.fuzzyPoNo" value="{{editTask.fuzzyPoNo}}">
+          <input type="hidden" name="poId" ng-model="editTask.poId" value="{{editTask.poId}}">
           <input type="hidden" name="taskId" value="{{editTask.modifyType === 'edit' && editTask.id || 0}}">
           <div class="form-group col-md-12">
             <label for="poNo" class="col-md-3 control-label require_field">PO# </label>
             <div class="form-group col-md-3">
               <div class="input-group">
-                <input type="text" class="form-control" name="modifyTask_poNo" id="modifyTask_poNo" ng-model="editTask.poNo" value="{{ editTask.poNo }}" required ng-disabled="editTask.modifyType === 'edit'">
-                <ul class="dropdown-menu" role="menu" aria-labelledby="modifyTask_poNo" id="modifyTask_poNo_dropdown" ng-if="editTask.modifyType === 'create'">
-                  <li role="presentation" ng-model="poFuzzySearch" ng-repeat="poNo in poFuzzySearch">
-                    <a role="menuitem" tabindex="-1" href="#{{ poNo.value }}" ng-click="toggleFuzzyDropdown(poNo.value)">{{ poNo.label }}</a>
-                  </li>
-                </ul>
+                <input type="text" class="form-control" name="modifyTask_poNo" id="modifyTask_poNo" ng-model="editTask.poNo" value="{{ editTask.poNo }}" required ng-disabled="editTask.modifyType === 'edit'" bs-dropdown="editTask.poFuzzySearch">
               </div>
             </div>
             <label for="ComboId" class="col-md-3 control-label require_field">ComboId </label>
             <div class="form-group col-md-3">
               <div class="input-group">
-                <input class="form-control" name="modifyTask_comboList" ng-model="editTask.comboId" value="{{ editTask.comboId }}" required ng-disabled="editTask.modifyType === 'edit'">
+                <input class="form-control" name="modifyTask_comboList" ng-model="editTask.comboId" value="{{ editTask.comboId }}" required ng-disabled="editTask.modifyType === 'edit'" bs-dropdown="editTask.comboList">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group col-md-12">
+            <label for="productId" class="col-md-3 control-label require_field">Product </label>
+            <div class="form-group col-md-3">
+              <input type="text" class="form-control" name="modifyTask_productId" id="modifyTask_productId" ng-model="editTask.productId" value="{{ editTask.productId }}" required ng-disabled="editTask.modifyType === 'edit'" bs-dropdown="editTask.productList">
+            </div>
+            <label for="processId" class="col-md-3 control-label require_field">Process </label>
+            <div class="form-group col-md-3">
+              <input type="text" class="form-control" name="modifyTask_processId" id="modifyTask_processId" ng-model="editTask.processId" value="{{ editTask.processId }}" required ng-disabled="editTask.modifyType === 'edit'" bs-dropdown="editTask.processList">
+            </div>
+          </div>
+
+          <div class="form-group col-md-12" ng-if="editTask.modifyType === 'create'">
+            <label for="previousOperation" class="col-md-3 control-label">Previous Task </label>
+            <div class="form-group col-md-3">
+              <div class="input-group">
+                <button type="button" class="form-control btn btn-default" name="modifyTask_previousTask" ng-model="editTask.previousTaskId" ng-options="task.value as task.label for task in editTask.previousTask" required bs-select></button>
+              </div>
+            </div>
+            <label for="nextOperation" class="col-md-3 control-label">Next Task </label>
+            <div class="form-group col-md-3">
+              <div class="input-group">
+                <button type="button" class="form-control btn btn-default" name="modifyTask_nextTask" ng-model="editTask.nextTaskId" ng-options="task.value as task.label for task in editTask.nextTask" required bs-select></button>
               </div>
             </div>
           </div>
@@ -43,26 +66,7 @@
             </div>
             <label for="operationCode" class="col-md-3 control-label require_field">Operation Code </label>
             <div class="form-group col-md-3">
-              <input type="text" class="form-control" name="modifyTask_operationCode" ng-model="editTask.operationCode" value="{{ editTask.operationCode }}" required></input>
-            </div>
-          </div>
-
-          <div class="form-group col-md-12" ng-if="editTask.modifyType === 'create'">
-            <label for="previousOperation" class="col-md-3 control-label">Previous Task </label>
-            <div class="form-group col-md-3">
-              <div class="input-group">
-                <select class="form-control" name="modifyTask_previousTask" ng-model="editTask.previousTask" ng-options="task.value as task.label for task in editTask.previousOperations" required>
-                  <option label="Select Previous" value="">Select Previous</option>
-                </select>
-              </div>
-            </div>
-            <label for="nextOperation" class="col-md-3 control-label">Next Task </label>
-            <div class="form-group col-md-3">
-              <div class="input-group">
-                <select class="form-control" name="modifyTask_nextTask" ng-model="editTask.nextTask" ng-options="task.value as task.label for task in editTask.nextOperation" required>
-                  <option label="Select Next" value="">Select Next</option>
-                </select>
-              </div>
+              <input type="text" class="form-control" name="modifyTask_operationCode" ng-model="editTask.operationCode" value="{{ editTask.operationCode }}" required>
             </div>
           </div>
 

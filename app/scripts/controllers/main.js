@@ -7,61 +7,58 @@
  * # MainCtrl
  * Controller of the HarvardApp
  */
-angular.module('HarvardApp').controller('MainCtrl', ['$scope', '$element', '$http', '$timeout', '$log', '$modal', '$alert', 'ganttUtils', 'GanttObjectModel', 'Coloured', 'Harvard', 'Matt', 'ganttMouseOffset', 'ganttDebounce', 'moment', function($scope, $element, $http, $timeout, $log, $modal, $alert, utils, ObjectModel, Coloured, Harvard, Matt, mouseOffset, debounce, moment) {
+angular.module('HarvardApp').controller('MainCtrl', ['$scope', '$element', '$http', '$timeout', '$log', '$modal', '$alert', '$dropdown', 'ganttUtils', 'GanttObjectModel', 'Coloured', 'Harvard', 'Matt', 'ganttMouseOffset', 'ganttDebounce', 'moment', function($scope, $element, $http, $timeout, $log, $modal, $alert, $dropdown, utils, ObjectModel, Coloured, Harvard, Matt, mouseOffset, debounce, moment) {
     var objectModel;
     var dataToRemove;
     var taskTemplate = {
-        name: 'Drawn task',
-        color: '#AA8833',
-        from: null,
-        to: null,
         id: 0,
         oid: 0,
+        color: '#AA8833',
+        name: 'Drawn task',
+        from: moment().format('YYYY-MM-DDTHH:mm:ssZ'),
+        to: moment().format('YYYY-MM-DDTHH:mm:ssZ'),
         textColor: Coloured.isDarkColoured('#AA8833') ? '#ffffff' : '#000000',
         operationCode: '',
-        processingType: 'GANG',
-        quantity: 0,
-        group: '',
-        isNew: true,
-        isDelete: false,
-        isFinish: false,
-        isPin: false,
-        inProcessing: false,
-        factoryOperation: '',
+        priority: 0,
         job: {},
         process: {},
+        previousOperations: [],
+        nextOperations: '',
+        runOnMachineId: 0,
+        actualRunOnMachineId: 0,
+        quantity: 0,
+        actualQuantity: 0,
+        processingType: 'GANG',
+        factoryOperation: null,
+        pin: false,
+        capacity: 0,
+        s2sMins: -1,
+        up: 0,
+        sheetUp: 0,
+        face: 0,
+        pendingMinutes: 0,
+        expectedStartTime: null,
+        expectedSetupFinishTime: null,
+        expectedFinishTime: null,
+        actualStartTime: null,
+        actualSetupFinishTime: null,
+        actualFinishTime: null,
+        finished: false,
+        inProcessing: false,
+        delete: false,
+        parallelCode: '',
+        expectedMoldId: null,
+        tooltip: [],
+        timeclockEmployeeId: '',
+        rounds: 0,
+        taskGroup: '',
+        machineShiftLabel: '',
+        new: true,
         movable: {
             enabled: true,
             allowMoving: true,
             allowResizing: false,
             allowRowSwitching: false
-        },
-        data: {
-            previousOperations: [],
-            nextOperations: '',
-            runOnMachineId: 0,
-            actualRunOnMachineId: 0,
-            machineShiftLabel: '',
-            parallelCode: '',
-            pendingMinutes: 0,
-            expectedMoldId: '',
-            capacity: 0,
-            face: 0,
-            priority: 0,
-            rounds: 0,
-            up: 0,
-            sheetUp: 0,
-            part: 0,
-            s2sMins: -1,
-            timeclockEmployeeId: '',
-            expectedStartTime: null,
-            expectedSetupFinishTime: null,
-            expectedFinishTime: null,
-            actualStartTime: null,
-            actualSetupFinishTime: null,
-            actualFinishTime: null,
-            actualQuantity: null,
-            UI2: []
         }
     };
     var editTaskTemplate = {
@@ -97,11 +94,21 @@ angular.module('HarvardApp').controller('MainCtrl', ['$scope', '$element', '$htt
         actualSetupFinishTime: null,
         actualFinishTime: null,
         actualQuantity: null,
-        previousTask: 0,
-        nextTask: 0,
         modifyType: 'create',
         drawTask: false,
-        modal: undefined
+        modal: undefined,
+        fuzzyPoNo: '',
+        poId: '',
+        productId: '',
+        processId: '',
+        poFuzzySearch: [],
+        comboList: [],
+        productList: [],
+        processList: [],
+        previousTask: [],
+        nextTask: [],
+        previousTaskId: 0,
+        nextTaskId: 0
     };
     var editTaskModalOptions = {
         scope: $scope,
@@ -110,6 +117,8 @@ angular.module('HarvardApp').controller('MainCtrl', ['$scope', '$element', '$htt
         backdrop: false,
         show: true
     };
+
+    $scope.editTask = editTaskTemplate;
 
     $scope.tasksMap = {};
     $scope.processesMap = {};
@@ -295,7 +304,7 @@ angular.module('HarvardApp').controller('MainCtrl', ['$scope', '$element', '$htt
                             }
                         };
                         directiveScope.autoExpand = {
-                            width: (directiveScope.row.model.UI2Title.length * 10 + 33) + 'em'
+                            width: (directiveScope.row.model.title.length * 10 + 33) + 'em'
                         };
                         directiveScope.taskColoured = function(bgColor, textColor) {
                             return {
@@ -332,7 +341,7 @@ angular.module('HarvardApp').controller('MainCtrl', ['$scope', '$element', '$htt
                                         if (directiveScope.multipleTasks.indexOf(t[i].model.id) > -1 && Math.abs(_shiftDuring) > 0) {
                                             t[i].model.from = t[i].model.from.clone().add(_shiftDuring, 'm');
                                             t[i].model.to = t[i].model.to.clone().add(_shiftDuring, 'm');
-                                            t[i].model.data.expectedSetupFinishTime = t[i].model.data.expectedSetupFinishTime.clone().add(_shiftDuring, 'm');
+                                            t[i].model.expectedSetupFinishTime = t[i].model.expectedSetupFinishTime.clone().add(_shiftDuring, 'm');
                                         }
                                     }
                                     directiveScope.row.tasks.sort(function(a, b) { return a.model.from - b.model.from; });
@@ -345,11 +354,11 @@ angular.module('HarvardApp').controller('MainCtrl', ['$scope', '$element', '$htt
                                     }
                                     if (t[i].model.from < t[(i-1)].model.to) {
                                         var during = t[i].model.to.clone() - t[i].model.from.clone(),
-                                            setupDuring = t[i].model.data.expectedSetupFinishTime.clone() - t[i].model.from.clone();
+                                            setupDuring = t[i].model.expectedSetupFinishTime.clone() - t[i].model.from.clone();
 
                                         t[i].model.from = t[(i-1)].model.to.clone().add(1, 'm');
                                         t[i].model.to = t[i].model.from.clone().add(during, 'ms');
-                                        t[i].model.data.expectedSetupFinishTime = t[i].model.from.clone().add(setupDuring, 'ms');
+                                        t[i].model.expectedSetupFinishTime = t[i].model.from.clone().add(setupDuring, 'ms');
                                     }
                                 }
                                 directiveScope.row.tasks.sort(function(a, b) { return a.model.from - b.model.from; });
@@ -436,6 +445,294 @@ angular.module('HarvardApp').controller('MainCtrl', ['$scope', '$element', '$htt
             $scope.options.filterRow = newValue;
         }
     });
+    var editTaskHandleError = function(response) {
+        var i, k, l;
+        switch(response.config.data) {
+            case 'poFuzzySearch':
+                $scope.editTask.poFuzzySearch = [];
+                var _poNo = [];
+                for (i = 0, k = Object.keys($scope.jobsMap), l = k.length; i < l; i++) {
+                    if (_poNo.indexOf($scope.jobsMap[k[i]].poNo) < 0) {
+                        $scope.editTask.poFuzzySearch.push({
+                            text: $scope.jobsMap[k[i]].poNo,
+                            click: function(poNo) {
+                                this.editTask.poNo = poNo;
+                                this.editTask.fuzzyPoNo = poNo;
+                            }.bind($scope, $scope.jobsMap[k[i]].poNo)
+                        });
+                        _poNo.push($scope.jobsMap[k[i]].poNo);
+                    }
+                }
+            break;
+            case 'getPoUrl':
+                $scope.editTask.poId = $scope.editTask.poNo;
+            break;
+            case 'getComboUrl':
+                $scope.editTask.comboList = [];
+                for (i = 0, k = Object.keys($scope.jobsMap), l = k.length; i < l; ++i) {
+                    if ($scope.jobsMap[k[i]].poNo === $scope.editTask.poNo) {
+                        $scope.editTask.comboList.push({
+                            text: $scope.jobsMap[k[i]].comboId,
+                            click: function(comboId) {
+                                this.editTask.comboId = comboId;
+                            }.bind($scope, $scope.jobsMap[k[i]].comboId)
+                        });
+                        $scope.editTask.job = $scope.jobsMap[k[i]];
+                        break;
+                    }
+                }
+            break;
+            case 'getProductUrl':
+                $scope.editTask.productList = [];
+                var _productId = [];
+                for (i = 0, k = Object.keys($scope.processesMap), l = k.length; i < l; ++i) {
+                    if (_productId.indexOf($scope.processesMap[k[i]].productId) < 0) {
+                        $scope.editTask.productList.push({
+                            text: $scope.processesMap[k[i]].productId,
+                            click: function(productId) {
+                                this.editTask.productId = productId;
+                            }.bind($scope, $scope.processesMap[k[i]].productId)
+                        });
+                        _productId.push($scope.processesMap[k[i]].productId);
+                    }
+                }
+            break;
+            case 'getProcessUrl':
+                $scope.editTask.processList = [];
+                var _processId = [];
+                for (i = 0, k = Object.keys($scope.processesMap), l = k.length; i < l; ++i) {
+                    if ($scope.processesMap[k[i]].productId === $scope.editTask.productId) {
+                        $scope.editTask.processList.push({
+                            text: $scope.processesMap[k[i]].id,
+                            click: function(processId) {
+                                this.editTask.processId = processId;
+                            }.bind($scope, $scope.processesMap[k[i]].id)
+                        });
+                        break;
+                    }
+                }
+            break;
+        }
+    };
+    var editTaskHandleSuccess = function(response) {
+        $log.info(response);
+        var responseType = response.headers('Content-Type').replace(/;(.*)$/gi, '');
+        if (responseType === 'application/json') {
+            switch(response.config.data) {
+                case 'poFuzzySearch':
+                    $scope.editTask.poFuzzySearch = [];
+                    var _poNo = [];
+                    for (i = 0, k = response.data.data, l = k.length; i < l; i++) {
+                        if (_poNo.indexOf(k[i]) < 0) {
+                            $scope.editTask.poFuzzySearch.push({
+                                text: k[i],
+                                click: function(poNo) {
+                                    this.editTask.poNo = k[i];
+                                    this.editTask.fuzzyPoNo = k[i];
+                                }.bind($scope, k[i])
+                            });
+                            _poNo.push(k[i]);
+                        }
+                    }
+                break;
+                case 'getPoUrl':
+                    $scope.editTask.poId = response.data.data.id;
+                break;
+                case 'getComboUrl':
+                    $scope.editTask.comboList = response.data.data;
+                    for (i = 0, k = Object.keys($scope.jobsMap), l = k.length; i < l; ++i) {
+                        if ($scope.jobsMap[k[i]].poNo === $scope.editTask.poNo) {
+                            $scope.editTask.job = $scope.jobsMap[k[i]];
+                            break;
+                        }
+                    }
+                break;
+                case 'getProductUrl':
+                    $scope.editTask.productList = response.data.data;
+                break;
+                case 'getProcessUrl':
+                    $scope.editTask.processList = response.data.data;
+                break;
+                case 'getProductInfoUrl':
+                    $scope.editTask.comboList = [];
+                    $scope.editTask.comboList.push({
+                        text: response.data.data.comboId,
+                        click: function(comboId) {
+                            this.editTask.comboId = comboId;
+                        }.bind($scope, response.data.data.comboId)
+                    });
+                    $scope.editTask.productList = [];
+                    $scope.editTask.processList.push({
+                        text: response.data.data.productId,
+                        click: function(id) {
+                            this.editTask.productId = id;
+                        }.bind($scope, response.data.data.productId)
+                    });
+                    $scope.editTask.comboId = response.data.data.comboId;
+                    $scope.editTask.productId = response.data.data.productId;
+                    $scope.editTask.poNo = response.data.data.poNo;
+                    $scope.editTask.poId = response.data.data.poNo;
+                break;
+                default:
+                    $alert({
+                        title: 'Error!',
+                        content: 'Server JSON Data error.',
+                        placement: 'top',
+                        type: 'info',
+                        duration: 3,
+                        dismissable: false,
+                        container: '#gantt-editor-alert',
+                        show: true
+                    });
+            }
+        } else {
+            editTaskHandleError(response);
+        }
+    };
+    $scope.$watch('editTask.poNo', function(newValue, oldValue) {
+        if (newValue !== undefined && !angular.equals(newValue, oldValue)) {
+            $timeout(function() {
+                var result = ($http({
+                    method: 'get',
+                    responseType: 'json',
+                    url: $scope.configuration.serverLocation + $scope.configuration.poFuzzySearch.replace('#poNo#', newValue),
+                    data: 'poFuzzySearch'
+                })).then(editTaskHandleSuccess, editTaskHandleError);
+            }, 300);
+        }
+    });
+    $scope.$watch('editTask.fuzzyPoNo', function(newValue, oldValue) {
+        if (newValue !== undefined && !angular.equals(newValue, oldValue)) {
+            $timeout(function() {
+                var result = ($http({
+                    method: 'get',
+                    responseType: 'json',
+                    url: $scope.configuration.serverLocation + $scope.configuration.getPoUrl.replace('#poNo#', newValue),
+                    data: 'getPoUrl'
+                })).then(editTaskHandleSuccess, editTaskHandleError);
+            }, 300);
+        }
+    });
+    $scope.$watch('editTask.poId', function(newValue, oldValue) {
+        if (newValue !== undefined && !angular.equals(newValue, oldValue)) {
+            $timeout(function() {
+                var result = ($http({
+                    method: 'get',
+                    responseType: 'json',
+                    url: $scope.configuration.serverLocation + $scope.configuration.getComboUrl.replace('#poId#', newValue),
+                    data: 'getComboUrl'
+                })).then(editTaskHandleSuccess, editTaskHandleError);
+            }, 300);
+        }
+    });
+    $scope.$watch('editTask.comboId', function(newValue, oldValue) {
+        if (newValue !== undefined && !angular.equals(newValue, oldValue)) {
+            $timeout(function() {
+                var result = ($http({
+                    method: 'get',
+                    responseType: 'json',
+                    url: $scope.configuration.serverLocation + $scope.configuration.getProductUrl.replace('#comboId#', newValue),
+                    data: 'getProductUrl'
+                })).then(editTaskHandleSuccess, editTaskHandleError);
+            }, 300);
+        }
+    });
+    $scope.$watch('editTask.productId', function(newValue, oldValue) {
+        if (newValue !== undefined && !angular.equals(newValue, oldValue)) {
+            var rowIndex = (function($scope) {
+                for (var i = 0, l = $scope.data.length; i < l; i++) {
+                    if ($scope.data[i].id === $scope.editTask.runOnMachineId) {
+                        return i;
+                    }
+                }
+                return false;
+            })($scope);
+            $timeout(function() {
+                var result = ($http({
+                    method: 'get',
+                    responseType: 'json',
+                    url: $scope.configuration.serverLocation + $scope.configuration.getProcessUrl.replace('#productId#', newValue),
+                    data: 'getProcessUrl',
+                    params: {
+                        factoryOperationCode: $scope.data[rowIndex].factoryOperation.code
+                    }
+                })).then(editTaskHandleSuccess, editTaskHandleError);
+            }, 300);
+        }
+    });
+    $scope.$watch('editTask.processId', function(newValue, oldValue) {
+        $scope.editTask.previousTask = [];
+        $scope.editTask.nextTask = [];
+        var _task = [], _tasks = [];
+        var prevProcesses = function(process) {
+            var result = process.operations;
+            if (process.previousProcesses.length > 0) {
+                for (var i = 0, k = process.previousProcesses, l = k.length; i < l; i++) {
+                    if (('p'+k[i]) in $scope.processesMap) {
+                        result = result.concat(prevProcesses($scope.processesMap[('p'+k[i])]));
+                    }
+                }
+            }
+            return result;
+        };
+        var nextProcesses = function(process) {
+            var result = process.operations;
+            if (process.previousProcesses.length > 0) {
+                for (var i = 0, k = process.previousProcesses, l = k.length; i < l; i++) {
+                    if (('p'+k[i]) in $scope.processesMap) {
+                        result = result.concat(nextProcesses($scope.processesMap[('p'+k[i])]));
+                    }
+                }
+            }
+            return result;
+        };
+        if (!angular.equals(newValue, oldValue) && ('p'+newValue) in $scope.processesMap) {
+            _tasks = prevProcesses($scope.processesMap[('p'+newValue)]);
+            _tasks = _tasks.concat(nextProcesses($scope.processesMap[('p'+newValue)]));
+            for (var i = 0, k = _tasks, l = k.length; i < l; i++) {
+                if (('t'+k[i]) in $scope.tasksMap && _task.indexOf(k[i]) < 0) {
+                    $scope.editTask.previousTask.push({
+                        label: $scope.tasksMap[('t'+k[i])].name,
+                        value: k[i]
+                    });
+                    $scope.editTask.nextTask.push({
+                        label: $scope.tasksMap[('t'+k[i])].name,
+                        value: k[i]
+                    });
+                    _task.push(k[i]);
+                }
+            }
+        }
+    });
+    $scope.$watch('editTask.previousTaskId', function(newValue, oldValue) {
+        $scope.editTask.nextTask = [];
+        var _task = [], _tasks = [];
+        var nextProcesses = function(process) {
+            var result = process.operations;
+            if (process.previousProcesses.length > 0) {
+                for (var i = 0, k = process.previousProcesses, l = k.length; i < l; i++) {
+                    if (('p'+k[i]) in $scope.processesMap) {
+                        result = result.concat(nextProcesses($scope.processesMap[('p'+k[i])]));
+                    }
+                }
+            }
+            return result;
+        };
+        if (!angular.equals(newValue, oldValue) && ('t'+newValue) in $scope.tasksMap) {
+            _tasks = nextProcesses($scope.processesMap[('p'+$scope.editTask.processId)]);
+            for (var i = 0, k = _tasks, l = k.length; i < l; i++) {
+                if (('t'+k[i]) in $scope.tasksMap && ('t'+newValue) in $scope.tasksMap ) {
+                    if ($scope.tasksMap[('t'+k[i])].from > $scope.tasksMap[('t'+newValue)].from && k[i] !== newValue && _task.indexOf(k[i]) < 0) {
+                        $scope.editTask.nextTask.push({
+                            label: $scope.tasksMap[('t'+k[i])].name,
+                            value: k[i]
+                        });
+                        _task.push(k[i]);
+                    }
+                }
+            }
+        }
+    });
 
     $scope.paginationFilter = function(page, direction) {
         page = parseInt(page, 10);
@@ -490,45 +787,44 @@ angular.module('HarvardApp').controller('MainCtrl', ['$scope', '$element', '$htt
             if (result.state === 'ok') {
                 task = taskTemplate;
                 task.id = $scope.editTask.id;
+                task.oid = $scope.editTask.id;
                 task.name = $scope.editTask.operationCode;
                 task.from = typeof($scope.editTask.expectedStartTime) === 'object' ? moment((new Date($scope.editTask.expectedStartTime)).getTime(), 'x') : moment($scope.editTask.expectedStartTime, 'YYYY-MM-DDTHH:mm:ssZ');
                 task.to = typeof($scope.editTask.expectedFinishTime) === 'object' ? moment((new Date($scope.editTask.expectedFinishTime)).getTime(), 'x') : moment($scope.editTask.expectedFinishTime, 'YYYY-MM-DDTHH:mm:ssZ');
                 task.operationCode = $scope.editTask.operationCode;
                 task.processingType = $scope.editTask.processingType;
                 task.quantity = $scope.editTask.quantity;
-                task.isNew = true;
-                task.isDelete = false;
-                task.isFinish = $scope.editTask.isFinish;
-                task.isPin = $scope.editTask.isPin;
+                task.new = true;
+                task.delete = false;
+                task.finished = $scope.editTask.isFinish;
+                task.pin = $scope.editTask.isPin;
                 task.inProcessing = $scope.editTask.inProcessing;
-                task.data = {
-                    previousOperations: [$scope.editTask.previousTask],
-                    nextOperations: $scope.editTask.nextTask,
-                    runOnMachineId: $scope.editTask.runOnMachineId,
-                    actualRunOnMachineId: $scope.editTask.actualRunOnMachineId,
-                    machineShiftLabel: $scope.editTask.machineShiftLabel,
-                    parallelCode: $scope.editTask.parallelCode,
-                    pendingMinutes: $scope.editTask.pendingMinutes,
-                    expectedMoldId: $scope.editTask.expectedMoldId,
-                    capacity: $scope.editTask.capacity,
-                    face: $scope.editTask.face,
-                    priority: $scope.editTask.priority,
-                    rounds: $scope.editTask.rounds,
-                    up: $scope.editTask.up,
-                    sheetUp: $scope.editTask.sheetUp,
-                    part: $scope.editTask.part,
-                    s2sMins: $scope.editTask.s2sMins,
-                    timeclockEmployeeId: $scope.editTask.timeclockEmployeeId,
-                    expectedStartTime: typeof($scope.editTask.expectedStartTime) === 'object' ? moment((new Date($scope.editTask.expectedStartTime)).getTime(), 'x') : moment($scope.editTask.expectedStartTime, 'YYYY-MM-DDTHH:mm:ssZ'),
-                    expectedSetupFinishTime: typeof($scope.editTask.expectedSetupFinishTime) === 'object' ? moment((new Date($scope.editTask.expectedSetupFinishTime)).getTime(), 'x') : moment($scope.editTask.expectedSetupFinishTime, 'YYYY-MM-DDTHH:mm:ssZ'),
-                    expectedFinishTime: typeof($scope.editTask.expectedFinishTime) === 'object' ? moment((new Date($scope.editTask.expectedFinishTime)).getTime(), 'x') : moment($scope.editTask.expectedFinishTime, 'YYYY-MM-DDTHH:mm:ssZ'),
-                    actualStartTime: typeof($scope.editTask.actualStartTime) === 'object' ? moment((new Date($scope.editTask.actualStartTime)).getTime(), 'x') : moment($scope.editTask.actualStartTime, 'YYYY-MM-DDTHH:mm:ssZ'),
-                    actualSetupFinishTime: typeof($scope.editTask.actualSetupFinishTime) === 'object' ? moment((new Date($scope.editTask.actualSetupFinishTime)).getTime(), 'x') : moment($scope.editTask.actualSetupFinishTime, 'YYYY-MM-DDTHH:mm:ssZ'),
-                    actualFinishTime: typeof($scope.editTask.actualFinishTime) === 'object' ? moment((new Date($scope.editTask.actualFinishTime)).getTime(), 'x') : moment($scope.editTask.actualFinishTime, 'YYYY-MM-DDTHH:mm:ssZ'),
-                    actualQuantity: $scope.editTask.actualQuantity,
-                    UI2: []
-                };
-                $log.info(task, $scope.editTask);
+                task.previousOperations = [$scope.editTask.previousTask];
+                task.nextOperations = $scope.editTask.nextTask;
+                task.runOnMachineId = $scope.editTask.runOnMachineId;
+                task.actualRunOnMachineId = $scope.editTask.actualRunOnMachineId;
+                task.machineShiftLabel = $scope.editTask.machineShiftLabel;
+                task.parallelCode = $scope.editTask.parallelCode;
+                task.pendingMinutes = $scope.editTask.pendingMinutes;
+                task.expectedMoldId = $scope.editTask.expectedMoldId;
+                task.capacity = $scope.editTask.capacity;
+                task.face = $scope.editTask.face;
+                task.priority = $scope.editTask.priority;
+                task.rounds = $scope.editTask.rounds;
+                task.up = $scope.editTask.up;
+                task.sheetUp = $scope.editTask.sheetUp;
+                task.part = $scope.editTask.part;
+                task.s2sMins = $scope.editTask.s2sMins;
+                task.timeclockEmployeeId = $scope.editTask.timeclockEmployeeId;
+                task.expectedStartTime = typeof($scope.editTask.expectedStartTime) === 'object' ? moment((new Date($scope.editTask.expectedStartTime)).getTime(), 'x') : moment($scope.editTask.expectedStartTime, 'YYYY-MM-DDTHH:mm:ssZ');
+                task.expectedSetupFinishTime = typeof($scope.editTask.expectedSetupFinishTime) === 'object' ? moment((new Date($scope.editTask.expectedSetupFinishTime)).getTime(), 'x') : moment($scope.editTask.expectedSetupFinishTime, 'YYYY-MM-DDTHH:mm:ssZ');
+                task.expectedFinishTime = typeof($scope.editTask.expectedFinishTime) === 'object' ? moment((new Date($scope.editTask.expectedFinishTime)).getTime(), 'x') : moment($scope.editTask.expectedFinishTime, 'YYYY-MM-DDTHH:mm:ssZ');
+                task.actualStartTime = typeof($scope.editTask.actualStartTime) === 'object' ? moment((new Date($scope.editTask.actualStartTime)).getTime(), 'x') : moment($scope.editTask.actualStartTime, 'YYYY-MM-DDTHH:mm:ssZ');
+                task.actualSetupFinishTime = typeof($scope.editTask.actualSetupFinishTime) === 'object' ? moment((new Date($scope.editTask.actualSetupFinishTime)).getTime(), 'x') : moment($scope.editTask.actualSetupFinishTime, 'YYYY-MM-DDTHH:mm:ssZ');
+                task.actualFinishTime = typeof($scope.editTask.actualFinishTime) === 'object' ? moment((new Date($scope.editTask.actualFinishTime)).getTime(), 'x') : moment($scope.editTask.actualFinishTime, 'YYYY-MM-DDTHH:mm:ssZ');
+                task.actualQuantity = $scope.editTask.actualQuantity;
+                task.tooltip = [];
+
                 $scope.tasksMap['t'+$scope.editTask.id] = task;
 
                 if ($scope.editTask.drawTask === false) {
@@ -561,7 +857,7 @@ angular.module('HarvardApp').controller('MainCtrl', ['$scope', '$element', '$htt
         }
     };
 
-    $scope.saveGanttData = function() {
+    $scope.saveGanttData = function(type) {
         var mattCallback = Matt.saveOrCalcGanttData(), rawData = {}, isSave = false;
 
         $http({
@@ -574,7 +870,7 @@ angular.module('HarvardApp').controller('MainCtrl', ['$scope', '$element', '$htt
                 calculate: true,
                 calculateFrom: 0,// moment($scope.gantt.getFirstColumn().date).format(dateFormat),  // Gantt start time
                 calculateWeeks: 52,
-                save: isSave
+                save: type === 'save' ? true : false
             }
         }).then(function(response) {
             var result = mattCallback.success(response);
@@ -625,9 +921,11 @@ angular.module('HarvardApp').controller('MainCtrl', ['$scope', '$element', '$htt
                 id: m[i].machine.id,
                 name: m[i].machine.settingsMachine.name,
                 dept: m[i].machine.settingsMachine.dept,
-                settings: m[i].machine.settingsMachine,
+                settingsMachine: m[i].machine.settingsMachine,
                 factoryOperation: m[i].machine.factoryOperation,
-                UI2Title: m[i].machine.title.split('|'),
+                title: m[i].machine.title.split('|'),
+                currentTimeWorks: m[i].machine.currentTimeWorks,
+                online: m[i].machine.online,
                 tasks: []
             };
 
@@ -657,53 +955,50 @@ angular.module('HarvardApp').controller('MainCtrl', ['$scope', '$element', '$htt
                 for(j = 0, t = m[i].operationQueue, q = t.length; j < q; j++) {
                     // Prepare and cleanup the task data.
                     task = {
-                        name: t[j].operationCode,
-                        color: t[j].color,
-                        from: moment(t[j].expectedStartTime, 'YYYY-MM-DDTHH:mm:ssZ'),
-                        to: moment(t[j].expectedFinishTime, 'YYYY-MM-DDTHH:mm:ssZ'),
                         id: t[j].id,
                         oid: t[j].oid,
+                        color: t[j].color,
+                        name: t[j].operationCode,
+                        from: moment(t[j].expectedStartTime, 'YYYY-MM-DDTHH:mm:ssZ'),
+                        to: moment(t[j].expectedFinishTime, 'YYYY-MM-DDTHH:mm:ssZ'),
                         textColor: Coloured.isDarkColoured(t[j].color) ? '#ffffff' : '#000000',
                         operationCode: t[j].operationCode,
-                        processingType: t[j].processingType,
-                        quantity: t[j].quantity,
-                        group: t[j].taskGroup,
-                        isNew: false,
-                        isDelete: t[j].delete,
-                        isFinish: t[j].finished,
-                        isPin: t[j].pin,
-                        inProcessing: t[j].inProcessing,
-                        factoryOperation: t[j].factoryOperation,
+                        priority: t[j].priority,
                         job: t[j].job,
                         process: t[j].process,
-                        movable: taskTemplate.movable,
-                        data: {
-                            previousOperations: [t[j].previousOperation],
-                            nextOperations: t[j].nextOperations,
-                            runOnMachineId: t[j].runOnMachineId,
-                            actualRunOnMachineId: t[j].actualRunOnMachineId,
-                            machineShiftLabel: t[j].machineShiftLabel,
-                            parallelCode: t[j].parallelCode,
-                            pendingMinutes: t[j].pendingMinutes,
-                            expectedMoldId: t[j].expectedMoldId,
-                            capacity: t[j].capacity,
-                            face: t[j].face,
-                            priority: t[j].priority,
-                            rounds: t[j].rounds,
-                            up: t[j].up,
-                            sheetUp: t[j].sheetUp,
-                            part: t[j].part,
-                            s2sMins: t[j].s2sMins,
-                            timeclockEmployeeId: t[j].timeclockEmployeeId,
-                            expectedStartTime: moment(t[j].expectedStartTime, 'YYYY-MM-DDTHH:mm:ssZ'),
-                            expectedSetupFinishTime: moment(t[j].expectedSetupFinishTime, 'YYYY-MM-DDTHH:mm:ssZ'),
-                            expectedFinishTime: moment(t[j].expectedFinishTime, 'YYYY-MM-DDTHH:mm:ssZ'),
-                            actualStartTime: (t[j].actualStartTime === null) ? null : moment(t[j].actualStartTime, 'YYYY-MM-DDTHH:mm:ssZ'),
-                            actualSetupFinishTime: (t[j].actualSetupFinishTime === null) ? null : moment(t[j].actualSetupFinishTime, 'YYYY-MM-DDTHH:mm:ssZ'),
-                            actualFinishTime: (t[j].actualFinishTime === null) ? null : moment(t[j].actualFinishTime, 'YYYY-MM-DDTHH:mm:ssZ'),
-                            actualQuantity: t[j].actualQuantity,
-                            UI2: t[j].tooltip.split('|')
-                        }
+                        previousOperations: [t[j].previousOperation],
+                        nextOperations: t[j].nextOperations,
+                        runOnMachineId: t[j].runOnMachineId,
+                        actualRunOnMachineId: t[j].actualRunOnMachineId,
+                        quantity: t[j].quantity,
+                        actualQuantity: t[j].actualQuantity,
+                        processingType: t[j].processingType,
+                        factoryOperation: t[j].factoryOperation,
+                        pin: t[j].pin,
+                        capacity: t[j].capacity,
+                        s2sMins: t[j].s2sMins,
+                        up: t[j].up,
+                        sheetUp: t[j].sheetUp,
+                        face: t[j].face,
+                        pendingMinutes: t[j].pendingMinutes,
+                        expectedStartTime: moment(t[j].expectedStartTime, 'YYYY-MM-DDTHH:mm:ssZ'),
+                        expectedSetupFinishTime: moment(t[j].expectedSetupFinishTime, 'YYYY-MM-DDTHH:mm:ssZ'),
+                        expectedFinishTime: moment(t[j].expectedFinishTime, 'YYYY-MM-DDTHH:mm:ssZ'),
+                        actualStartTime: (t[j].actualStartTime === null) ? null : moment(t[j].actualStartTime, 'YYYY-MM-DDTHH:mm:ssZ'),
+                        actualSetupFinishTime: (t[j].actualSetupFinishTime === null) ? null : moment(t[j].actualSetupFinishTime, 'YYYY-MM-DDTHH:mm:ssZ'),
+                        actualFinishTime: (t[j].actualFinishTime === null) ? null : moment(t[j].actualFinishTime, 'YYYY-MM-DDTHH:mm:ssZ'),
+                        finished: t[j].finished,
+                        inProcessing: t[j].inProcessing,
+                        delete: t[j].delete,
+                        parallelCode: t[j].parallelCode,
+                        expectedMoldId: t[j].expectedMoldId,
+                        tooltip: t[j].tooltip.split('|'),
+                        timeclockEmployeeId: t[j].timeclockEmployeeId,
+                        rounds: t[j].rounds,
+                        taskGroup: t[j].taskGroup,
+                        machineShiftLabel: t[j].machineShiftLabel,
+                        new: t[j].new,
+                        movable: taskTemplate.movable
                     };
 
                     if (('t'+t[j].id in $scope.tasksMap) === false) {
@@ -747,8 +1042,8 @@ angular.module('HarvardApp').controller('MainCtrl', ['$scope', '$element', '$htt
         for(p in $scope.processesMap) {
             if ($scope.processesMap[p].previousProcesses.length > 0) {
                 for(i = 0, m = $scope.processesMap[p].previousProcesses, l = m.length; i < l; i++) {
-                    if ('p'+m[i].id in $scope.processesMap) {
-                        $scope.processesMap['p'+m[i].id].nextProcesses.push($scope.processesMap[p].id);
+                    if ('p'+m[i] in $scope.processesMap) {
+                        $scope.processesMap['p'+m[i]].nextProcesses.push($scope.processesMap[p].id);
                     }
                 }
             }
@@ -903,12 +1198,13 @@ angular.module('HarvardApp').controller('MainCtrl', ['$scope', '$element', '$htt
     var logTaskEvent = function(eventName, data) {
         var key;
 
-        if (eventName === 'tasks.on.resizeEnd' && data.model.data.expectedStartTime === null) {
+        if (eventName === 'tasks.on.resizeEnd' && data.model.expectedStartTime === null) {
             $scope.editTask = editTaskTemplate;
             $scope.editTask.id = data.model.id;
             $scope.editTask.rowId = data.row.model.id;
             $scope.editTask.runOnMachineId = data.row.model.id;
             $scope.editTask.modifyType = 'create';
+            $scope.editTask.priority = Object($scope.tasksMap).length + 1;
             $scope.editTask.drawTask = true;
             $scope.editTask.modal = $modal(editTaskModalOptions);
         }
@@ -917,42 +1213,45 @@ angular.module('HarvardApp').controller('MainCtrl', ['$scope', '$element', '$htt
             switch(data.type) {
                 case 'edit':
                     // Calculate the expected setup finish datetime.
-                    var _setupFinishTime = moment(data.task.model.data.expectedSetupFinishTime) + (data.task.model.from - moment(data.task.model.data.expectedStartTime));
+                    var _setupFinishTime = moment(data.task.model.expectedSetupFinishTime) + (data.task.model.from - moment(data.task.model.expectedStartTime));
                     _setupFinishTime = moment(_setupFinishTime).format('YYYY/MM/DD HH:mm');
 
                     $scope.editTask = {
                         id: data.task.model.id,
                         rowId: data.task.row.id,
                         poNo: data.task.model.job.poNo,
+                        fuzzyPoNo: data.task.model.job.poNo,
+                        processId: data.task.model.process.id,
+                        productId: data.task.model.process.productId,
                         comboId: data.task.model.job.comboId,
                         processingType: data.task.model.processingType,
                         operationCode: data.task.model.operationCode,
-                        rounds: data.task.model.data.rounds,
-                        priority: data.task.model.data.priority,
-                        isPin: data.task.model.isPin,
-                        isFinish: data.task.model.isFinish,
+                        rounds: data.task.model.rounds,
+                        priority: data.task.model.priority,
+                        isPin: data.task.model.pin,
+                        isFinish: data.task.model.finished,
                         inProcessing: data.task.model.inProcessing,
-                        runOnMachineId: data.task.model.data.runOnMachineId,
-                        actualRunOnMachineId: data.task.model.data.actualRunOnMachineId,
-                        machineShiftLabel: data.task.model.data.machineShiftLabel,
-                        parallelCode: data.task.model.data.parallelCode,
-                        pendingMinutes: data.task.model.data.pendingMinutes,
-                        capacity: data.task.model.data.capacity,
-                        face: data.task.model.data.face,
-                        part: data.task.model.data.part,
-                        up: data.task.model.data.up,
-                        sheetUp: data.task.model.data.sheetUp,
-                        s2sMins: data.task.model.data.s2sMins,
-                        timeclockEmployeeId: data.task.model.data.timeclockEmployeeId,
-                        expectedMoldId: data.task.model.data.expectedMoldId,
+                        runOnMachineId: data.task.model.runOnMachineId,
+                        actualRunOnMachineId: data.task.model.actualRunOnMachineId,
+                        machineShiftLabel: data.task.model.machineShiftLabel,
+                        parallelCode: data.task.model.parallelCode,
+                        pendingMinutes: data.task.model.pendingMinutes,
+                        capacity: data.task.model.capacity,
+                        face: data.task.model.face,
+                        part: data.task.model.part,
+                        up: data.task.model.up,
+                        sheetUp: data.task.model.sheetUp,
+                        s2sMins: data.task.model.s2sMins,
+                        timeclockEmployeeId: data.task.model.timeclockEmployeeId,
+                        expectedMoldId: data.task.model.expectedMoldId,
                         expectedStartTime: data.task.model.from.format('YYYY/MM/DD HH:mm'),
                         expectedSetupFinishTime: _setupFinishTime,
                         expectedFinishTime: data.task.model.to.format('YYYY/MM/DD HH:mm'),
                         quantity: data.task.model.quantity,
-                        actualStartTime: data.task.model.data.actualStartTime,
-                        actualSetupFinishTime: data.task.model.data.actualSetupFinishTime,
-                        actualFinishTime: data.task.model.data.actualFinishTime,
-                        actualQuantity: data.task.model.data.actualQuantity,
+                        actualStartTime: data.task.model.actualStartTime,
+                        actualSetupFinishTime: data.task.model.actualSetupFinishTime,
+                        actualFinishTime: data.task.model.actualFinishTime,
+                        actualQuantity: data.task.model.actualQuantity,
                         previousTask: 0,
                         nextTask: 0,
                         modifyType: data.type,
@@ -967,6 +1266,7 @@ angular.module('HarvardApp').controller('MainCtrl', ['$scope', '$element', '$htt
                     $scope.editTask.rowId = data.task.id;
                     $scope.editTask.runOnMachineId = data.task.id;
                     $scope.editTask.modifyType = data.type;
+                    $scope.editTask.priority = Object($scope.tasksMap).length + 1;
                     $scope.editTask.modal = $modal(editTaskModalOptions);
                 break;
                 case 'delete':
@@ -1001,6 +1301,7 @@ angular.module('HarvardApp').controller('MainCtrl', ['$scope', '$element', '$htt
                     $scope.editTask.rowId = data.row.model.id;
                     $scope.editTask.runOnMachineId = data.row.model.id;
                     $scope.editTask.modifyType = data.type;
+                    $scope.editTask.priority = Object($scope.tasksMap).length + 1;
                     $scope.editTask.modal = $modal(editTaskModalOptions);
                 break;
                 case 'zoomIn':

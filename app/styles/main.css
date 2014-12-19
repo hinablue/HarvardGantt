@@ -64,7 +64,8 @@ textarea.live-task, textarea.live-row {
 }
 
 .modal {
-    z-index: 1000;
+    z-index: 9000;
+    background-color: rgba(0, 0, 0, 0.8);
 }
 
 .gantt-context-menu {
