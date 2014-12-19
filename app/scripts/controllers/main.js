@@ -7,118 +7,14 @@
  * # MainCtrl
  * Controller of the HarvardApp
  */
-angular.module('HarvardApp').controller('MainCtrl', ['$scope', '$element', '$http', '$timeout', '$log', '$modal', '$alert', '$dropdown', 'ganttUtils', 'GanttObjectModel', 'Coloured', 'Harvard', 'Matt', 'ganttMouseOffset', 'ganttDebounce', 'moment', function($scope, $element, $http, $timeout, $log, $modal, $alert, $dropdown, utils, ObjectModel, Coloured, Harvard, Matt, mouseOffset, debounce, moment) {
+angular.module('HarvardApp')
+.controller('MainCtrl', ['$scope', '$element', '$http', '$timeout', '$log', '$modal', '$alert', '$dropdown', 'ganttUtils', 'GanttObjectModel', 'Coloured', 'Harvard', 'Matt', 'TaskEditor', 'ganttMouseOffset', 'ganttDebounce', 'moment', function($scope, $element, $http, $timeout, $log, $modal, $alert, $dropdown, utils, ObjectModel, Coloured, Harvard, Matt, TaskEditor, mouseOffset, debounce, moment) {
     var objectModel;
     var dataToRemove;
-    var taskTemplate = {
-        id: 0,
-        oid: 0,
-        color: '#AA8833',
-        name: 'Drawn task',
-        from: moment().format('YYYY-MM-DDTHH:mm:ssZ'),
-        to: moment().format('YYYY-MM-DDTHH:mm:ssZ'),
-        textColor: Coloured.isDarkColoured('#AA8833') ? '#ffffff' : '#000000',
-        operationCode: '',
-        priority: 0,
-        job: {},
-        process: {},
-        previousOperations: [],
-        nextOperations: '',
-        runOnMachineId: 0,
-        actualRunOnMachineId: 0,
-        quantity: 0,
-        actualQuantity: 0,
-        processingType: 'GANG',
-        factoryOperation: null,
-        pin: false,
-        capacity: 0,
-        s2sMins: -1,
-        up: 0,
-        sheetUp: 0,
-        face: 0,
-        pendingMinutes: 0,
-        expectedStartTime: null,
-        expectedSetupFinishTime: null,
-        expectedFinishTime: null,
-        actualStartTime: null,
-        actualSetupFinishTime: null,
-        actualFinishTime: null,
-        finished: false,
-        inProcessing: false,
-        delete: false,
-        parallelCode: '',
-        expectedMoldId: null,
-        tooltip: [],
-        timeclockEmployeeId: '',
-        rounds: 0,
-        taskGroup: '',
-        machineShiftLabel: '',
-        new: true,
-        movable: {
-            enabled: true,
-            allowMoving: true,
-            allowResizing: false,
-            allowRowSwitching: false
-        }
-    };
-    var editTaskTemplate = {
-        id: 0,
-        rowId: 0,
-        poNo: '',
-        comboId: '',
-        processingType: 'GANG',
-        operationCode: '',
-        rounds: 0,
-        priority: 0,
-        isPin: false,
-        isFinish: false,
-        inProcessing: false,
-        machineShiftLabel: null,
-        parallelCode: null,
-        capacity: 1,
-        pendingMinutes: 0,
-        face: 0,
-        up: 0,
-        sheetUp: 0,
-        part: 0,
-        expectedMoldId: null,
-        s2sMins: -1,
-        timeclockEmployeeId: 0,
-        runOnMachineId: null,
-        actualRunOnMachineId: null,
-        expectedStartTime: moment().format('YYYY/MM/DD HH:mm'),
-        expectedSetupFinishTime: null,
-        expectedFinishTime: null,
-        quantity: 0,
-        actualStartTime: null,
-        actualSetupFinishTime: null,
-        actualFinishTime: null,
-        actualQuantity: null,
-        modifyType: 'create',
-        drawTask: false,
-        modal: undefined,
-        fuzzyPoNo: '',
-        poId: '',
-        productId: '',
-        processId: '',
-        poFuzzySearch: [],
-        comboList: [],
-        productList: [],
-        processList: [],
-        previousTask: [],
-        nextTask: [],
-        previousTaskId: 0,
-        nextTaskId: 0
-    };
-    var editTaskModalOptions = {
-        scope: $scope,
-        title: 'Task Creator',
-        template: 'views/editor.tpl.html',
-        backdrop: false,
-        show: true
-    };
+    var editTaskModalOptions = TaskEditor.editTaskModalOptions;
+    editTaskModalOptions.scope = $scope;
 
-    $scope.editTask = editTaskTemplate;
+    $scope.editTask = TaskEditor.editTaskTemplate;
 
     $scope.tasksMap = {};
     $scope.processesMap = {};
@@ -201,7 +97,7 @@ angular.module('HarvardApp').controller('MainCtrl', ['$scope', '$element', '$htt
         timeFramesNonWorkingMode: 'visible',
         columnMagnet: '1 minutes',
         drawTaskFactory: function() {
-            var task = taskTemplate;
+            var task = TaskEditor.taskTemplate;
             task.id = utils.randomUuid();
             task.oid = task.id;
 
@@ -446,19 +342,40 @@ angular.module('HarvardApp').controller('MainCtrl', ['$scope', '$element', '$htt
         }
     });
     var editTaskHandleError = function(response) {
-        var i, k, l;
+        var errorMessages = 'Something error from server.';
+        if (response.data !== null) {
+            if (response.data.messagesEmpty !== true) {
+                errorMessages = response.data.messages.join('<br>');
+            }
+        }
+
+        $alert({
+            title: 'Error!<br>',
+            content: errorMessages,
+            placement: 'top',
+            type: 'info',
+            duration: 3,
+            dismissable: false,
+            html: true,
+            container: '#gantt-editor-alert',
+            show: true
+        });
+        var i, k, l, _clickFunc;
         switch(response.config.data) {
             case 'poFuzzySearch':
                 $scope.editTask.poFuzzySearch = [];
                 var _poNo = [];
+                _clickFunc = function(poNo) {
+                    return function(poNo) {
+                        $scope.editTask.poNo = poNo;
+                        $scope.editTask.fuzzyPoNo = poNo;
+                    }.bind(this, poNo);
+                };
                 for (i = 0, k = Object.keys($scope.jobsMap), l = k.length; i < l; i++) {
                     if (_poNo.indexOf($scope.jobsMap[k[i]].poNo) < 0) {
                         $scope.editTask.poFuzzySearch.push({
                             text: $scope.jobsMap[k[i]].poNo,
-                            click: function(poNo) {
-                                this.editTask.poNo = poNo;
-                                this.editTask.fuzzyPoNo = poNo;
-                            }.bind($scope, $scope.jobsMap[k[i]].poNo)
+                            click: _clickFunc.call(null, $scope.jobsMap[k[i]].poNo)
                         });
                         _poNo.push($scope.jobsMap[k[i]].poNo);
                     }
@@ -469,13 +386,16 @@ angular.module('HarvardApp').controller('MainCtrl', ['$scope', '$element', '$htt
             break;
             case 'getComboUrl':
                 $scope.editTask.comboList = [];
+                _clickFunc = function(comboId) {
+                    return function(comboId) {
+                        $scope.editTask.comboId = comboId;
+                    }.bind(this, comboId);
+                };
                 for (i = 0, k = Object.keys($scope.jobsMap), l = k.length; i < l; ++i) {
                     if ($scope.jobsMap[k[i]].poNo === $scope.editTask.poNo) {
                         $scope.editTask.comboList.push({
                             text: $scope.jobsMap[k[i]].comboId,
-                            click: function(comboId) {
-                                this.editTask.comboId = comboId;
-                            }.bind($scope, $scope.jobsMap[k[i]].comboId)
+                            click: _clickFunc.call(null, $scope.jobsMap[k[i]].comboId)
                         });
                         $scope.editTask.job = $scope.jobsMap[k[i]];
                         break;
@@ -485,13 +405,16 @@ angular.module('HarvardApp').controller('MainCtrl', ['$scope', '$element', '$htt
             case 'getProductUrl':
                 $scope.editTask.productList = [];
                 var _productId = [];
+                _clickFunc = function(productId) {
+                    return function(comboId) {
+                        $scope.editTask.productId = productId;
+                    }.bind(this, productId);
+                };
                 for (i = 0, k = Object.keys($scope.processesMap), l = k.length; i < l; ++i) {
                     if (_productId.indexOf($scope.processesMap[k[i]].productId) < 0) {
                         $scope.editTask.productList.push({
                             text: $scope.processesMap[k[i]].productId,
-                            click: function(productId) {
-                                this.editTask.productId = productId;
-                            }.bind($scope, $scope.processesMap[k[i]].productId)
+                            click: _clickFunc.call(null, $scope.processesMap[k[i]].productId)
                         });
                         _productId.push($scope.processesMap[k[i]].productId);
                     }
@@ -500,13 +423,16 @@ angular.module('HarvardApp').controller('MainCtrl', ['$scope', '$element', '$htt
             case 'getProcessUrl':
                 $scope.editTask.processList = [];
                 var _processId = [];
+                _clickFunc = function(processId) {
+                    return function(processId) {
+                        $scope.editTask.processId = processId;
+                    }.bind(this, processId);
+                };
                 for (i = 0, k = Object.keys($scope.processesMap), l = k.length; i < l; ++i) {
                     if ($scope.processesMap[k[i]].productId === $scope.editTask.productId) {
                         $scope.editTask.processList.push({
                             text: $scope.processesMap[k[i]].id,
-                            click: function(processId) {
-                                this.editTask.processId = processId;
-                            }.bind($scope, $scope.processesMap[k[i]].id)
+                            click: _clickFunc.call(null, $scope.processesMap[k[i]].id)
                         });
                         break;
                     }
@@ -517,73 +443,82 @@ angular.module('HarvardApp').controller('MainCtrl', ['$scope', '$element', '$htt
     var editTaskHandleSuccess = function(response) {
         $log.info(response);
         var responseType = response.headers('Content-Type').replace(/;(.*)$/gi, '');
-        if (responseType === 'application/json') {
-            switch(response.config.data) {
-                case 'poFuzzySearch':
-                    $scope.editTask.poFuzzySearch = [];
-                    var _poNo = [];
-                    for (i = 0, k = response.data.data, l = k.length; i < l; i++) {
-                        if (_poNo.indexOf(k[i]) < 0) {
-                            $scope.editTask.poFuzzySearch.push({
-                                text: k[i],
-                                click: function(poNo) {
-                                    this.editTask.poNo = k[i];
-                                    this.editTask.fuzzyPoNo = k[i];
-                                }.bind($scope, k[i])
-                            });
-                            _poNo.push(k[i]);
+        if (responseType === 'application/json' && response.data !== null) {
+            if (response.data.messagesEmpty === true) {
+                var _clickFunc;
+                switch(response.config.data) {
+                    case 'poFuzzySearch':
+                        $scope.editTask.poFuzzySearch = [];
+                        var _poNo = [];
+                        _clickFunc = function(poNo) {
+                            return function(poNo) {
+                                $scope.editTask.poNo = poNo;
+                                $scope.editTask.fuzzyPoNo = poNo;
+                            }.bind(this, poNo);
+                        };
+                        for (i = 0, k = response.data.data, l = k.length; i < l; i++) {
+                            if (_poNo.indexOf(k[i].value) < 0) {
+                                $scope.editTask.poFuzzySearch.push({
+                                    text: k[i].label,
+                                    click: _clickFunc.call(null, k[i].value)
+                                });
+                                _poNo.push(k[i]);
+                            }
                         }
-                    }
-                break;
-                case 'getPoUrl':
-                    $scope.editTask.poId = response.data.data.id;
-                break;
-                case 'getComboUrl':
-                    $scope.editTask.comboList = response.data.data;
-                    for (i = 0, k = Object.keys($scope.jobsMap), l = k.length; i < l; ++i) {
-                        if ($scope.jobsMap[k[i]].poNo === $scope.editTask.poNo) {
-                            $scope.editTask.job = $scope.jobsMap[k[i]];
-                            break;
+                    break;
+                    case 'getPoUrl':
+                        $scope.editTask.poId = response.data.data.id;
+                    break;
+                    case 'getComboUrl':
+                        $scope.editTask.comboList = response.data.data;
+                        for (i = 0, k = Object.keys($scope.jobsMap), l = k.length; i < l; ++i) {
+                            if ($scope.jobsMap[k[i]].poNo === $scope.editTask.poNo) {
+                                $scope.editTask.job = $scope.jobsMap[k[i]];
+                                break;
+                            }
                         }
-                    }
-                break;
-                case 'getProductUrl':
-                    $scope.editTask.productList = response.data.data;
-                break;
-                case 'getProcessUrl':
-                    $scope.editTask.processList = response.data.data;
-                break;
-                case 'getProductInfoUrl':
-                    $scope.editTask.comboList = [];
-                    $scope.editTask.comboList.push({
-                        text: response.data.data.comboId,
-                        click: function(comboId) {
-                            this.editTask.comboId = comboId;
-                        }.bind($scope, response.data.data.comboId)
-                    });
-                    $scope.editTask.productList = [];
-                    $scope.editTask.processList.push({
-                        text: response.data.data.productId,
-                        click: function(id) {
-                            this.editTask.productId = id;
-                        }.bind($scope, response.data.data.productId)
-                    });
-                    $scope.editTask.comboId = response.data.data.comboId;
-                    $scope.editTask.productId = response.data.data.productId;
-                    $scope.editTask.poNo = response.data.data.poNo;
-                    $scope.editTask.poId = response.data.data.poNo;
-                break;
-                default:
-                    $alert({
-                        title: 'Error!',
-                        content: 'Server JSON Data error.',
-                        placement: 'top',
-                        type: 'info',
-                        duration: 3,
-                        dismissable: false,
-                        container: '#gantt-editor-alert',
-                        show: true
-                    });
+                    break;
+                    case 'getProductUrl':
+                        $scope.editTask.productList = response.data.data;
+                    break;
+                    case 'getProcessUrl':
+                        $scope.editTask.processList = response.data.data;
+                    break;
+                    case 'getProductInfoUrl':
+                        $scope.editTask.comboList = [];
+                        $scope.editTask.comboList.push({
+                            text: response.data.data.comboId,
+                            click: function(comboId) {
+                                this.editTask.comboId = comboId;
+                            }.bind($scope, response.data.data.comboId)
+                        });
+                        $scope.editTask.productList = [];
+                        $scope.editTask.processList.push({
+                            text: response.data.data.productId,
+                            click: function(id) {
+                                this.editTask.productId = id;
+                            }.bind($scope, response.data.data.productId)
+                        });
+                        $scope.editTask.comboId = response.data.data.comboId;
+                        $scope.editTask.productId = response.data.data.productId;
+                        $scope.editTask.poNo = response.data.data.poNo;
+                        $scope.editTask.poId = response.data.data.poNo;
+                    break;
+                    default:
+                        $alert({
+                            title: 'Error!<br>',
+                            content: 'Server JSON Data error.',
+                            placement: 'top',
+                            type: 'info',
+                            duration: 3,
+                            dismissable: false,
+                            html: true,
+                            container: '#gantt-editor-alert',
+                            show: true
+                        });
+                }
+            } else {
+                editTaskHandleError(response);
             }
         } else {
             editTaskHandleError(response);
@@ -785,7 +720,7 @@ angular.module('HarvardApp').controller('MainCtrl', ['$scope', '$element', '$htt
         if ($scope.editTask !== undefined) {
             var result = Matt.addTaskData($scope.editTask), task;
             if (result.state === 'ok') {
-                task = taskTemplate;
+                task = TaskEditor.taskTemplate;
                 task.id = $scope.editTask.id;
                 task.oid = $scope.editTask.id;
                 task.name = $scope.editTask.operationCode;
@@ -837,16 +772,16 @@ angular.module('HarvardApp').controller('MainCtrl', ['$scope', '$element', '$htt
                         return false;
                     })($scope);
                     $scope.data[rowIndex].tasks.push(task);
-                    // objectModel.api.gantt.rowsManager.rows[rowIndex].addTask(task, false);
                 }
 
                 $alert({
-                    title: 'Success!',
+                    title: 'Success!<br>',
                     content: 'The task save success.',
                     placement: 'top',
                     type: 'info',
                     duration: 3,
                     dismissable: false,
+                    html: true,
                     container: '#gantt-editor-alert',
                     show: true
                 });
@@ -878,12 +813,13 @@ angular.module('HarvardApp').controller('MainCtrl', ['$scope', '$element', '$htt
                 $scope.readyToGo(result.data);
             } else {
                 $alert({
-                    title: result.messages.title,
+                    title: result.messages.title+'<br>',
                     content: result.messages.content,
                     placement: 'top',
                     type: 'info',
                     duration: 3,
                     dismissable: false,
+                    html: true,
                     container: '#gantt-chart-alert',
                     show: true
                 });
@@ -891,12 +827,13 @@ angular.module('HarvardApp').controller('MainCtrl', ['$scope', '$element', '$htt
         }, function(response) {
             var result = mattCallback.error(response);
             $alert({
-                title: result.messages.title,
+                title: result.messages.title+'<br>',
                 content: result.messages.content,
                 placement: 'top',
                 type: 'info',
                 duration: 3,
                 dismissable: false,
+                html: true,
                 container: '#gantt-chart-alert',
                 show: true
             });
@@ -998,7 +935,7 @@ angular.module('HarvardApp').controller('MainCtrl', ['$scope', '$element', '$htt
                         taskGroup: t[j].taskGroup,
                         machineShiftLabel: t[j].machineShiftLabel,
                         new: t[j].new,
-                        movable: taskTemplate.movable
+                        movable: TaskEditor.taskTemplate.movable
                     };
 
                     if (('t'+t[j].id in $scope.tasksMap) === false) {
@@ -1072,12 +1009,13 @@ angular.module('HarvardApp').controller('MainCtrl', ['$scope', '$element', '$htt
                 $scope.readyToGo(result.data);
             } else {
                 $alert({
-                    title: result.messages.title,
+                    title: result.messages.title+'<br>',
                     content: result.messages.content,
                     placement: 'top',
                     type: 'info',
                     duration: 3,
                     dismissable: false,
+                    html: true,
                     container: '#gantt-chart-alert',
                     show: true
                 });
@@ -1087,12 +1025,13 @@ angular.module('HarvardApp').controller('MainCtrl', ['$scope', '$element', '$htt
         }, function(response) {
             var result = mattCallback.error(response);
             $alert({
-                title: result.messages.title,
+                title: result.messages.title+'<br>',
                 content: result.messages.content,
                 placement: 'top',
                 type: 'info',
                 duration: 3,
                 dismissable: false,
+                html: true,
                 container: '#gantt-chart-alert',
                 show: true
             });
@@ -1199,7 +1138,7 @@ angular.module('HarvardApp').controller('MainCtrl', ['$scope', '$element', '$htt
         var key;
 
         if (eventName === 'tasks.on.resizeEnd' && data.model.expectedStartTime === null) {
-            $scope.editTask = editTaskTemplate;
+            $scope.editTask = TaskEditor.editTaskTemplate;
             $scope.editTask.id = data.model.id;
             $scope.editTask.rowId = data.row.model.id;
             $scope.editTask.runOnMachineId = data.row.model.id;
@@ -1261,7 +1200,7 @@ angular.module('HarvardApp').controller('MainCtrl', ['$scope', '$element', '$htt
                     $scope.editTask.modal = $modal(editTaskModalOptions);
                 break;
                 case 'create':
-                    $scope.editTask = editTaskTemplate;
+                    $scope.editTask = TaskEditor.editTaskTemplate;
                     $scope.editTask.id = utils.randomUuid();
                     $scope.editTask.rowId = data.task.id;
                     $scope.editTask.runOnMachineId = data.task.id;
@@ -1296,7 +1235,7 @@ angular.module('HarvardApp').controller('MainCtrl', ['$scope', '$element', '$htt
             switch(data.type) {
                 case 'create':
                     $log.info(data);
-                    $scope.editTask = editTaskTemplate;
+                    $scope.editTask = TaskEditor.editTaskTemplate;
                     $scope.editTask.id = utils.randomUuid();
                     $scope.editTask.rowId = data.row.model.id;
                     $scope.editTask.runOnMachineId = data.row.model.id;
