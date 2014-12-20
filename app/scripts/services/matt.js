@@ -8,20 +8,21 @@
  * Service in the HarvardApp.
  */
 angular.module('HarvardApp')
-    .service('Matt', ['$http', '$timeout', '$log', function Matt($http, $timeout, $log) {
+    .service('Matt', ['$http', '$timeout', '$log', '$location', function Matt($http, $timeout, $log, $location) {
         var configuration = {
             serverLocation: '',
             jsLocationPrefix: '/',
-            viewsFolder: '/views',
+            // 奇怪$location.path()沒有用, 所以先用absUrl(), 7是’http://‘的長度
+            viewsFolder: '/' + $location.absUrl().substr(7).split('/')[1] + '/resources/Gantt-v2/views',
             // 讀取 Gantt 資料 URL
-            getGanttUrl: '/machines',
+            getGanttUrl: $location.absUrl() + '/machines',
             // 儲存或是運算 Gantt URL
-            saveGanttUrl: '/calculate',
-            calcGanttUrl: '/calculate',
+            saveGanttUrl: $location.absUrl() + '/calculate',
+            calcGanttUrl: $location.absUrl() + '/calculate',
             // 讀取 Gantt  的 Server response Timeout，單位秒
-            getGanttDataTimeout: 20,
+            getGanttDataTimeout: 15 * 60,
             // 儲存或是運算 Gantt 的 Server response Timeout，單位秒
-            saveGanttDataTimeout: 20,
+            saveGanttDataTimeout: 15 * 60,
             // 以字串(term)模糊查詢符合的PoNo
             // url: GET /company/sales/pos/like/{term}
             // return: list of labelValueModel, label: poNo, value: poNo
@@ -109,7 +110,7 @@ angular.module('HarvardApp')
                         if (response.data.messagesEmpty) {
                             return {
                                 state: 'ok',
-                                data: {}
+                                data: response.data.data
                             };
                         } else {
                             return {
