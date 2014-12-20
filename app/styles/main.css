@@ -63,6 +63,14 @@ textarea.live-task, textarea.live-row {
     color: #333;
 }
 
+.gantt-task-highlight {
+    -webkit-box-shadow: darkred 0px 0px 3px 1px;
+    -moz-box-shadow: darkred 0px 0px 3px 1px;
+    -o-box-shadow: darkred 0px 0px 3px 1px;
+    -ms-box-shadow: darkred 0px 0px 3px 1px;
+    box-shadow: darkred 0px 0px 3px 1px;
+}
+
 .modal {
     z-index: 9000;
     background-color: rgba(0, 0, 0, 0.8);

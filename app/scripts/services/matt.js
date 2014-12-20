@@ -12,6 +12,7 @@ angular.module('HarvardApp')
         var configuration = {
             serverLocation: '',
             jsLocationPrefix: '/',
+            viewsFolder: '/views',
             // 讀取 Gantt 資料 URL
             getGanttUrl: '/machines',
             // 儲存或是運算 Gantt URL

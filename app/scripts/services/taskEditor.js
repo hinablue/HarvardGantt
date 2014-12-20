@@ -8,8 +8,9 @@
  * Service in the HarvardApp.
  */
 angular.module('HarvardApp')
-    .service('TaskEditor', ['$http', '$timeout', '$log', '$alert', 'Coloured', 'moment', function TaskEditor($http, $timeout, $log, $alert, Coloured, moment) {
+    .service('TaskEditor', ['$http', '$timeout', '$log', '$alert', 'Coloured', 'Matt', 'moment', function TaskEditor($http, $timeout, $log, $alert, Coloured, Matt, moment) {
         var scope = null;
+        var configuration = Matt.configuration();
 
         return {
             taskTemplate: {
@@ -57,6 +58,7 @@ angular.module('HarvardApp')
                 taskGroup: '',
                 machineShiftLabel: '',
                 new: true,
+                highlight: false,
                 movable: {
                     enabled: true,
                     allowMoving: true,
@@ -117,7 +119,7 @@ angular.module('HarvardApp')
             editTaskModalOptions: {
                 scope: null,
                 title: 'Task Creator',
-                template: 'views/editor.tpl.html',
+                template: configuration.serverLocation + configuration.viewsFolder + '/editor.tpl.html',
                 backdrop: false,
                 show: true
             }

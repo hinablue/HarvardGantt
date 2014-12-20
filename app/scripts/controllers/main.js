@@ -8,10 +8,11 @@
  * Controller of the HarvardApp
  */
 angular.module('HarvardApp')
-.controller('MainCtrl', ['$scope', '$element', '$http', '$timeout', '$log', '$modal', '$alert', '$dropdown', 'ganttUtils', 'GanttObjectModel', 'Coloured', 'Harvard', 'Matt', 'TaskEditor', 'ganttMouseOffset', 'ganttDebounce', 'moment', function($scope, $element, $http, $timeout, $log, $modal, $alert, $dropdown, utils, ObjectModel, Coloured, Harvard, Matt, TaskEditor, mouseOffset, debounce, moment) {
+.controller('MainCtrl', ['$scope', '$document', '$compile', '$element', '$http', '$timeout', '$log', '$modal', '$alert', '$dropdown', 'ganttUtils', 'GanttObjectModel', 'Coloured', 'Harvard', 'Matt', 'TaskEditor', 'ganttMouseOffset', 'ganttDebounce', 'moment', function($scope, $document, $compile, $element, $http, $timeout, $log, $modal, $alert, $dropdown, utils, ObjectModel, Coloured, Harvard, Matt, TaskEditor, mouseOffset, debounce, moment) {
     var objectModel;
     var dataToRemove;
     var editTaskModalOptions = TaskEditor.editTaskModalOptions;
+    var multipleTaskSelected = [];
     editTaskModalOptions.scope = $scope;
 
     $scope.editTask = TaskEditor.editTaskTemplate;
@@ -121,13 +122,13 @@ angular.module('HarvardApp')
                 api.tasks.on.remove($scope, addEventName('tasks.on.remove', logTaskEvent));
 
                 if (api.tasks.on.moveBegin) {
-                    api.tasks.on.moveBegin($scope, addEventName('tasks.on.moveBegin', logTaskEvent));
+                    api.tasks.on.moveBegin($scope, addEventName('tasks.on.moveBegin', moveTaskBeginEvent));
                     // api.tasks.on.move($scope, addEventName('tasks.on.move', logTaskEvent));
-                    api.tasks.on.moveEnd($scope, addEventName('tasks.on.moveEnd', logTaskEvent));
+                    api.tasks.on.moveEnd($scope, addEventName('tasks.on.moveEnd', moveTaskEndEvent));
 
-                    api.tasks.on.resizeBegin($scope, addEventName('tasks.on.resizeBegin', logTaskEvent));
+                    // api.tasks.on.resizeBegin($scope, addEventName('tasks.on.resizeBegin', logTaskEvent));
                     // api.tasks.on.resize($scope, addEventName('tasks.on.resize', logTaskEvent));
-                    api.tasks.on.resizeEnd($scope, addEventName('tasks.on.resizeEnd', logTaskEvent));
+                    api.tasks.on.resizeEnd($scope, addEventName('tasks.on.resizeEnd', drawResizeEndEvent));
                 }
 
                 api.rows.on.add($scope, addEventName('rows.on.add', logRowEvent));
@@ -152,19 +153,33 @@ angular.module('HarvardApp')
                 // Add some DOM events
                 api.directives.on.new($scope, function(directiveName, directiveScope, element) {
                     if (directiveName === 'ganttTask') {
-                        element.bind('click', function() {
-                            logTaskEvent('task-click', directiveScope.task);
-                        });
-                        element.bind('mousedown touchstart', function(event) {
-                            event.stopPropagation();
-                            $scope.live.row = directiveScope.task.row.model;
-                            if (directiveScope.task.originalModel !== undefined) {
-                                $scope.live.task = directiveScope.task.originalModel;
+                        // Add the highlight box-shadow.
+                        var highlightScope = directiveScope.$new();
+                        var ifElement = $document[0].createElement('div');
+                        angular.element(ifElement).attr('class', 'gantt-task gantt-task-highlight').attr('data-ng-if', 'task.model.highlight');
+                        element.append($compile(ifElement)(highlightScope));
+
+                        element.bind('click', function(evt) {
+                            if (evt.shiftKey === true) {
+                                multipleTaskSelected.push(directiveScope.task);
                             } else {
-                                $scope.live.task = directiveScope.task.model;
+                                multipleTaskSelected = [];
                             }
+                            $log.info(multipleTaskSelected);
+                            directiveScope.task.model.highlight = !directiveScope.task.model.highlight;
                             $scope.$digest();
                         });
+
+                        // element.bind('mousedown touchstart', function(event) {
+                        //     event.stopPropagation();
+                        //     $scope.live.row = directiveScope.task.row.model;
+                        //     if (directiveScope.task.originalModel !== undefined) {
+                        //         $scope.live.task = directiveScope.task.originalModel;
+                        //     } else {
+                        //         $scope.live.task = directiveScope.task.model;
+                        //     }
+                        //     $scope.$digest();
+                        // });
                     } else if (directiveName === 'ganttRow') {
                         element.bind('click', function() {
                             logRowEvent('row-click', directiveScope.row);
@@ -263,7 +278,7 @@ angular.module('HarvardApp')
                         directiveScope.tasksOnMachine = $modal({
                             scope: directiveScope,
                             title: 'Machine',
-                            template: 'views/machine.tpl.html',
+                            template: $scope.configuration.serverLocation + $scope.configuration.viewsFolder + '/machine.tpl.html',
                             backdrop: false,
                             placement: 'center',
                             show: false
@@ -274,9 +289,9 @@ angular.module('HarvardApp')
                     }
                 });
 
-                api.tasks.on.rowChange($scope, function(task) {
-                    $scope.live.row = task.row.model;
-                });
+                // api.tasks.on.rowChange($scope, function(task) {
+                //     $scope.live.row = task.row.model;
+                // });
 
                 objectModel = new ObjectModel(api);
             });
@@ -1013,6 +1028,7 @@ angular.module('HarvardApp')
                         taskGroup: t[j].taskGroup,
                         machineShiftLabel: t[j].machineShiftLabel,
                         new: t[j].new,
+                        highlight: false,
                         movable: TaskEditor.taskTemplate.movable
                     };
 
@@ -1135,97 +1151,94 @@ angular.module('HarvardApp')
     // Visual two way binding.
     $scope.live = {};
 
-    var debounceValue = 1000;
+    // var debounceValue = 1000;
 
-    var listenTaskJson = debounce(function(taskJson) {
-        if (taskJson !== undefined) {
-            var task = angular.fromJson(taskJson);
-            objectModel.cleanTask(task);
-            var model = $scope.live.task;
-            angular.extend(model, task);
-        }
-    }, debounceValue);
-    $scope.$watch('live.taskJson', listenTaskJson);
+    // var listenTaskJson = debounce(function(taskJson) {
+    //     if (taskJson !== undefined) {
+    //         var task = angular.fromJson(taskJson);
+    //         objectModel.cleanTask(task);
+    //         var model = $scope.live.task;
+    //         angular.extend(model, task);
+    //     }
+    // }, debounceValue);
+    // $scope.$watch('live.taskJson', listenTaskJson);
 
-    var listenRowJson = debounce(function(rowJson) {
-        if (rowJson !== undefined) {
-            var row = angular.fromJson(rowJson);
-            objectModel.cleanRow(row);
-            var tasks = row.tasks;
+    // var listenRowJson = debounce(function(rowJson) {
+    //     if (rowJson !== undefined) {
+    //         var row = angular.fromJson(rowJson);
+    //         objectModel.cleanRow(row);
+    //         var tasks = row.tasks;
 
-            delete row.tasks;
-            var rowModel = $scope.live.row;
+    //         delete row.tasks;
+    //         var rowModel = $scope.live.row;
 
-            angular.extend(rowModel, row);
+    //         angular.extend(rowModel, row);
 
-            var newTasks = {};
-            var i, l;
+    //         var newTasks = {};
+    //         var i, l;
 
-            if (tasks !== undefined) {
-                for (i = 0, l = tasks.length; i < l; i++) {
-                    objectModel.cleanTask(tasks[i]);
-                }
+    //         if (tasks !== undefined) {
+    //             for (i = 0, l = tasks.length; i < l; i++) {
+    //                 objectModel.cleanTask(tasks[i]);
+    //             }
 
-                for (i = 0, l = tasks.length; i < l; i++) {
-                    newTasks[tasks[i].id] = tasks[i];
-                }
+    //             for (i = 0, l = tasks.length; i < l; i++) {
+    //                 newTasks[tasks[i].id] = tasks[i];
+    //             }
 
-                if (rowModel.tasks === undefined) {
-                    rowModel.tasks = [];
-                }
-                for (i = rowModel.tasks.length - 1; i >= 0; i--) {
-                    var existingTask = rowModel.tasks[i];
-                    var newTask = newTasks[existingTask.id];
-                    if (newTask === undefined) {
-                        rowModel.tasks.splice(i, 1);
-                    } else {
-                        objectModel.cleanTask(newTask);
-                        angular.extend(existingTask, newTask);
-                        delete newTasks[existingTask.id];
-                    }
-                }
-            } else {
-                delete rowModel.tasks;
-            }
+    //             if (rowModel.tasks === undefined) {
+    //                 rowModel.tasks = [];
+    //             }
+    //             for (i = rowModel.tasks.length - 1; i >= 0; i--) {
+    //                 var existingTask = rowModel.tasks[i];
+    //                 var newTask = newTasks[existingTask.id];
+    //                 if (newTask === undefined) {
+    //                     rowModel.tasks.splice(i, 1);
+    //                 } else {
+    //                     objectModel.cleanTask(newTask);
+    //                     angular.extend(existingTask, newTask);
+    //                     delete newTasks[existingTask.id];
+    //                 }
+    //             }
+    //         } else {
+    //             delete rowModel.tasks;
+    //         }
 
-            angular.forEach(newTasks, function(newTask) {
-                rowModel.tasks.push(newTask);
-            });
-        }
-    }, debounceValue);
-    $scope.$watch('live.rowJson', listenRowJson);
+    //         angular.forEach(newTasks, function(newTask) {
+    //             rowModel.tasks.push(newTask);
+    //         });
+    //     }
+    // }, debounceValue);
+    // $scope.$watch('live.rowJson', listenRowJson);
 
-    $scope.$watchCollection('live.task', function(task) {
-        $scope.live.taskJson = angular.toJson(task, true);
-        $scope.live.rowJson = angular.toJson($scope.live.row, true);
-    });
+    // $scope.$watchCollection('live.task', function(task) {
+    //     $scope.live.taskJson = angular.toJson(task, true);
+    //     $scope.live.rowJson = angular.toJson($scope.live.row, true);
+    // });
 
-    $scope.$watchCollection('live.row', function(row) {
-        $scope.live.rowJson = angular.toJson(row, true);
-        if (row !== undefined && row.tasks.indexOf($scope.live.task) < 0) {
-            $scope.live.task = (row.tasks === undefined || row.tasks.length <= 0) ? undefined : row.tasks[0];
-        }
-    });
+    // $scope.$watchCollection('live.row', function(row) {
+    //     $scope.live.rowJson = angular.toJson(row, true);
+    //     if (row !== undefined && row.tasks.indexOf($scope.live.task) < 0) {
+    //         $scope.live.task = (row.tasks === undefined || row.tasks.length <= 0) ? undefined : row.tasks[0];
+    //     }
+    // });
 
-    $scope.$watchCollection('live.row.tasks', function() {
-        $scope.live.rowJson = angular.toJson($scope.live.row, true);
-    });
+    // $scope.$watchCollection('live.row.tasks', function() {
+    //     $scope.live.rowJson = angular.toJson($scope.live.row, true);
+    // });
 
-    // Event handler
-    var logTaskEvent = function(eventName, data) {
+    var drawResizeEndEvent = function(eventName, task) {
+        $scope.editTask = TaskEditor.editTaskTemplate;
+        $scope.editTask.id = task.model.id;
+        $scope.editTask.rowId = task.row.model.id;
+        $scope.editTask.runOnMachineId = task.row.model.id;
+        $scope.editTask.modifyType = 'create';
+        $scope.editTask.priority = Object($scope.tasksMap).length + 1;
+        $scope.editTask.drawTask = true;
+        $scope.editTask.modal = $modal(editTaskModalOptions);
+    };
+    var contextMenuEvent = function(eventName, data) {
         var key;
-
-        if (eventName === 'tasks.on.resizeEnd' && data.model.expectedStartTime === null) {
-            $scope.editTask = TaskEditor.editTaskTemplate;
-            $scope.editTask.id = data.model.id;
-            $scope.editTask.rowId = data.row.model.id;
-            $scope.editTask.runOnMachineId = data.row.model.id;
-            $scope.editTask.modifyType = 'create';
-            $scope.editTask.priority = Object($scope.tasksMap).length + 1;
-            $scope.editTask.drawTask = true;
-            $scope.editTask.modal = $modal(editTaskModalOptions);
-        }
-
         if (data.type !== undefined) {
             switch(data.type) {
                 case 'edit':
@@ -1304,6 +1317,15 @@ angular.module('HarvardApp')
                 break;
             }
         }
+    };
+    var moveTaskBeginEvent = function(eventName, task) {
+        $log.info(multipleTaskSelected);
+    };
+    var moveTaskEndEvent = function(eventName, task) {
+        $log.info(multipleTaskSelected);
+    };
+    // Event handler
+    var logTaskEvent = function(eventName, data) {
     };
 
     // Event handler

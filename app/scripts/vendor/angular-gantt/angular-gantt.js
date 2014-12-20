@@ -4831,7 +4831,7 @@ angular.module('gantt.templates', []).run(['$templateCache', function($templateC
         '    </script>\n' +
         '\n' +
         '    <script type="text/ng-template" id="template/ganttTaskBackground.tmpl.html">\n' +
-        '        <div class="gantt-task-background" ng-class="task.model.classes" ng-style="{\'background-color\': task.model.color}"></div>\n' +
+        '        <div class="gantt-task-background" ng-style="{\'background-color\': task.model.color}"></div>\n' +
         '    </script>\n' +
         '\n' +
         '    <script type="text/ng-template" id="template/ganttTaskForeground.tmpl.html">\n' +
@@ -4866,7 +4866,7 @@ angular.module('gantt.templates', []).run(['$templateCache', function($templateC
         '\n' +
         '    <!-- Task content template -->\n' +
         '    <script type="text/ng-template" id="template/ganttTaskContent.tmpl.html">\n' +
-        '        <div class="gantt-task-content-container">\n' +
+        '        <div class="gantt-task-content-container" ng-class="task.model.classes">\n' +
         '            <div class="gantt-task-content" ng-style="{color: \'{{task.model.textColor}}\', overflow: \'auto\'}"><span>{{task.model.name}}({{task.model.id}})</span><span class="middle-placeholder"></span></div>\n' +
         '        </div>\n' +
         '    </script>\n' +
