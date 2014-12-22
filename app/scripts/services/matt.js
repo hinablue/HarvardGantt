@@ -67,7 +67,7 @@ angular.module('HarvardApp')
             // calculateFrom, default: system day + 1 day, 從哪一天開始計算
             // calculateWeeks, default: 12, 要計算幾周
             // return tw.com.softleader.harvard.aps.service.result.ApsMessage
-            confirmGanttUrl: '/company/scheduler/plans/calculate/',
+            confirmGanttUrl: $location.absUrl() + '/calculate/',
         };
 
         return {

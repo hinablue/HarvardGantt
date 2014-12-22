@@ -36,7 +36,7 @@ angular.module('HarvardApp')
 
     $scope.options = {
         mode: 'custom',
-        scale: 'day',
+        scale: '3 hours',
         sortMode: undefined,
         maxHeight: false,
         width: false,
@@ -60,26 +60,26 @@ angular.module('HarvardApp')
             return false;
         },
         timeFrames: {
-            'day': {
-                start: moment('8:00', 'HH:mm'),
-                end: moment('20:00', 'HH:mm'),
-                working: true,
-                default: true
-            },
-            'noon': {
-                start: moment('12:00', 'HH:mm'),
-                end: moment('13:30', 'HH:mm'),
-                working: false,
-                default: true
-            },
+            // 'day': {
+            //     start: moment('8:00', 'HH:mm'),
+            //     end: moment('20:00', 'HH:mm'),
+            //     working: true,
+            //     default: true
+            // },
+            // 'noon': {
+            //     start: moment('12:00', 'HH:mm'),
+            //     end: moment('13:30', 'HH:mm'),
+            //     working: false,
+            //     default: true
+            // },
             'weekend': {
                 working: false
-            },
-            'holiday': {
-                working: false,
-                color: 'red',
-                classes: ['gantt-timeframe-holiday']
             }
+            // 'holiday': {
+            //     working: false,
+            //     color: 'red',
+            //     classes: ['gantt-timeframe-holiday']
+            // }
         },
         dateFrames: {
             'weekend': {
@@ -87,13 +87,14 @@ angular.module('HarvardApp')
                     return date.isoWeekday() === 6 || date.isoWeekday() === 7;
                 },
                 targets: ['weekend']
-            },
-            '11-november': {
-                evaluator: function(date) {
-                    return date.month() === 10 && date.date() === 11;
-                },
-                targets: ['holiday']
             }
+            // ,
+            // '11-november': {
+            //     evaluator: function(date) {
+            //         return date.month() === 10 && date.date() === 11;
+            //     },
+            //     targets: ['holiday']
+            // }
         },
         timeFramesNonWorkingMode: 'visible',
         columnMagnet: '1 minutes',
@@ -862,12 +863,12 @@ angular.module('HarvardApp')
                         sheetUp: t[j].sheetUp,
                         face: t[j].face,
                         pendingMinutes: t[j].pendingMinutes,
-                        expectedStartTime: t[j].expectedStartTime.utc().format('YYYY-MM-DD HH:mm:ss.SSS'),
-                        expectedSetupFinishTime: t[j].expectedSetupFinishTime.utc().format('YYYY-MM-DD HH:mm:ss.SSS'),
-                        expectedFinishTime: t[j].expectedFinishTime.utc().format('YYYY-MM-DD HH:mm:ss.SSS'),
-                        actualStartTime: t[j].actualStartTime !== null ? t[j].actualStartTime.utc().format('YYYY-MM-DD HH:mm:ss.SSS') : null,
-                        actualSetupFinishTime: t[j].actualSetupFinishTime !== null ? t[j].actualSetupFinishTime.utc().format('YYYY-MM-DD HH:mm:ss.SSS') : null,
-                        actualFinishTime: t[j].actualFinishTime !== null ? t[j].actualFinishTime.utc().format('YYYY-MM-DD HH:mm:ss.SSS') : null,
+                        expectedStartTime: t[j].expectedStartTime.utc().format('YYYY-MM-DDTHH:mm:ss'),
+                        expectedSetupFinishTime: t[j].expectedSetupFinishTime.utc().format('YYYY-MM-DDTHH:mm:ss'),
+                        expectedFinishTime: t[j].expectedFinishTime.utc().format('YYYY-MM-DDTHH:mm:ss'),
+                        actualStartTime: t[j].actualStartTime !== null ? t[j].actualStartTime.utc().format('YYYY-MM-DDTHH:mm:ss') : null,
+                        actualSetupFinishTime: t[j].actualSetupFinishTime !== null ? t[j].actualSetupFinishTime.utc().format('YYYY-MM-DDTHH:mm:ss') : null,
+                        actualFinishTime: t[j].actualFinishTime !== null ? t[j].actualFinishTime.utc().format('YYYY-MM-DDTHH:mm:ss') : null,
                         finished: t[j].finished,
                         inProcessing: t[j].inProcessing,
                         delete: t[j].delete,
@@ -896,7 +897,7 @@ angular.module('HarvardApp')
             data: machines,
             params: {
                 calculate: true,
-                calculateFrom: moment.utc($scope.api.gantt.columnsManager.getFirstColumn().date.format(), 'YYYY-MM-DD HH:mm:ss.SSS'),
+                calculateFrom: moment.utc($scope.api.gantt.columnsManager.getFirstColumn().date.format(), 'YYYY-MM-DD HH:mm:ss.SSS').format('YYYY-MM-DDTHH:mm:ss'),
                 calculateWeeks: 52,
                 save: type === 'save' ? true : false
             }
