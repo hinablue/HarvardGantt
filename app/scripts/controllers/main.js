@@ -1095,7 +1095,7 @@ angular.module('HarvardApp')
         $http({
             method: 'get',
             responseType: 'json',
-            url: $scope.configuration.getGanttUrl,
+            url: $scope.configuration.serverLocation + $scope.configuration.getGanttUrl,
             params: {},
             timeout: $scope.configuration.getGanttDataTimeout * 1000
         }).then(function(response) {

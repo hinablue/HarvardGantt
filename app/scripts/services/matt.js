@@ -10,15 +10,13 @@
 angular.module('HarvardApp')
     .service('Matt', ['$http', '$timeout', '$log', '$location', function Matt($http, $timeout, $log, $location) {
         var configuration = {
-            serverLocation: '',
-            jsLocationPrefix: '/',
             // 奇怪$location.path()沒有用, 所以先用absUrl(), 7是’http://‘的長度
-            viewsFolder: '/' + $location.absUrl().substr(7).split('/')[1] + '/resources/Gantt-v2/views',
+            serverLocation: '/' + $location.absUrl().substr(7).split('/')[1],
+            jsLocationPrefix: '/',
+            viewsFolder: '/resources/Gantt-v2/views',
             // 讀取 Gantt 資料 URL
-            getGanttUrl: $location.absUrl() + '/machines',
+            getGanttUrl: '/company/scheduler/gantt/machines',
             // 儲存或是運算 Gantt URL
-            saveGanttUrl: $location.absUrl() + '/calculate',
-            calcGanttUrl: $location.absUrl() + '/calculate',
             // 讀取 Gantt  的 Server response Timeout，單位秒
             getGanttDataTimeout: 15 * 60,
             // 儲存或是運算 Gantt 的 Server response Timeout，單位秒
@@ -67,7 +65,7 @@ angular.module('HarvardApp')
             // calculateFrom, default: system day + 1 day, 從哪一天開始計算
             // calculateWeeks, default: 12, 要計算幾周
             // return tw.com.softleader.harvard.aps.service.result.ApsMessage
-            confirmGanttUrl: $location.absUrl() + '/calculate/',
+            confirmGanttUrl: '/company/scheduler/gantt/calculate/',
         };
 
         return {
