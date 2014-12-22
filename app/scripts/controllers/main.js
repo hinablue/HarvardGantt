@@ -16,6 +16,7 @@ angular.module('HarvardApp')
     editTaskModalOptions.scope = $scope;
 
     $scope.editTask = TaskEditor.editTaskTemplate;
+    $scope.groupTask = false;
 
     $scope.tasksMap = {};
     $scope.processesMap = {};
@@ -780,10 +781,11 @@ angular.module('HarvardApp')
             if (result.state === 'ok') {
                 task = TaskEditor.taskTemplate;
                 task.id = $scope.editTask.id;
+                task.color = $scope.editTask.color;
                 task.oid = $scope.editTask.id;
                 task.name = $scope.editTask.operationCode;
-                task.from = typeof($scope.editTask.expectedStartTime) === 'object' ? moment((new Date($scope.editTask.expectedStartTime)).getTime(), 'x') : moment($scope.editTask.expectedStartTime, 'YYYY-MM-DDTHH:mm:ssZ');
-                task.to = typeof($scope.editTask.expectedFinishTime) === 'object' ? moment((new Date($scope.editTask.expectedFinishTime)).getTime(), 'x') : moment($scope.editTask.expectedFinishTime, 'YYYY-MM-DDTHH:mm:ssZ');
+                task.from = typeof($scope.editTask.expectedStartTime) === 'object' ? moment((new Date($scope.editTask.expectedStartTime)).getTime(), 'x') : moment($scope.editTask.expectedStartTime, 'YYYY-MM-DDTHH:mm:ss');
+                task.to = typeof($scope.editTask.expectedFinishTime) === 'object' ? moment((new Date($scope.editTask.expectedFinishTime)).getTime(), 'x') : moment($scope.editTask.expectedFinishTime, 'YYYY-MM-DDTHH:mm:ss');
                 task.operationCode = $scope.editTask.operationCode;
                 task.processingType = $scope.editTask.processingType;
                 task.quantity = $scope.editTask.quantity;
@@ -823,12 +825,12 @@ angular.module('HarvardApp')
                 task.part = $scope.editTask.part;
                 task.s2sMins = $scope.editTask.s2sMins;
                 task.timeclockEmployeeId = $scope.editTask.timeclockEmployeeId;
-                task.expectedStartTime = typeof($scope.editTask.expectedStartTime) === 'object' ? moment((new Date($scope.editTask.expectedStartTime)).getTime(), 'x') : moment($scope.editTask.expectedStartTime, 'YYYY-MM-DDTHH:mm:ssZ');
-                task.expectedSetupFinishTime = typeof($scope.editTask.expectedSetupFinishTime) === 'object' ? moment((new Date($scope.editTask.expectedSetupFinishTime)).getTime(), 'x') : moment($scope.editTask.expectedSetupFinishTime, 'YYYY-MM-DDTHH:mm:ssZ');
-                task.expectedFinishTime = typeof($scope.editTask.expectedFinishTime) === 'object' ? moment((new Date($scope.editTask.expectedFinishTime)).getTime(), 'x') : moment($scope.editTask.expectedFinishTime, 'YYYY-MM-DDTHH:mm:ssZ');
-                task.actualStartTime = typeof($scope.editTask.actualStartTime) === 'object' ? moment((new Date($scope.editTask.actualStartTime)).getTime(), 'x') : moment($scope.editTask.actualStartTime, 'YYYY-MM-DDTHH:mm:ssZ');
-                task.actualSetupFinishTime = typeof($scope.editTask.actualSetupFinishTime) === 'object' ? moment((new Date($scope.editTask.actualSetupFinishTime)).getTime(), 'x') : moment($scope.editTask.actualSetupFinishTime, 'YYYY-MM-DDTHH:mm:ssZ');
-                task.actualFinishTime = typeof($scope.editTask.actualFinishTime) === 'object' ? moment((new Date($scope.editTask.actualFinishTime)).getTime(), 'x') : moment($scope.editTask.actualFinishTime, 'YYYY-MM-DDTHH:mm:ssZ');
+                task.expectedStartTime = typeof($scope.editTask.expectedStartTime) === 'object' ? moment((new Date($scope.editTask.expectedStartTime)).getTime(), 'x') : moment($scope.editTask.expectedStartTime, 'YYYY-MM-DDTHH:mm:ss');
+                task.expectedSetupFinishTime = typeof($scope.editTask.expectedSetupFinishTime) === 'object' ? moment((new Date($scope.editTask.expectedSetupFinishTime)).getTime(), 'x') : moment($scope.editTask.expectedSetupFinishTime, 'YYYY-MM-DDTHH:mm:ss');
+                task.expectedFinishTime = typeof($scope.editTask.expectedFinishTime) === 'object' ? moment((new Date($scope.editTask.expectedFinishTime)).getTime(), 'x') : moment($scope.editTask.expectedFinishTime, 'YYYY-MM-DDTHH:mm:ss');
+                task.actualStartTime = typeof($scope.editTask.actualStartTime) === 'object' ? moment((new Date($scope.editTask.actualStartTime)).getTime(), 'x') : moment($scope.editTask.actualStartTime, 'YYYY-MM-DDTHH:mm:ss');
+                task.actualSetupFinishTime = typeof($scope.editTask.actualSetupFinishTime) === 'object' ? moment((new Date($scope.editTask.actualSetupFinishTime)).getTime(), 'x') : moment($scope.editTask.actualSetupFinishTime, 'YYYY-MM-DDTHH:mm:ss');
+                task.actualFinishTime = typeof($scope.editTask.actualFinishTime) === 'object' ? moment((new Date($scope.editTask.actualFinishTime)).getTime(), 'x') : moment($scope.editTask.actualFinishTime, 'YYYY-MM-DDTHH:mm:ss');
                 task.actualQuantity = $scope.editTask.actualQuantity;
                 task.tooltip = [];
 
@@ -1031,8 +1033,8 @@ angular.module('HarvardApp')
                         oid: t[j].oid,
                         color: t[j].color,
                         name: t[j].operationCode,
-                        from: moment(t[j].expectedStartTime, 'YYYY-MM-DDTHH:mm:ssZ'),
-                        to: moment(t[j].expectedFinishTime, 'YYYY-MM-DDTHH:mm:ssZ'),
+                        from: moment(t[j].expectedStartTime, 'YYYY-MM-DDTHH:mm:ss'),
+                        to: moment(t[j].expectedFinishTime, 'YYYY-MM-DDTHH:mm:ss'),
                         textColor: Coloured.isDarkColoured(t[j].color) ? '#ffffff' : '#000000',
                         operationCode: t[j].operationCode,
                         priority: t[j].priority,
@@ -1053,12 +1055,12 @@ angular.module('HarvardApp')
                         sheetUp: t[j].sheetUp,
                         face: t[j].face,
                         pendingMinutes: t[j].pendingMinutes,
-                        expectedStartTime: moment(t[j].expectedStartTime, 'YYYY-MM-DDTHH:mm:ssZ'),
-                        expectedSetupFinishTime: moment(t[j].expectedSetupFinishTime, 'YYYY-MM-DDTHH:mm:ssZ'),
-                        expectedFinishTime: moment(t[j].expectedFinishTime, 'YYYY-MM-DDTHH:mm:ssZ'),
-                        actualStartTime: (t[j].actualStartTime === null) ? null : moment(t[j].actualStartTime, 'YYYY-MM-DDTHH:mm:ssZ'),
-                        actualSetupFinishTime: (t[j].actualSetupFinishTime === null) ? null : moment(t[j].actualSetupFinishTime, 'YYYY-MM-DDTHH:mm:ssZ'),
-                        actualFinishTime: (t[j].actualFinishTime === null) ? null : moment(t[j].actualFinishTime, 'YYYY-MM-DDTHH:mm:ssZ'),
+                        expectedStartTime: moment(t[j].expectedStartTime, 'YYYY-MM-DDTHH:mm:ss'),
+                        expectedSetupFinishTime: moment(t[j].expectedSetupFinishTime, 'YYYY-MM-DDTHH:mm:ss'),
+                        expectedFinishTime: moment(t[j].expectedFinishTime, 'YYYY-MM-DDTHH:mm:ss'),
+                        actualStartTime: (t[j].actualStartTime === null) ? null : moment(t[j].actualStartTime, 'YYYY-MM-DDTHH:mm:ss'),
+                        actualSetupFinishTime: (t[j].actualSetupFinishTime === null) ? null : moment(t[j].actualSetupFinishTime, 'YYYY-MM-DDTHH:mm:ss'),
+                        actualFinishTime: (t[j].actualFinishTime === null) ? null : moment(t[j].actualFinishTime, 'YYYY-MM-DDTHH:mm:ss'),
                         finished: t[j].finished,
                         inProcessing: t[j].inProcessing,
                         delete: t[j].delete,
@@ -1328,6 +1330,7 @@ angular.module('HarvardApp')
                         previousTask: 0,
                         nextTask: 0,
                         modifyType: data.type,
+                        color: data.task.model.color,
                         drawTask: false,
                         modal: undefined,
                         check: false
@@ -1362,7 +1365,14 @@ angular.module('HarvardApp')
         }
     };
     var moveTaskBeginEvent = function(eventName, task) {
-        $log.info(multipleTaskSelected);
+        if ($scope.groupTask === true) {
+            if (multipleTaskSelected.length > 0) {
+                for (var i = 0, t = multipleTaskSelected, l = t.length; i < l; i++) {
+                    t[i].model.highlight = false;
+                }
+            }
+            multipleTaskSelected = [];
+        }
     };
     var movingTaskEvent = function(eventName, task) {
 
@@ -1439,7 +1449,7 @@ angular.module('HarvardApp')
         } else {
             viewScaleUnit = $scope.options.scale;
         }
-        from = moment($scope.api.gantt.columnsManager.getLastColumn().date.format(), 'YYYY-MM-DDTHH:mm:ssZ');
+        from = moment($scope.api.gantt.columnsManager.getLastColumn().date.format(), 'YYYY-MM-DDTHH:mm:ss');
 
         if ($scope.api.gantt.width + $scope.api.gantt.scroll.getBordersWidth() < $element[0].offsetWidth) {
             if (['minute', 'minutes', 'hour', 'hours'].indexOf(viewScaleUnit) > -1) {
