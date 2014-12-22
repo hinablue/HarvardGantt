@@ -423,7 +423,7 @@ angular.module('HarvardApp')
                 $scope.editTask.productList = [];
                 var _productId = [];
                 _clickFunc = function(productId) {
-                    return function(comboId) {
+                    return function(productId) {
                         $scope.editTask.productId = productId;
                     }.bind(this, productId);
                 };
@@ -487,7 +487,7 @@ angular.module('HarvardApp')
                         $scope.editTask.poId = response.data.data.id;
                     break;
                     case 'getComboUrl':
-                        $scope.editTask.comboList = response.data.data;
+                        $scope.editTask.comboList = [];
                         for (i = 0, k = Object.keys($scope.jobsMap), l = k.length; i < l; ++i) {
                             if ($scope.jobsMap[k[i]].poNo === $scope.editTask.poNo) {
                                 $scope.editTask.job = $scope.jobsMap[k[i]];
@@ -507,10 +507,38 @@ angular.module('HarvardApp')
                         }
                     break;
                     case 'getProductUrl':
-                        $scope.editTask.productList = response.data.data;
+                        $scope.editTask.productList = [];
+                        var _productId = [];
+                        _clickFunc = function(productId) {
+                            return function(productId) {
+                                $scope.editTask.productId = productId;
+                            }.bind(this, productId);
+                        };
+                        for (i = 0, k = response.data.data, l = k.length; i < l; ++i) {
+                            if (_productId.indexOf(k[i].value.productId) < 0) {
+                                $scope.editTask.productList.push({
+                                    text: k[i].label,
+                                    click: _clickFunc.call(null, k[i].value)
+                                });
+                                _productId.push(k[i].value);
+                            }
+                        }
+
                     break;
                     case 'getProcessUrl':
-                        $scope.editTask.processList = response.data.data;
+                        $scope.editTask.processList = [];
+                        var _processId = [];
+                        _clickFunc = function(processId) {
+                            return function(processId) {
+                                $scope.editTask.processId = processId;
+                            }.bind(this, processId);
+                        };
+                        for (i = 0, k = response.data.data, l = k.length; i < l; ++i) {
+                            $scope.editTask.processList.push({
+                                text: k[i].label,
+                                click: _clickFunc.call(null, k[i].value)
+                            });
+                        }
                     break;
                     case 'getProductInfoUrl':
                         $scope.editTask.comboList = [];

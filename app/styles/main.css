@@ -127,6 +127,9 @@ textarea.live-task, textarea.live-row {
     border-bottom: 1px solid #efefef;
     display: table;
 }
+.dropdown-menu {
+    z-index: 9900;
+}
 .as-sortable-drag {
     z-index: 99999;
 }
