@@ -64,6 +64,7 @@ textarea.live-task, textarea.live-row {
 }
 
 .gantt-task-highlight {
+    width: 100%;
     -webkit-box-shadow: darkred 0px 0px 3px 1px;
     -moz-box-shadow: darkred 0px 0px 3px 1px;
     -o-box-shadow: darkred 0px 0px 3px 1px;
