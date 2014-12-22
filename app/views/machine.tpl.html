@@ -9,7 +9,7 @@
       	<div class="machine" ng-style="autoExpand">
 	      	<div class="header">
 	  			<span class="column multiple">&nbsp;</span>
-	  			<span class="column data" ng-repeat="title in row.model.UI2Title">{{ title }}</span>
+	  			<span class="column data" ng-repeat="title in row.model.title">{{ title }}</span>
 	  			<span class="column from">From</span>
 	  			<span class="column to">To</span>
 	  			<span class="column during">During(Min)</span>
@@ -20,7 +20,7 @@
       		<div class="tasks ng-scope" ng-repeat="task in row.tasks" as-sortable-item>
       			<div class="task ng-scope" ng-style="taskColoured(task.model.color, task.model.textColor)" as-sortable-item-handle>
 	      			<span class="column ng-binding multiple"><i class="multiple-tasks fa {{ multipleTasksCheck(task.model.id) === true && 'fa-check-square-o' || 'fa-square-o' }}" ng-click="multipleTasksToggle(task.model.id)"></i></span>
-	      			<span class="column ng-binding data" ng-repeat="data in task.model.data.UI2 track by $index">{{ data }}</span>
+	      			<span class="column ng-binding data" ng-repeat="data in task.model.tooltip track by $index">{{ data }}</span>
 					<span class="column ng-binding from">{{ task.model.from.utc().format("YYYY/MM/DD HH:mm") }}</span>
 					<span class="column ng-binding to">{{ task.model.to.utc().format("YYYY/MM/DD HH:mm") }}</span>
 					<span class="column ng-binding during">{{ (task.model.to.utc() - task.model.from.utc()) / 60 / 1000 }}</span>
