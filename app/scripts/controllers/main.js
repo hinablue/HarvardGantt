@@ -28,6 +28,7 @@ angular.module('HarvardApp')
     $scope.departmentMenuDefault = 'Select';
     $scope.subDepartmentMenuDefault = 'Select';
     $scope.pagination = [1];
+    $scope.paginationPrePage = 6;
     $scope.currentPage = 1;
 
     $scope.configuration = Matt.configuration();
@@ -97,7 +98,7 @@ angular.module('HarvardApp')
             // }
         },
         timeFramesNonWorkingMode: 'visible',
-        columnMagnet: '1 minutes',
+        columnMagnet: '1 minute',
         drawTaskFactory: function() {
             var task = TaskEditor.taskTemplate;
             task.id = utils.randomUuid();
@@ -124,7 +125,7 @@ angular.module('HarvardApp')
 
                 if (api.tasks.on.moveBegin) {
                     api.tasks.on.moveBegin($scope, addEventName('tasks.on.moveBegin', moveTaskBeginEvent));
-                    // api.tasks.on.move($scope, addEventName('tasks.on.move', logTaskEvent));
+                    api.tasks.on.move($scope, addEventName('tasks.on.move', movingTaskEvent));
                     api.tasks.on.moveEnd($scope, addEventName('tasks.on.moveEnd', moveTaskEndEvent));
 
                     // api.tasks.on.resizeBegin($scope, addEventName('tasks.on.resizeBegin', logTaskEvent));
@@ -492,6 +493,17 @@ angular.module('HarvardApp')
                                 $scope.editTask.job = $scope.jobsMap[k[i]];
                                 break;
                             }
+                        }
+                        _clickFunc = function(comboId) {
+                            return function(comboId) {
+                                $scope.editTask.comboId = comboId;
+                            }.bind(this, comboId);
+                        };
+                        for (i = 0, k = response.data.data, l = k.length; i < l; ++i) {
+                            $scope.editTask.comboList.push({
+                                text: k[i].label,
+                                click: _clickFunc.call(null, k[i].value)
+                            });
                         }
                     break;
                     case 'getProductUrl':
@@ -1063,7 +1075,7 @@ angular.module('HarvardApp')
         q = Object.keys($scope.machinesMap).sort(function(a, b) { return $scope.machinesMap[a].id - $scope.machinesMap[b].id; });
         p = 1;
         for(i = 0, l = q.length; i < l; i++) {
-            if (i > 0 && i % 6 === 0) {
+            if (i > 0 && i % $scope.paginationPrePage === 0) {
                 p++;
                 $scope.pagination.push(p);
             }
@@ -1322,8 +1334,15 @@ angular.module('HarvardApp')
     var moveTaskBeginEvent = function(eventName, task) {
         $log.info(multipleTaskSelected);
     };
+    var movingTaskEvent = function(eventName, task) {
+
+    };
     var moveTaskEndEvent = function(eventName, task) {
-        $log.info(multipleTaskSelected);
+        if (multipleTaskSelected.length > 0) {
+            for (var i = 0, t = multipleTaskSelected, l = t.length; i < l; i++) {
+                t[i].model.highlight = false;
+            }
+        }
     };
     // Event handler
     var logTaskEvent = function(eventName, data) {
