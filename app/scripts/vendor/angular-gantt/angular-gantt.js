@@ -4867,7 +4867,7 @@ angular.module('gantt.templates', []).run(['$templateCache', function($templateC
         '    <!-- Task content template -->\n' +
         '    <script type="text/ng-template" id="template/ganttTaskContent.tmpl.html">\n' +
         '        <div class="gantt-task-content-container" ng-class="task.model.classes">\n' +
-        '            <div class="gantt-task-content" ng-style="{color: \'{{task.model.textColor}}\', overflow: \'auto\'}"><span>{{task.model.name}}({{task.model.id}})</span><span class="middle-placeholder"></span></div>\n' +
+        '            <div class="gantt-task-content" ng-style="{color: \'{{task.model.textColor}}\', overflow: \'hidden\'}"><span>{{task.model.name}}({{task.model.id}})</span><span class="middle-placeholder"></span></div>\n' +
         '        </div>\n' +
         '    </script>\n' +
         '\n' +
