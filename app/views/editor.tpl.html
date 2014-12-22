@@ -13,13 +13,13 @@
           <input type="hidden" name="poId" ng-model="editTask.poId" value="{{editTask.poId}}">
           <input type="hidden" name="taskId" value="{{editTask.modifyType === 'edit' && editTask.id || 0}}">
           <div class="form-group col-md-12">
-            <label for="poNo" class="col-md-3 control-label require_field">PO# </label>
+            <label for="poNo" class="col-md-3 control-label require_field"><font color="red">*&nbsp;</font>PO# </label>
             <div class="form-group col-md-3">
               <div class="input-group">
                 <input type="text" class="form-control" name="modifyTask_poNo" id="modifyTask_poNo" ng-model="editTask.poNo" value="{{ editTask.poNo }}" required ng-disabled="editTask.modifyType === 'edit'" bs-dropdown="editTask.poFuzzySearch">
               </div>
             </div>
-            <label for="ComboId" class="col-md-3 control-label require_field">ComboId </label>
+            <label for="ComboId" class="col-md-3 control-label require_field"><font color="red">*&nbsp;</font>ComboId </label>
             <div class="form-group col-md-3">
               <div class="input-group">
                 <input class="form-control" name="modifyTask_comboList" ng-model="editTask.comboId" value="{{ editTask.comboId }}" required ng-disabled="editTask.modifyType === 'edit'" bs-dropdown="editTask.comboList">
@@ -28,11 +28,11 @@
           </div>
 
           <div class="form-group col-md-12">
-            <label for="productId" class="col-md-3 control-label require_field">Product </label>
+            <label for="productId" class="col-md-3 control-label require_field"><font color="red">*&nbsp;</font>Product </label>
             <div class="form-group col-md-3">
               <input type="text" class="form-control" name="modifyTask_productId" id="modifyTask_productId" ng-model="editTask.productId" value="{{ editTask.productId }}" required ng-disabled="editTask.modifyType === 'edit'" bs-dropdown="editTask.productList">
             </div>
-            <label for="processId" class="col-md-3 control-label require_field">Process </label>
+            <label for="processId" class="col-md-3 control-label require_field"><font color="red">*&nbsp;</font>Process </label>
             <div class="form-group col-md-3">
               <input type="text" class="form-control" name="modifyTask_processId" id="modifyTask_processId" ng-model="editTask.processId" value="{{ editTask.processId }}" required ng-disabled="editTask.modifyType === 'edit'" bs-dropdown="editTask.processList">
             </div>
@@ -54,7 +54,7 @@
           </div>
 
           <div class="form-group col-md-12">
-            <label for="processingType" class="col-md-3 control-label require_field">Processing Type </label>
+            <label for="processingType" class="col-md-3 control-label require_field"><font color="red">*&nbsp;</font>Processing Type </label>
             <div class="form-group col-md-3">
               <div class="input-group">
                 <select class="form-control" name="modifyTask_processingType" ng-model="editTask.processingType" required>
@@ -64,28 +64,28 @@
                 </select>
               </div>
             </div>
-            <label for="operationCode" class="col-md-3 control-label require_field">Operation Code </label>
+            <label for="operationCode" class="col-md-3 control-label require_field"><font color="red">*&nbsp;</font>Operation Code </label>
             <div class="form-group col-md-3">
               <input type="text" class="form-control" name="modifyTask_operationCode" ng-model="editTask.operationCode" value="{{ editTask.operationCode }}" required>
             </div>
           </div>
 
           <div class="form-group col-md-6">
-            <label for="rounds" class="col-md-6 control-label require_field">Rounds </label>
+            <label for="rounds" class="col-md-6 control-label require_field"><font color="red">*&nbsp;</font>Rounds </label>
             <div class="form-group col-md-6">
               <input type="number" class="form-control" name="modifyTask_rounds" ng-model="editTask.rounds" required value="{{ editTask.rounds }}">
             </div>
           </div>
           <div class="form-group col-md-6">
-            <label for="priority" class="col-md-6 control-label">Priority </label>
+            <label for="priority" class="col-md-6 control-label"><font color="red">*&nbsp;</font>Priority </label>
             <div class="form-group col-md-6">
               <div class="input-group">
-                <input type="number" class="form-control" id="priority" name="modifyTask_priority" ng-model="editTask.priority" value="{{ editTask.priority }}" required ng-disabled="editTask.modifyType === 'edit'">
+                <input type="number" class="form-control" id="priority" name="modifyTask_priority" ng-model="editTask.priority" value="{{ editTask.priority }}" required>
               </div>
             </div>
           </div>
           <div class="form-group col-md-6">
-            <label for="rounds" class="col-md-6 control-label require_field">Capacity </label>
+            <label for="rounds" class="col-md-6 control-label require_field"><font color="red">*&nbsp;</font>Capacity </label>
             <div class="form-group col-md-6">
               <input type="number" class="form-control" name="modifyTask_capacity" ng-model="editTask.capacity" value="{{ editTask.capacity }}">
             </div>
@@ -95,31 +95,31 @@
           <hr class="clearfix col-md-12">
 
           <div class="form-group col-md-12">
-            <label for="pin" class="col-md-6 control-label" title="Pin">Pin</label>
-            <div class="form-group col-md-6">
+            <label for="pin" class="col-md-2 control-label" title="Pin"><span class="glyphicon glyphicon-pushpin"></span> &nbsp;Pin</label>
+            <div class="form-group col-md-2">
               <select class="form-control" name="modifyTask_isPin" id="pin" ng-model="editTask.isPin" required>
                 <option value="false" ng-selected="editTask.isPin === false">N</option>
                 <option value="true" ng-selected="editTask.isPin === true">Y</option>
               </select>
             </div>
-            <label for="finished" class="col-md-6 control-label" title="Finish">Finish</label>
-            <div class="form-group col-md-6">
-              <select class="form-control" name="modifyTask_isFinished" id="finished" ng-model="editTask.isFinish" required>
-                <option value="false" ng-selected="editTask.isFinish === false">N</option>
-                <option value="true" ng-selected="editTask.isFinish === true">Y</option>
-              </select>
-            </div>
-            <label for="inProcessing" class="col-md-6 control-label" title="In Processing">In Processing</label>
-            <div class="form-group col-md-6">
+            <label for="inProcessing" class="col-md-2 control-label" title="Pending"><span class="glyphicon glyphicon-transfer"></span>&nbsp;Pending</label>
+            <div class="form-group col-md-2">
               <select class="form-control" name="modifyTask_inProcessing" id="inProcessing" ng-model="editTask.inProcessing" required>
                 <option value="false" ng-selected="editTask.inProcessing === false">N</option>
                 <option value="true" ng-selected="editTask.inProcessing === true">Y</option>
               </select>
             </div>
+            <label for="finished" class="col-md-2 control-label" title="Finish"><span class="glyphicon glyphicon-thumbs-up"></span>&nbsp;Finish</label>
+            <div class="form-group col-md-2">
+              <select class="form-control" name="modifyTask_isFinished" id="finished" ng-model="editTask.isFinish" required>
+                <option value="false" ng-selected="editTask.isFinish === false">N</option>
+                <option value="true" ng-selected="editTask.isFinish === true">Y</option>
+              </select>
+            </div>
           </div>
 
           <div class="form-group col-md-12">
-            <label for="up" class="col-md-6 control-label">Up </label>
+            <label for="up" class="col-md-6 control-label"><font color="red">*&nbsp;</font>Up </label>
             <div class="form-group col-md-6">
               <div class="input-group">
                 <span class="input-group-addon">PDT</span>
@@ -131,7 +131,7 @@
           </div>
 
           <div class="form-group col-md-6">
-            <label for="s2sMins" class="col-md-6 control-label">Start to Start Minutes</label>
+            <label for="s2sMins" class="col-md-6 control-label"><font color="red">*&nbsp;</font>Start to Start Minutes</label>
             <div class="form-group col-md-6">
               <input type="number" class="form-control" id="s2sMins" name="modifyTask_s2sMins" ng-model="editTask.s2sMins" value="{{ editTask.s2sMins }}">
             </div>
@@ -146,7 +146,7 @@
           <hr class="clearfix col-md-12">
 
           <div class="form-group col-md-3">
-            <label for="expectedStartTime" class="control-label require_field">Expect Start </label>
+            <label for="expectedStartTime" class="control-label require_field"><font color="red">*&nbsp;</font>Expect Start </label>
             <div class="form-group">
               <input type="text" class="form-control" size="10" id="expectedStartDate" name="modifyTask_expectedStartDate" placeholder="yyyy/MM/dd" ng-model="editTask.expectedStartTime" value="{{ editTask.expectedStartTime | date: 'yyyy/MM/dd' }}" data-autoclose="1" data-date-format="yyyy/MM/dd" model-date-format="yyyy/MM/dd" container="body" bs-datepicker>
             </div>
@@ -155,7 +155,7 @@
             </div>
           </div>
           <div class="form-group col-md-3">
-            <label for="expectedSetupFinishTime" class="control-label">Expect Setup Finish </label>
+            <label for="expectedSetupFinishTime" class="control-label"><font color="red">*&nbsp;</font>Expect Setup Finish </label>
             <div class="form-group">
               <input type="text" class="form-control" size="10" id="expectedSetupFinishDate" name="modifyTask_expectedSetupFinishDate" placeholder="YYYY/MM/DD" ng-model="editTask.expectedSetupFinishTime" value="{{ editTask.expectedSetupFinishTime | date: 'yyyy/MM/dd' }}" ng-required="editTask.inProcessing === true || editTask.isPin === true" data-autoclose="1" data-date-format="yyyy/MM/dd" model-date-format="yyyy/MM/dd" container="body" bs-datepicker>
             </div>
@@ -165,7 +165,7 @@
           </div>
 
           <div class="form-group col-md-3">
-            <label for="expectedFinishTime" class="control-label require_field">Expect Production Finish </label>
+            <label for="expectedFinishTime" class="control-label require_field"><font color="red">*&nbsp;</font>Expect Production Finish </label>
             <div class="form-group">
               <input type="text" class="form-control" size="10" id="expectedFinishDate" name="modifyTask_expectedFinishDate" placeholder="YYYY/MM/DD" ng-model="editTask.expectedFinishTime" value="{{ editTask.expectedFinishTime | date: 'yyyy/MM/dd' }}" ng-required="editTask.inProcessing === true || editTask.isPin === true" data-autoclose="1" data-date-format="yyyy/MM/dd" model-date-format="yyyy/MM/dd" container="body" bs-datepicker>
             </div>
@@ -174,7 +174,7 @@
             </div>
           </div>
           <div class="form-group col-md-3">
-            <label for="quantity" class="control-label">Expect Quantity </label>
+            <label for="quantity" class="control-label"><font color="red">*&nbsp;</font>Expect Quantity </label>
             <div class="form-group">
               <input type="number" class="form-control" id="quantity" name="modifyTask_quantity" placeholder="Expect Quantity"
                  ng-model="editTask.quantity" value="{{ editTask.quantity }}" ng-required="editTask.inProcessing === true || editTask.isPin === true">
