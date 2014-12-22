@@ -119,9 +119,10 @@ angular.module('HarvardApp')
                 api.core.on.ready($scope, logReadyEvent);
 
                 api.tasks.on.add($scope, addEventName('tasks.on.add', logTaskEvent));
-                api.tasks.on.change($scope, addEventName('tasks.on.change', logTaskEvent));
                 api.tasks.on.rowChange($scope, addEventName('tasks.on.rowChange', logTaskEvent));
                 api.tasks.on.remove($scope, addEventName('tasks.on.remove', logTaskEvent));
+
+                api.tasks.on.change($scope, addEventName('tasks.on.change', contextMenuEvent));
 
                 if (api.tasks.on.moveBegin) {
                     api.tasks.on.moveBegin($scope, addEventName('tasks.on.moveBegin', moveTaskBeginEvent));
@@ -1280,6 +1281,7 @@ angular.module('HarvardApp')
     };
     var contextMenuEvent = function(eventName, data) {
         var key;
+        $log.info(data);
         if (data.type !== undefined) {
             switch(data.type) {
                 case 'edit':
