@@ -11,9 +11,9 @@ angular.module('HarvardApp')
     .service('Matt', ['$http', '$timeout', '$log', '$location', 'moment', function Matt($http, $timeout, $log, $location, moment) {
         var configuration = {
             // 奇怪$location.path()沒有用, 所以先用absUrl(), 7是’http://‘的長度
-            serverLocation: '',
+            serverLocation: '/' + $location.absUrl().substr(7).split('/')[1],
             jsLocationPrefix: '/',
-            viewsFolder: '/views',
+            viewsFolder: '/resources/Gantt-v2/views',
             // 讀取 Gantt 資料 URL
             getGanttUrl: '/company/scheduler/gantt/machines',
             // 儲存或是運算 Gantt URL
