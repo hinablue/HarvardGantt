@@ -8,7 +8,7 @@
  * Controller of the HarvardApp
  */
 angular.module('HarvardApp')
-.controller('MainCtrl', ['$scope', '$document', '$compile', '$element', '$http', '$timeout', '$log', '$modal', '$alert', '$dropdown', 'ganttUtils', 'GanttObjectModel', 'Coloured', 'Harvard', 'Matt', 'TaskEditor', 'ganttMouseOffset', 'ganttDebounce', 'moment', function($scope, $document, $compile, $element, $http, $timeout, $log, $modal, $alert, $dropdown, utils, ObjectModel, Coloured, Harvard, Matt, TaskEditor, mouseOffset, debounce, moment) {
+.controller('MainCtrl', ['$scope', '$window', '$document', '$compile', '$element', '$http', '$timeout', '$log', '$modal', '$alert', '$dropdown', 'ganttUtils', 'GanttObjectModel', 'Coloured', 'Harvard', 'Matt', 'TaskEditor', 'ganttMouseOffset', 'ganttDebounce', 'moment', function($scope, $window, $document, $compile, $element, $http, $timeout, $log, $modal, $alert, $dropdown, utils, ObjectModel, Coloured, Harvard, Matt, TaskEditor, mouseOffset, debounce, moment) {
     var objectModel, dataToRemove, saveGanttModal, _movingTask;
     var editTaskModalOptions = TaskEditor.editTaskModalOptions;
     var multipleTaskSelected = [];
@@ -104,6 +104,16 @@ angular.module('HarvardApp')
             var task = TaskEditor.taskTemplate;
             task.id = utils.randomUuid();
             task.oid = task.id;
+            task.movable = {
+                enabled: function() {
+                    return $scope.options.readOnly === false;
+                },
+                allowMoving: function() {
+                    return $scope.options.readOnly === false;
+                },
+                allowResizing: false,
+                allowRowSwitching: false
+            };
 
             if (false === ('t'+task.id in $scope.tasksMap)) {
                 $scope.tasksMap['t'+task.id] = task;
@@ -173,7 +183,7 @@ angular.module('HarvardApp')
                                 multipleTaskSelected = [];
                                 directiveScope.task.model.highlight = !directiveScope.task.model.highlight;
                             }
-                            $scope.$digest();
+                            directiveScope.$digest();
 
                             logTaskEvent('task-click', directiveScope.task);
                         });
@@ -338,7 +348,6 @@ angular.module('HarvardApp')
 
         return 40;
     };
-
     $scope.$watch('departmentMenuDefault', function(newValue, oldValue) {
         $scope.subDepartmentMenu = ['Select'];
         $scope.subDepartmentMenuDefault = 'Select';
@@ -364,6 +373,47 @@ angular.module('HarvardApp')
             $scope.options.filterRow = newValue;
         }
     });
+    $scope.paginationFilter = function(page, direction) {
+        page = parseInt(page, 10);
+        direction = parseInt(direction, 10);
+
+        if (page === 0) {
+            if (direction === 1) {
+                if ($scope.currentPage < $scope.pagination.length) {
+                    $scope.currentPage++;
+
+                    $scope.options.filterRow = '-Page ' + ('00000' + $scope.currentPage.toString()).substr(-5);
+                }
+            } else {
+                if ($scope.currentPage > 1) {
+                    $scope.currentPage--;
+
+                    $scope.options.filterRow = '-Page ' + ('00000' + $scope.currentPage.toString()).substr(-5);
+                }
+            }
+        } else {
+            if ($scope.currentPage !== page) {
+                $scope.currentPage = page;
+                $scope.options.filterRow = '-Page ' + ('00000' + $scope.currentPage.toString()).substr(-5);
+            }
+        }
+    };
+
+    $scope.$watch('options.readOnly', function(newValue, oldValue) {
+        if (false === angular.equals(newValue, oldValue)) {
+            // if (newValue === true) {
+            //     for (var i = 0, k = Object.key($scope.tasksMap), l = k.length; i < l; i++) {
+            //         $scope.tasksMap[k[i]].movable.enabled = false;
+            //     }
+            // } else {
+            //     for (var i = 0, k = Object.key($scope.tasksMap), l = k.length; i < l; i++) {
+            //         $scope.tasksMap[k[i]].movable.enabled = true;
+            //     }
+            // }
+        }
+    });
+
+    // Task Editor
     var editTaskHandleError = function(response) {
         var errorMessages = 'Something error from server.';
         if (response.data !== null) {
@@ -748,32 +798,6 @@ angular.module('HarvardApp')
             }
         }
     });
-
-    $scope.paginationFilter = function(page, direction) {
-        page = parseInt(page, 10);
-        direction = parseInt(direction, 10);
-
-        if (page === 0) {
-            if (direction === 1) {
-                if ($scope.currentPage < $scope.pagination.length) {
-                    $scope.currentPage++;
-
-                    $scope.options.filterRow = '-Page ' + ('00000' + $scope.currentPage.toString()).substr(-5);
-                }
-            } else {
-                if ($scope.currentPage > 1) {
-                    $scope.currentPage--;
-
-                    $scope.options.filterRow = '-Page ' + ('00000' + $scope.currentPage.toString()).substr(-5);
-                }
-            }
-        } else {
-            if ($scope.currentPage !== page) {
-                $scope.currentPage = page;
-                $scope.options.filterRow = '-Page ' + ('00000' + $scope.currentPage.toString()).substr(-5);
-            }
-        }
-    };
     $scope.closeTaskEditor = function() {
         $scope.options.draw = false;
         if ($scope.editTask !== undefined) {
@@ -845,9 +869,9 @@ angular.module('HarvardApp')
                     productId: $scope.editTask.productId
                 };
                 task.delete = false;
-                task.finished = $scope.editTask.isFinish;
-                task.pin = $scope.editTask.isPin;
-                task.inProcessing = $scope.editTask.inProcessing;
+                task.finished = $scope.editTask.isFinish === '1' ? true : false;
+                task.pin = $scope.editTask.isPin === '1' ? true : false;
+                task.inProcessing = $scope.editTask.inProcessing === '1' ? true : false;
                 task.previousOperation = $scope.editTask.previousTaskId;
                 task.nextOperations = [$scope.editTask.nextTaskId];
                 task.runOnMachineId = $scope.editTask.runOnMachineId;
@@ -872,13 +896,17 @@ angular.module('HarvardApp')
                 task.actualSetupFinishTime = $scope.editTask.actualSetupFinishTime;
                 task.actualFinishTime = $scope.editTask.actualFinishTime;
                 task.actualQuantity = $scope.editTask.actualQuantity;
-                task.tooltip = (function(rowIndex) {
-                    var tooltip = [];
-                    for (var i = 0, l = objectModel.api.gantt.rowsManager.rows[rowIndex].model.title.length; i < l; i++) {
-                        tooltip.push('N');
-                    }
-                    return tooltip;
-                })(rowIndex);
+                if ($scope.editTask.tooltip.length === 0) {
+                    task.tooltip = (function(rowIndex) {
+                        var tooltip = [];
+                        for (var i = 0, l = objectModel.api.gantt.rowsManager.rows[rowIndex].model.title.length; i < l; i++) {
+                            tooltip.push('N');
+                        }
+                        return tooltip;
+                    })(rowIndex);
+                } else {
+                    task.tooltip = $scope.editTask.tooltip;
+                }
 
                 $scope.editTask.check = true;
                 if ($scope.editTask.drawTask === false) {
@@ -912,6 +940,7 @@ angular.module('HarvardApp')
         }
     };
 
+    // Save or Calculate buttons
     $scope.saveGanttData = function(type) {
         var mattCallback = Matt.saveOrCalcGanttData(), machine = {}, machines = [];
         for (var i = 0, m = $scope.data, l = m.length; i < l; i++) {
@@ -1129,12 +1158,17 @@ angular.module('HarvardApp')
                         machineShiftLabel: t[j].machineShiftLabel,
                         new: t[j].new,
                         highlight: false,
-                        movable: TaskEditor.taskTemplate.movable
+                        movable: {
+                            enabled: function() {
+                                return $scope.options.readOnly === false;
+                            },
+                            allowMoving: function() {
+                                return $scope.options.readOnly === false;
+                            },
+                            allowResizing: false,
+                            allowRowSwitching: false
+                        }
                     };
-
-                    if (('t'+t[j].id in $scope.tasksMap) === false) {
-                        $scope.tasksMap['t'+t[j].id] = task;
-                    }
 
                     // Prepare processesMap
                     if (('p'+t[j].process.id in $scope.processesMap) === false) {
@@ -1256,85 +1290,6 @@ angular.module('HarvardApp')
         $scope.data = [];
     };
 
-    // Visual two way binding.
-    $scope.live = {};
-
-    // var debounceValue = 1000;
-
-    // var listenTaskJson = debounce(function(taskJson) {
-    //     if (taskJson !== undefined) {
-    //         var task = angular.fromJson(taskJson);
-    //         objectModel.cleanTask(task);
-    //         var model = $scope.live.task;
-    //         angular.extend(model, task);
-    //     }
-    // }, debounceValue);
-    // $scope.$watch('live.taskJson', listenTaskJson);
-
-    // var listenRowJson = debounce(function(rowJson) {
-    //     if (rowJson !== undefined) {
-    //         var row = angular.fromJson(rowJson);
-    //         objectModel.cleanRow(row);
-    //         var tasks = row.tasks;
-
-    //         delete row.tasks;
-    //         var rowModel = $scope.live.row;
-
-    //         angular.extend(rowModel, row);
-
-    //         var newTasks = {};
-    //         var i, l;
-
-    //         if (tasks !== undefined) {
-    //             for (i = 0, l = tasks.length; i < l; i++) {
-    //                 objectModel.cleanTask(tasks[i]);
-    //             }
-
-    //             for (i = 0, l = tasks.length; i < l; i++) {
-    //                 newTasks[tasks[i].id] = tasks[i];
-    //             }
-
-    //             if (rowModel.tasks === undefined) {
-    //                 rowModel.tasks = [];
-    //             }
-    //             for (i = rowModel.tasks.length - 1; i >= 0; i--) {
-    //                 var existingTask = rowModel.tasks[i];
-    //                 var newTask = newTasks[existingTask.id];
-    //                 if (newTask === undefined) {
-    //                     rowModel.tasks.splice(i, 1);
-    //                 } else {
-    //                     objectModel.cleanTask(newTask);
-    //                     angular.extend(existingTask, newTask);
-    //                     delete newTasks[existingTask.id];
-    //                 }
-    //             }
-    //         } else {
-    //             delete rowModel.tasks;
-    //         }
-
-    //         angular.forEach(newTasks, function(newTask) {
-    //             rowModel.tasks.push(newTask);
-    //         });
-    //     }
-    // }, debounceValue);
-    // $scope.$watch('live.rowJson', listenRowJson);
-
-    // $scope.$watchCollection('live.task', function(task) {
-    //     $scope.live.taskJson = angular.toJson(task, true);
-    //     $scope.live.rowJson = angular.toJson($scope.live.row, true);
-    // });
-
-    // $scope.$watchCollection('live.row', function(row) {
-    //     $scope.live.rowJson = angular.toJson(row, true);
-    //     if (row !== undefined && row.tasks.indexOf($scope.live.task) < 0) {
-    //         $scope.live.task = (row.tasks === undefined || row.tasks.length <= 0) ? undefined : row.tasks[0];
-    //     }
-    // });
-
-    // $scope.$watchCollection('live.row.tasks', function() {
-    //     $scope.live.rowJson = angular.toJson($scope.live.row, true);
-    // });
-
     var drawResizeEndEvent = function(eventName, task) {
         $scope.editTask = TaskEditor.editTaskTemplate;
         $scope.editTask.id = task.model.id;
@@ -1352,69 +1307,83 @@ angular.module('HarvardApp')
         var key;
         if (data.type !== undefined) {
             switch(data.type) {
+                case 'pin':
+                    if ($scope.options.readOnly === false) {
+                        data.task.model.pin = !data.task.model.pin;
+                    }
+                break;
                 case 'edit':
-                    // Calculate the expected setup finish datetime.
-                    var _setupFinishTime = moment(data.task.model.expectedSetupFinishTime) + (data.task.model.from - moment(data.task.model.expectedStartTime));
-                    _setupFinishTime = moment(_setupFinishTime).format('YYYY/MM/DD HH:mm');
+                    if ($scope.options.readOnly === false) {
+                        // Calculate the expected setup finish datetime.
+                        var _setupFinishTime = moment(data.task.model.expectedSetupFinishTime) + (data.task.model.from - moment(data.task.model.expectedStartTime));
+                        _setupFinishTime = moment(_setupFinishTime).format('YYYY/MM/DD HH:mm');
 
-                    $scope.editTask = {
-                        id: data.task.model.id,
-                        rowId: data.task.row.id,
-                        poNo: data.task.model.job.poNo,
-                        fuzzyPoNo: data.task.model.job.poNo,
-                        processId: data.task.model.process.id,
-                        productId: data.task.model.process.productId,
-                        comboId: data.task.model.job.comboId,
-                        processingType: data.task.model.processingType,
-                        operationCode: data.task.model.operationCode,
-                        rounds: data.task.model.rounds,
-                        priority: data.task.model.priority,
-                        isPin: data.task.model.pin,
-                        isFinish: data.task.model.finished,
-                        inProcessing: data.task.model.inProcessing,
-                        runOnMachineId: data.task.model.runOnMachineId,
-                        actualRunOnMachineId: data.task.model.actualRunOnMachineId,
-                        machineShiftLabel: data.task.model.machineShiftLabel,
-                        parallelCode: data.task.model.parallelCode,
-                        pendingMinutes: data.task.model.pendingMinutes,
-                        capacity: data.task.model.capacity,
-                        face: data.task.model.face,
-                        part: data.task.model.part,
-                        up: data.task.model.up,
-                        sheetUp: data.task.model.sheetUp,
-                        s2sMins: data.task.model.s2sMins,
-                        timeclockEmployeeId: data.task.model.timeclockEmployeeId,
-                        expectedMoldId: data.task.model.expectedMoldId,
-                        expectedStartTime: data.task.model.from.format('YYYY/MM/DD HH:mm'),
-                        expectedSetupFinishTime: _setupFinishTime,
-                        expectedFinishTime: data.task.model.to.format('YYYY/MM/DD HH:mm'),
-                        quantity: data.task.model.quantity,
-                        actualStartTime: data.task.model.actualStartTime,
-                        actualSetupFinishTime: data.task.model.actualSetupFinishTime,
-                        actualFinishTime: data.task.model.actualFinishTime,
-                        actualQuantity: data.task.model.actualQuantity,
-                        previousTask: 0,
-                        nextTask: 0,
-                        modifyType: data.type,
-                        color: data.task.model.color,
-                        drawTask: false,
-                        modal: undefined,
-                        check: false
-                    };
-                    $scope.editTask.modal = $modal(editTaskModalOptions);
+                        $scope.editTask = {
+                            id: data.task.model.id,
+                            rowId: data.task.row.model.id,
+                            poNo: data.task.model.job.poNo,
+                            fuzzyPoNo: data.task.model.job.poNo,
+                            processId: data.task.model.process.id,
+                            productId: data.task.model.process.productId,
+                            comboId: data.task.model.job.comboId,
+                            processingType: data.task.model.processingType,
+                            operationCode: data.task.model.operationCode,
+                            rounds: data.task.model.rounds,
+                            priority: data.task.model.priority,
+                            isPin: data.task.model.pin ? '1' : '0',
+                            isFinish: data.task.model.finished ? '1' : '0',
+                            inProcessing: data.task.model.inProcessing ? '1' : '0',
+                            runOnMachineId: data.task.model.runOnMachineId,
+                            actualRunOnMachineId: data.task.model.actualRunOnMachineId,
+                            machineShiftLabel: data.task.model.machineShiftLabel,
+                            parallelCode: data.task.model.parallelCode,
+                            pendingMinutes: data.task.model.pendingMinutes,
+                            capacity: data.task.model.capacity,
+                            face: data.task.model.face,
+                            part: data.task.model.part,
+                            up: data.task.model.up,
+                            sheetUp: data.task.model.sheetUp,
+                            s2sMins: data.task.model.s2sMins,
+                            timeclockEmployeeId: data.task.model.timeclockEmployeeId,
+                            expectedMoldId: data.task.model.expectedMoldId,
+                            expectedStartTime: data.task.model.from.format('YYYY/MM/DD HH:mm'),
+                            expectedSetupFinishTime: _setupFinishTime,
+                            expectedFinishTime: data.task.model.to.format('YYYY/MM/DD HH:mm'),
+                            quantity: data.task.model.quantity,
+                            actualStartTime: data.task.model.actualStartTime,
+                            actualSetupFinishTime: data.task.model.actualSetupFinishTime,
+                            actualFinishTime: data.task.model.actualFinishTime,
+                            actualQuantity: data.task.model.actualQuantity,
+                            previousTask: 0,
+                            nextTask: 0,
+                            tooltip: data.task.model.tooltip,
+                            modifyType: data.type,
+                            color: data.task.model.color,
+                            drawTask: false,
+                            modal: undefined,
+                            check: false
+                        };
+                        $scope.editTask.modal = $modal(editTaskModalOptions);
+                    }
                 break;
                 case 'create':
-                    $scope.editTask = TaskEditor.editTaskTemplate;
-                    $scope.editTask.id = utils.randomUuid();
-                    $scope.editTask.rowId = data.task.id;
-                    $scope.editTask.runOnMachineId = data.task.id;
-                    $scope.editTask.modifyType = data.type;
-                    $scope.editTask.priority = Object.keys($scope.tasksMap).length + 1;
-                    $scope.editTask.modal = $modal(editTaskModalOptions);
+                    if ($scope.options.readOnly === false) {
+                        $scope.editTask = TaskEditor.editTaskTemplate;
+                        $scope.editTask.id = utils.randomUuid();
+                        $scope.editTask.rowId = data.task.id;
+                        $scope.editTask.runOnMachineId = data.task.id;
+                        $scope.editTask.modifyType = data.type;
+                        $scope.editTask.priority = Object.keys($scope.tasksMap).length + 1;
+                        $scope.editTask.modal = $modal(editTaskModalOptions);
+                    }
                 break;
                 case 'delete':
-                    data.task.model.delete = true;
-                    data.task.row.removeTask(data.task.model.id, true, false);
+                    if ($scope.options.readOnly === false) {
+                        if ($window.confirm('Are you sure to delete this task?') === true) {
+                            data.task.model.delete = true;
+                            data.task.row.removeTask(data.task.model.id, true, false);
+                        }
+                    }
                 break;
                 case 'zoomIn':
                     key = $scope.defaultScale.indexOf($scope.options.scale);
@@ -1493,6 +1462,15 @@ angular.module('HarvardApp')
     // Event handler
     var logTaskEvent = function(eventName, task) {
         if (eventName === 'tasks.on.add') {
+            if (task.model.color === '') {
+                task.model.color = '#AA8833';
+                task.model.textColor = Coloured.isDarkColoured('#AA8833') ? '#ffffff' : '#000000';
+            }
+            if (task.model.tooltip.length < task.row.model.title.length) {
+                for (var i = task.model.tooltip.length, l = task.row.model.title.length; i < l; i++) {
+                    task.model.tooltip.push('N');
+                }
+            }
             $scope.tasksMap['t' + task.model.id] = task;
         }
         if (eventName === 'task-click') {
@@ -1511,13 +1489,15 @@ angular.module('HarvardApp')
         if (data.type !== undefined) {
             switch(data.type) {
                 case 'create':
-                    $scope.editTask = TaskEditor.editTaskTemplate;
-                    $scope.editTask.id = utils.randomUuid();
-                    $scope.editTask.rowId = data.row.model.id;
-                    $scope.editTask.runOnMachineId = data.row.model.id;
-                    $scope.editTask.modifyType = data.type;
-                    $scope.editTask.priority = Object.keys($scope.tasksMap).length + 1;
-                    $scope.editTask.modal = $modal(editTaskModalOptions);
+                    if ($scope.options.readOnly === false) {
+                        $scope.editTask = TaskEditor.editTaskTemplate;
+                        $scope.editTask.id = utils.randomUuid();
+                        $scope.editTask.rowId = data.row.model.id;
+                        $scope.editTask.runOnMachineId = data.row.model.id;
+                        $scope.editTask.modifyType = data.type;
+                        $scope.editTask.priority = Object.keys($scope.tasksMap).length + 1;
+                        $scope.editTask.modal = $modal(editTaskModalOptions);
+                    }
                 break;
                 case 'zoomIn':
                     key = $scope.defaultScale.indexOf($scope.options.scale);

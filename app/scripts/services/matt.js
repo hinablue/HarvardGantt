@@ -11,9 +11,9 @@ angular.module('HarvardApp')
     .service('Matt', ['$http', '$timeout', '$log', '$location', 'moment', function Matt($http, $timeout, $log, $location, moment) {
         var configuration = {
             // 奇怪$location.path()沒有用, 所以先用absUrl(), 7是’http://‘的長度
-            serverLocation: '/' + $location.absUrl().substr(7).split('/')[1],
+            serverLocation: '',
             jsLocationPrefix: '/',
-            viewsFolder: '/resources/Gantt-v2/views',
+            viewsFolder: '/views',
             // 讀取 Gantt 資料 URL
             getGanttUrl: '/company/scheduler/gantt/machines',
             // 儲存或是運算 Gantt URL
@@ -149,19 +149,19 @@ angular.module('HarvardApp')
 				dataChecking = false;
 				errorMessage.push('Some thing is error');
 			}
-			if (taskData.inProcessing === true || taskData.inProcessing === true) {
+			if (taskData.inProcessing === '1' || taskData.inProcessing === '1') {
 				if (!taskData.actualStartTime) {
 					dataChecking = false;
 					errorMessage.push('When [Pending] is Yes, [Actual Start] must not be empty');
 				} else if(taskData.actualSetupFinishTime && taskData.actualStartTime > taskData.actualSetupFinishTime) {
 					dataChecking = false;
 					errorMessage.push('When [Pending] is Yes, [Actual Setup Finish] must be greater then [Actual Start]');
-				} else if(today > new Date(taskData.actualStartTime)) {
+				} else if(today > taskData.actualStartTime) {
 					dataChecking = false;
 					errorMessage.push('When [Pending] is Yes, [Actual Start] can\'t be before now');
 				}
 			}
-			if (taskData.isFinish === true || taskData.isFinish === true) {
+			if (taskData.isFinish === '1' || taskData.isFinish === '1') {
 				if(!taskData.actualStartTime || !taskData.actualSetupFinishTime || !taskData.actualFinishTime) {
 					if (!taskData.actualStartTime) {
 						dataChecking = false;
@@ -175,15 +175,18 @@ angular.module('HarvardApp')
 						dataChecking = false;
 						errorMessage.push('When [Finish] is Yes, [Actual Production Finish] must not be empty');
 					}
-				} else if(today > new Date(taskData.actualStartTime)) {
+				} else if(today > taskData.actualStartTime) {
 					dataChecking = false;
 					errorMessage.push('When [Finish] is Yes, [Actual Start] can\'t be before now');
-				} else if(taskData.actualStartTime <= taskData.actualSetupFinishTime && taskData.actualSetupFinishTime <= taskData.actualFinishTime) {
+				} else if(taskData.actualStartTime > taskData.actualSetupFinishTime) {
+					dataChecking = false;
+					errorMessage.push('[Actual Setup Finish] must be greater then [Actual Start]');
+				} else if(taskData.actualSetupFinishTime > taskData.actualFinishTime) {
 					dataChecking = false;
 					errorMessage.push('[Actual Production Finish] must be greater then [Actual Setup Finish] and [Actual Start]');
 				}
 			}
-			if(taskData.isFinish !== true && taskData.inProcessing !== true && taskData.isFinish !== true && taskData.inProcessing !== true) {
+			if(taskData.isFinish !== '1' && taskData.inProcessing !== '1' && taskData.isFinish !== '1' && taskData.inProcessing !== '1') {
 				if (taskData.actualStartTime) {
 					dataChecking = false;
 					errorMessage.push('When [Pending] & [Finish] is No, [Actual Start] must be empty');

@@ -1328,7 +1328,9 @@ angular.module('gantt.tooltips.templates', []).run(['$templateCache', function($
         '        QTY: {{task.model.quantity}}</br>\n' +
         '        Duration: {{((task.model.to - task.model.from) / 1000 / 3600).toFixed(2)}} (hrs)</br>\n' +
         '        <small>\n' +
-        '            {{task.isMilestone() === true && (getFromLabel()) || (getFromLabel() + \' - \' + getToLabel())}}\n' +
+        '            {{task.isMilestone() === true && (getFromLabel()) || (getFromLabel() + \' - \' + getToLabel())}}<br>\n' +
+        '            <i class="task-tootip-icon glyphicon glyphicon-pushpin" ng-if="task.model.pin"></i>Pined&nbsp;\n' +
+        '            <i class="task-tootip-icon glyphicon glyphicon-minus-sign" ng-if="task.model.finished"></i>Finished&nbsp;\n' +
         '        </small>\n' +
         '    </div>\n' +
         '</div>\n' +

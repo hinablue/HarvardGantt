@@ -59,8 +59,8 @@ angular.module('HarvardApp')
                 new: true,
                 highlight: false,
                 movable: {
-                    enabled: true,
-                    allowMoving: true,
+                    enabled: false,
+                    allowMoving: false,
                     allowResizing: false,
                     allowRowSwitching: false
                 }
@@ -74,9 +74,9 @@ angular.module('HarvardApp')
                 operationCode: '',
                 rounds: 0,
                 priority: 0,
-                isPin: false,
-                isFinish: false,
-                inProcessing: false,
+                isPin: '0',
+                isFinish: '0',
+                inProcessing: '0',
                 machineShiftLabel: null,
                 parallelCode: null,
                 capacity: 1,
@@ -111,6 +111,7 @@ angular.module('HarvardApp')
                 processList: [],
                 previousTask: [],
                 nextTask: [],
+                tooltip: [],
                 previousTaskId: 0,
                 nextTaskId: 0,
                 check: false,

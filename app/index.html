@@ -75,8 +75,8 @@
 
                                                     <div class="form-group text-center">
                                                         <label class="control-label"><i class="fa fa-pencil-square-o"></i> Edit</label><br>
-                                                        <button type="button" class="btn btn-default" ng-model="groupTask" bs-checkbox>Group</button>
-                                                        <button type="button" class="btn btn-default" ng-model="options.draw" bs-checkbox>Draw</button>
+                                                        <button type="button" class="btn btn-default" ng-model="groupTask" ng-disabled="options.readOnly === true" bs-checkbox>Group</button>
+                                                        <button type="button" class="btn btn-default" ng-model="options.draw" ng-disabled="options.readOnly === true" bs-checkbox>Draw</button>
                                                         <button type="button" class="btn btn-default" ng-model="options.readOnly" bs-checkbox>Read Only</button>
                                                     </div>
 

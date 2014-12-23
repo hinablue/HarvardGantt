@@ -98,22 +98,22 @@
             <label for="pin" class="col-md-2 control-label" title="Pin"><span class="glyphicon glyphicon-pushpin"></span>&nbsp;Pin</label>
             <div class="form-group col-md-2">
               <select class="form-control" name="modifyTask_isPin" id="pin" ng-model="editTask.isPin" required>
-                <option value="false" ng-selected="editTask.isPin === false">N</option>
-                <option value="true" ng-selected="editTask.isPin === true">Y</option>
+                <option value="0" ng-selected="editTask.isPin === '0'">N</option>
+                <option value="1" ng-selected="editTask.isPin === '1'">Y</option>
               </select>
             </div>
             <label for="inProcessing" class="col-md-2 control-label" title="Pending"><span class="glyphicon glyphicon-transfer"></span>&nbsp;Pending</label>
             <div class="form-group col-md-2">
               <select class="form-control" name="modifyTask_inProcessing" id="inProcessing" ng-model="editTask.inProcessing" required>
-                <option value="false" ng-selected="editTask.inProcessing === false">N</option>
-                <option value="true" ng-selected="editTask.inProcessing === true">Y</option>
+                <option value="0" ng-selected="editTask.inProcessing === '0'">N</option>
+                <option value="1" ng-selected="editTask.inProcessing === '1'">Y</option>
               </select>
             </div>
             <label for="finished" class="col-md-2 control-label" title="Finish"><span class="glyphicon glyphicon-thumbs-up"></span>&nbsp;Finish</label>
             <div class="form-group col-md-2">
               <select class="form-control" name="modifyTask_isFinished" id="finished" ng-model="editTask.isFinish" required>
-                <option value="false" ng-selected="editTask.isFinish === false">N</option>
-                <option value="true" ng-selected="editTask.isFinish === true">Y</option>
+                <option value="0" ng-selected="editTask.isFinish === '0'">N</option>
+                <option value="1" ng-selected="editTask.isFinish === '1'">Y</option>
               </select>
             </div>
           </div>

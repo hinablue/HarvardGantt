@@ -4314,12 +4314,9 @@ Github: https://github.com/angular-gantt/angular-gantt.git
         var builder = new Builder('ganttTaskForeground');
         builder.controller = function($scope) {
         	$scope.deleteTask = function() {
-        		if ($window.confirm('Are you sure to delete this task?') === true) {
-                    $scope.task.rowsManager.gantt.api.tasks.raise.change({task: $scope.task, type: 'delete'});
-        		}
+                $scope.task.rowsManager.gantt.api.tasks.raise.change({task: $scope.task, type: 'delete'});
         	};
             $scope.switchPin = function() {
-                $scope.task.model.isPin = !$scope.task.model.isPin;
                 $scope.task.rowsManager.gantt.api.tasks.raise.change({task: $scope.task, type: 'pin'});
             };
             $scope.editTask = function() {
@@ -4841,7 +4838,7 @@ angular.module('gantt.templates', []).run(['$templateCache', function($templateC
         '            <div class="dropdown position-fixed" id="taskmenu-{{task.model.id}}">\n' +
         '                <ul class="dropdown-menu" role="menu">\n' +
         '                    <li>\n' +
-        '                        <a class="pointer" role="menuitem" tabindex="1" ng-click="switchPin()">{{ task.model.isPin === true && \'Pined\' || \'Pin\' }}</a>\n' +
+        '                        <a class="pointer" role="menuitem" tabindex="1" ng-click="switchPin()">{{ task.model.pin === true && \'Pined\' || \'Pin\' }}</a>\n' +
         '                    </li>\n' +
         '                    <li>\n' +
         '                        <a class="pointer" role="menuitem" tabindex="2" ng-click="editTask()">Edit</a>\n' +
