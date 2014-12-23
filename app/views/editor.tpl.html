@@ -40,13 +40,13 @@
 
           <div class="form-group col-md-12" ng-if="editTask.modifyType === 'create'">
             <label for="previousOperation" class="col-md-3 control-label">Previous Task </label>
-            <div class="form-group col-md-3">
+            <div class="form-group col-md-9">
               <div class="input-group">
                 <button type="button" class="form-control btn btn-default" name="modifyTask_previousTask" ng-model="editTask.previousTaskId" ng-options="task.value as task.label for task in editTask.previousTask" required bs-select></button>
               </div>
             </div>
             <label for="nextOperation" class="col-md-3 control-label">Next Task </label>
-            <div class="form-group col-md-3">
+            <div class="form-group col-md-9">
               <div class="input-group">
                 <button type="button" class="form-control btn btn-default" name="modifyTask_nextTask" ng-model="editTask.nextTaskId" ng-options="task.value as task.label for task in editTask.nextTask" required bs-select></button>
               </div>
@@ -80,7 +80,7 @@
             <label for="priority" class="col-md-6 control-label"><font color="red">*&nbsp;</font>Priority </label>
             <div class="form-group col-md-6">
               <div class="input-group">
-                <input type="number" class="form-control" id="priority" name="modifyTask_priority" ng-model="editTask.priority" value="{{ editTask.priority }}" required>
+                <input type="number" class="form-control" id="priority" name="modifyTask_priority" ng-model="editTask.priority" value="{{ editTask.priority }}" required ng-disabled="editTask.modifyType === 'edit'">
               </div>
             </div>
           </div>
@@ -95,7 +95,7 @@
           <hr class="clearfix col-md-12">
 
           <div class="form-group col-md-12">
-            <label for="pin" class="col-md-2 control-label" title="Pin"><span class="glyphicon glyphicon-pushpin"></span> &nbsp;Pin</label>
+            <label for="pin" class="col-md-2 control-label" title="Pin"><span class="glyphicon glyphicon-pushpin"></span>&nbsp;Pin</label>
             <div class="form-group col-md-2">
               <select class="form-control" name="modifyTask_isPin" id="pin" ng-model="editTask.isPin" required>
                 <option value="false" ng-selected="editTask.isPin === false">N</option>
@@ -119,8 +119,8 @@
           </div>
 
           <div class="form-group col-md-12">
-            <label for="up" class="col-md-6 control-label"><font color="red">*&nbsp;</font>Up </label>
-            <div class="form-group col-md-6">
+            <label for="up" class="col-md-2 control-label"><font color="red">*&nbsp;</font>Up </label>
+            <div class="form-group col-md-10">
               <div class="input-group">
                 <span class="input-group-addon">PDT</span>
                 <input type="text" class="form-control" id="up" name="modifyTask_up" ng-model="editTask.up" value="{{ editTask.up }}" placeholder="Up" ng-required="editTask.processingType === 'GANG'">

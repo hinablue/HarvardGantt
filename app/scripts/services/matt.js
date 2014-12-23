@@ -128,7 +128,7 @@ angular.module('HarvardApp')
 				error_message.push('[Expect Quantity] must be greater then 0');
 			}
 
-			if(taskData.expectedStartTime && dataskDatata.expectedSetupFinishTime && taskData.expectedFinishTime &&
+			if(taskData.expectedStartTime && taskData.expectedSetupFinishTime && taskData.expectedFinishTime &&
 				!(taskData.expectedStartTime <= taskData.expectedSetupFinishTime && taskData.expectedSetupFinishTime <= taskData.expectedFinishTime)){
 				data_checking = false;
 				error_message.push('[Expect Production Finish] must be greater then [Expect Setup Finish] and [Expect Start]');
