@@ -127,7 +127,7 @@ angular.module('HarvardApp')
           'color': '#F0AD4E',
           'timeclockEmployeeId': null,
           'rounds': 1,
-          'taskGroup': '',
+          'taskGroup': 'F',
           'machineShiftLabel': '201412181445',
           'new': false
         },
@@ -192,7 +192,7 @@ angular.module('HarvardApp')
           'color': '#5CB85C',
           'timeclockEmployeeId': null,
           'rounds': 1,
-          'taskGroup': '',
+          'taskGroup': 'F',
           'machineShiftLabel': '201412181445',
           'new': false
         },
@@ -257,7 +257,7 @@ angular.module('HarvardApp')
           'color': '#5CB85C',
           'timeclockEmployeeId': null,
           'rounds': 2,
-          'taskGroup': '',
+          'taskGroup': 'F',
           'machineShiftLabel': '201412181445',
           'new': false
         }

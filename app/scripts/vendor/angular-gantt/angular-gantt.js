@@ -4316,7 +4316,6 @@ Github: https://github.com/angular-gantt/angular-gantt.git
         	$scope.deleteTask = function() {
         		if ($window.confirm('Are you sure to delete this task?') === true) {
                     $scope.task.rowsManager.gantt.api.tasks.raise.change({task: $scope.task, type: 'delete'});
-                    $scope.task.row.removeTask($scope.task.model.id, false, true);
         		}
         	};
             $scope.switchPin = function() {
@@ -4867,7 +4866,7 @@ angular.module('gantt.templates', []).run(['$templateCache', function($templateC
         '    <!-- Task content template -->\n' +
         '    <script type="text/ng-template" id="template/ganttTaskContent.tmpl.html">\n' +
         '        <div class="gantt-task-content-container" ng-class="task.model.classes">\n' +
-        '            <div class="gantt-task-content" ng-style="{color: \'{{task.model.textColor}}\', overflow: \'hidden\'}"><span>{{task.model.name}}({{task.model.id}})</span><span class="middle-placeholder"></span></div>\n' +
+        '            <div class="gantt-task-content" ng-style="{color: \'{{task.model.textColor}}\', overflow: \'hiddenj\'}"><span>{{task.model.name}}({{task.model.id}})</span><span class="middle-placeholder"></span></div>\n' +
         '        </div>\n' +
         '    </script>\n' +
         '\n' +
