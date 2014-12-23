@@ -9,7 +9,7 @@
  */
 angular.module('HarvardApp')
 .controller('MainCtrl', ['$scope', '$document', '$compile', '$element', '$http', '$timeout', '$log', '$modal', '$alert', '$dropdown', 'ganttUtils', 'GanttObjectModel', 'Coloured', 'Harvard', 'Matt', 'TaskEditor', 'ganttMouseOffset', 'ganttDebounce', 'moment', function($scope, $document, $compile, $element, $http, $timeout, $log, $modal, $alert, $dropdown, utils, ObjectModel, Coloured, Harvard, Matt, TaskEditor, mouseOffset, debounce, moment) {
-    var objectModel, dataToRemove, _movingTask;
+    var objectModel, dataToRemove, saveGanttModal, _movingTask;
     var editTaskModalOptions = TaskEditor.editTaskModalOptions;
     var multipleTaskSelected = [];
     editTaskModalOptions.scope = $scope;
@@ -144,11 +144,11 @@ angular.module('HarvardApp')
                 // api.side.on.resize($scope, addEventName('labels.on.resize', logLabelsEvent));
                 // api.side.on.resizeEnd($scope, addEventName('labels.on.resizeEnd', logLabelsEvent));
 
-                api.timespans.on.add($scope, addEventName('timespans.on.add', logTimespanEvent));
+                // api.timespans.on.add($scope, addEventName('timespans.on.add', logTimespanEvent));
                 api.columns.on.generate($scope, logColumnsGenerateEvent);
 
                 api.rows.on.filter($scope, logRowsFilterEvent);
-                api.tasks.on.filter($scope, logTasksFilterEvent);
+                // api.tasks.on.filter($scope, logTasksFilterEvent);
 
                 // When gantt is ready, load data.
                 // `data` attribute could have been used too.
@@ -174,6 +174,8 @@ angular.module('HarvardApp')
                                 directiveScope.task.model.highlight = !directiveScope.task.model.highlight;
                             }
                             $scope.$digest();
+
+                            logTaskEvent('task-click', directiveScope.task);
                         });
 
                         // element.bind('mousedown touchstart', function(event) {
@@ -232,9 +234,9 @@ angular.module('HarvardApp')
                         directiveScope.dragControlListeners = {
                             containment: '#machineTasks',
                             scrollableContainer: '#machineTasks',
-                            accept: function (sourceItemHandleScope, destSortableScope) {
-                                return true;
-                            },
+                            // accept: function (sourceItemHandleScope, destSortableScope) {
+                            //     return true;
+                            // },
                             orderChanged: function(event) {
                                 var target;
                                 if (event.dest.index === 0) {
@@ -443,7 +445,6 @@ angular.module('HarvardApp')
             break;
             case 'getProcessUrl':
                 $scope.editTask.processList = [];
-                var _processId = [];
                 _clickFunc = function(processId) {
                     return function(processId) {
                         $scope.editTask.processId = processId;
@@ -465,7 +466,7 @@ angular.module('HarvardApp')
         var responseType = response.headers('Content-Type').replace(/;(.*)$/gi, '');
         if (responseType === 'application/json' && response.data !== null) {
             if (response.data.messagesEmpty === true) {
-                var _clickFunc;
+                var i, k, l, _clickFunc;
                 switch(response.config.data) {
                     case 'poFuzzySearch':
                         $scope.editTask.poFuzzySearch = [];
@@ -530,7 +531,6 @@ angular.module('HarvardApp')
                     break;
                     case 'getProcessUrl':
                         $scope.editTask.processList = [];
-                        var _processId = [];
                         _clickFunc = function(processId) {
                             return function(processId) {
                                 $scope.editTask.processId = processId;
@@ -589,12 +589,12 @@ angular.module('HarvardApp')
         }
         if (newValue !== undefined && !angular.equals(newValue, oldValue)) {
             $timeout(function() {
-                var result = ($http({
+                $http({
                     method: 'get',
                     responseType: 'json',
                     url: $scope.configuration.serverLocation + $scope.configuration.poFuzzySearch.replace('#poNo#', newValue),
                     data: 'poFuzzySearch'
-                })).then(editTaskHandleSuccess, editTaskHandleError);
+                }).then(editTaskHandleSuccess, editTaskHandleError);
             }, 300);
         }
     });
@@ -604,12 +604,12 @@ angular.module('HarvardApp')
         }
         if (newValue !== undefined && !angular.equals(newValue, oldValue)) {
             $timeout(function() {
-                var result = ($http({
+                $http({
                     method: 'get',
                     responseType: 'json',
                     url: $scope.configuration.serverLocation + $scope.configuration.getPoUrl.replace('#poNo#', newValue),
                     data: 'getPoUrl'
-                })).then(editTaskHandleSuccess, editTaskHandleError);
+                }).then(editTaskHandleSuccess, editTaskHandleError);
             }, 300);
         }
     });
@@ -619,12 +619,12 @@ angular.module('HarvardApp')
         }
         if (newValue !== undefined && !angular.equals(newValue, oldValue)) {
             $timeout(function() {
-                var result = ($http({
+                $http({
                     method: 'get',
                     responseType: 'json',
                     url: $scope.configuration.serverLocation + $scope.configuration.getComboUrl.replace('#poId#', newValue),
                     data: 'getComboUrl'
-                })).then(editTaskHandleSuccess, editTaskHandleError);
+                }).then(editTaskHandleSuccess, editTaskHandleError);
             }, 300);
         }
     });
@@ -634,12 +634,12 @@ angular.module('HarvardApp')
         }
         if (newValue !== undefined && !angular.equals(newValue, oldValue)) {
             $timeout(function() {
-                var result = ($http({
+                $http({
                     method: 'get',
                     responseType: 'json',
                     url: $scope.configuration.serverLocation + $scope.configuration.getProductUrl.replace('#comboId#', newValue),
                     data: 'getProductUrl'
-                })).then(editTaskHandleSuccess, editTaskHandleError);
+                }).then(editTaskHandleSuccess, editTaskHandleError);
             }, 300);
         }
     });
@@ -657,7 +657,7 @@ angular.module('HarvardApp')
                 return false;
             })($scope);
             $timeout(function() {
-                var result = ($http({
+                $http({
                     method: 'get',
                     responseType: 'json',
                     url: $scope.configuration.serverLocation + $scope.configuration.getProcessUrl.replace('#productId#', newValue),
@@ -665,7 +665,7 @@ angular.module('HarvardApp')
                     params: {
                         factoryOperationCode: $scope.data[rowIndex].factoryOperation.code
                     }
-                })).then(editTaskHandleSuccess, editTaskHandleError);
+                }).then(editTaskHandleSuccess, editTaskHandleError);
             }, 300);
         }
     });
@@ -913,7 +913,7 @@ angular.module('HarvardApp')
     };
 
     $scope.saveGanttData = function(type) {
-        var mattCallback = Matt.saveOrCalcGanttData(), machine = {}, machines = [], isSave = false;
+        var mattCallback = Matt.saveOrCalcGanttData(), machine = {}, machines = [];
         for (var i = 0, m = $scope.data, l = m.length; i < l; i++) {
             if (m[i].tasks.length > 0) {
                 machine = {
@@ -975,6 +975,18 @@ angular.module('HarvardApp')
             }
         }
 
+        saveGanttModal = $modal({
+            scope: $scope,
+            title: 'Processing',
+            content: 'Waiting for server response...',
+            backdrop: false,
+            keyboard: false,
+            template: $scope.configuration.serverLocation + $scope.configuration.viewsFolder + '/processing.tpl.html',
+            placement: 'center',
+            show: true
+        });
+        saveGanttModal.$promise.then(saveGanttModal.show);
+
         $http({
             method: 'post',
             responseType: 'json',
@@ -988,6 +1000,7 @@ angular.module('HarvardApp')
                 save: type === 'save' ? true : false
             }
         }).then(function(response) {
+            saveGanttModal.hide();
             var result = mattCallback.success(response);
             if (result.state === 'ok' && result.data.machines !== undefined && result.data.machines.length > 0) {
                 $scope.readyToGo(result.data);
@@ -1005,6 +1018,7 @@ angular.module('HarvardApp')
                 });
             }
         }, function(response) {
+            saveGanttModal.hide();
             var result = mattCallback.error(response);
             $alert({
                 title: 'ERROR! '+result.messages.title+'<br>',
@@ -1481,11 +1495,18 @@ angular.module('HarvardApp')
         if (eventName === 'tasks.on.add') {
             $scope.tasksMap['t' + task.model.id] = task;
         }
+        if (eventName === 'task-click') {
+            $log.info(task);
+        }
     };
 
     // Event handler
     var logRowEvent = function(eventName, data) {
         var key;
+
+        if (eventName === 'row-click') {
+            $log.info(data);
+        }
 
         if (data.type !== undefined) {
             switch(data.type) {
@@ -1515,14 +1536,14 @@ angular.module('HarvardApp')
     };
 
     // Event handler
-    var logTimespanEvent = function(eventName, timespan) {
-        // $log.info('[Event] ' + eventName + ': ' + timespan.model.name);
-    };
+    // var logTimespanEvent = function(eventName, timespan) {
+    //     $log.info('[Event] ' + eventName + ': ' + timespan.model.name);
+    // };
 
     // Event handler
-    var logLabelsEvent = function(eventName, width) {
-        // $log.info('[Event] ' + eventName + ': ' + width);
-    };
+    // var logLabelsEvent = function(eventName, width) {
+    //     $log.info('[Event] ' + eventName + ': ' + width);
+    // };
 
     // Event handler
     var logScrollEvent = function(left, date, direction) {
@@ -1563,9 +1584,9 @@ angular.module('HarvardApp')
     };
 
     // Event handler
-    var logTasksFilterEvent = function(tasks, filteredTasks) {
-        // $log.info('[Event] tasks.on.filter: ' + filteredTasks.length + '/' + tasks.length + ' tasks displayed.');
-    };
+    // var logTasksFilterEvent = function(tasks, filteredTasks) {
+    //     $log.info('[Event] tasks.on.filter: ' + filteredTasks.length + '/' + tasks.length + ' tasks displayed.');
+    // };
 
     // Event handler
     var logReadyEvent = function() {

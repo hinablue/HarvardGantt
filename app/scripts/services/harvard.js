@@ -3371,7 +3371,7 @@ angular.module('HarvardApp')
           'delete': false,
           'parallelCode': 'B',
           'expectedMoldId': null,
-          'tooltip': '203924|M14d0001B|12-18 20:01 - 12-18 21:33|CARD_QTY|2.125\'x3.375\'   CR-80|Ultra MP Parent SIM Bundle Kit ($29 Airtime + $5 SIM) $34($34.00)|1 SOL|12-02 ��:��',
+          'tooltip': '203924|M14d0001B|12-18 20:01 - 12-18 21:33|CARD_QTY|2.125\'x3.375\'   CR-80|Ultra MP Parent SIM Bundle Kit ($29 Airtime + $5 SIM) $34($34.00)|1 SOL|12-02',
           'color': '#F0AD4E',
           'timeclockEmployeeId': null,
           'rounds': 1,

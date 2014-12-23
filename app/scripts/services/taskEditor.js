@@ -9,7 +9,6 @@
  */
 angular.module('HarvardApp')
     .service('TaskEditor', ['$http', '$timeout', '$log', '$alert', 'Coloured', 'Matt', 'moment', function TaskEditor($http, $timeout, $log, $alert, Coloured, Matt, moment) {
-        var scope = null;
         var configuration = Matt.configuration();
 
         return {
