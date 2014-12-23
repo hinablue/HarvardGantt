@@ -203,7 +203,7 @@ angular.module('HarvardApp')
 				return {
 					state: 'err',
 					messages: {
-						title: '',
+						title: 'Data validation failed',
 						content: error_message
 					}
 				};
