@@ -152,9 +152,12 @@ angular.module('HarvardApp')
 				if (!taskData.actualStartTime){
 					data_checking = false;
 					error_message.push('When [Pending] is Yes, [Actual Start] must not be empty');
-				} else if( taskData.actualSetupFinishTime && !(taskData.actualStartTime <= taskData.actualSetupFinishTime)){
+				} else if(taskData.actualSetupFinishTime && !(taskData.actualStartTime <= taskData.actualSetupFinishTime)){
 					data_checking = false;
 					error_message.push('When [Pending] is Yes, [Actual Setup Finish] must be greater then [Actual Start]');
+				} else if(today > new Date(taskData.actualStartTime)){
+					data_checking = false;
+					error_message = 'When [Pending] is Yes, [Actual Start] can\'t be after now';
 				}
 			}
 			if (taskData.isFinished == true || taskData.isFinished == "true"){
@@ -173,12 +176,13 @@ angular.module('HarvardApp')
 					}
 				} else if(today > new Date(taskData.actualStartTime)){
 					data_checking = false;
-					error_message = '[Actual Start] can\'t be after now';
+					error_message = 'When [Finish] is Yes, [Actual Start] can\'t be after now';
 				} else if(taskData.actualStartTime <= taskData.actualSetupFinishTime && taskData.actualSetupFinishTime <= taskData.actualFinishTime){
 					data_checking = false;
 					error_message = '[Actual Production Finish] must be greater then [Actual Setup Finish] and [Actual Start]';
 				}
-			} else if(taskData.inProcessing != true){
+			}
+			if(taskData.isFinished != true && taskData.inProcessing != true){
 				if (taskData.actualStartTime){
 					data_checking = false;
 					error_message.push('When [Pending] & [Finish] is No, [Actual Start] must be empty');
