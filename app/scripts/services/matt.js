@@ -74,73 +74,73 @@ angular.module('HarvardApp')
     		var errorMessage = [];
 			var today = moment();
 
-			if(!taskData.poNo){
+			if(!taskData.poNo) {
 				dataChecking = false;
 				errorMessage.push('[PO#] must not be empty');
 			}
-			if(!taskData.comboId){
+			if(!taskData.comboId) {
 				dataChecking = false;
 				errorMessage.push('[ComboId] must not be empty');
 			}
-			if(!taskData.processId){
+			if(!taskData.processId) {
 				dataChecking = false;
 				errorMessage.push('[Process] must not be empty');
 			}
-			if(!taskData.processingType){
+			if(!taskData.processingType) {
 				dataChecking = false;
 				errorMessage.push('[Processing Type] must not be empty');
 			}
-			if(!taskData.operationCode){
+			if(!taskData.operationCode) {
 				dataChecking = false;
 				errorMessage.push('[Operation Code] must not be empty');
 			}
-			if(taskData.rounds === null){
+			if(taskData.rounds === null) {
 				dataChecking = false;
 				errorMessage.push('[Rounds] must not be empty');
-			} else if(taskData.rounds <= 0){
+			} else if(taskData.rounds <= 0) {
 				dataChecking = false;
 				errorMessage.push('[Rounds] must be greater then 0');
 			}
-			if(!taskData.priority){
+			if(!taskData.priority) {
 				dataChecking = false;
 				errorMessage.push('[Priority] must not be empty');
 			}
-			if(!taskData.capacity){
+			if(!taskData.capacity) {
 				dataChecking = false;
 				errorMessage.push('[Capacity] must not be empty');
 			}
-			if(!taskData.expectedStartTime){
+			if(!taskData.expectedStartTime) {
 				dataChecking = false;
 				errorMessage.push('[Expect Start] must not be empty');
 			}
-			if(!taskData.expectedSetupFinishTime){
+			if(!taskData.expectedSetupFinishTime) {
 				dataChecking = false;
 				errorMessage.push('[Expect Setup Finish] must not be empty');
 			}
-			if(!taskData.expectedFinishTime){
+			if(!taskData.expectedFinishTime) {
 				dataChecking = false;
 				errorMessage.push('[Expect Production Finish] must not be empty');
 			}
-			if(taskData.quantity === null){
+			if(taskData.quantity === null) {
 				dataChecking = false;
 				errorMessage.push('[Expect Quantity] must not be empty');
-			} else if(taskData.quantity <= 0){
+			} else if(taskData.quantity <= 0) {
 				dataChecking = false;
 				errorMessage.push('[Expect Quantity] must be greater then 0');
 			}
 
 			if(taskData.expectedStartTime && taskData.expectedSetupFinishTime && taskData.expectedFinishTime &&
-				!(taskData.expectedStartTime <= taskData.expectedSetupFinishTime && taskData.expectedSetupFinishTime <= taskData.expectedFinishTime)){
+				!(taskData.expectedStartTime <= taskData.expectedSetupFinishTime && taskData.expectedSetupFinishTime <= taskData.expectedFinishTime)) {
 				dataChecking = false;
 				errorMessage.push('[Expect Production Finish] must be greater then [Expect Setup Finish] and [Expect Start]');
 			}
 
-			if(taskData.up === null || taskData.up <= 0){
+			if(taskData.up === null || taskData.up <= 0) {
 				dataChecking = false;
 				errorMessage.push('[Up] must not be empty or less then 0');
 			}
 
-			if(taskData.sheetUp === null || taskData.sheetUp <= 0){
+			if(taskData.sheetUp === null || taskData.sheetUp <= 0) {
 				dataChecking = false;
 				errorMessage.push('[SheetUp] must not be empty or less then 0');
 			}
@@ -149,56 +149,56 @@ angular.module('HarvardApp')
 				dataChecking = false;
 				errorMessage.push('Some thing is error');
 			}
-			if (taskData.inProcessing === true || taskData.inProcessing == "true"){
-				if (!taskData.actualStartTime){
+			if (taskData.inProcessing === true || taskData.inProcessing === true) {
+				if (!taskData.actualStartTime) {
 					dataChecking = false;
 					errorMessage.push('When [Pending] is Yes, [Actual Start] must not be empty');
-				} else if(taskData.actualSetupFinishTime && !(taskData.actualStartTime <= taskData.actualSetupFinishTime)){
+				} else if(taskData.actualSetupFinishTime && taskData.actualStartTime > taskData.actualSetupFinishTime) {
 					dataChecking = false;
 					errorMessage.push('When [Pending] is Yes, [Actual Setup Finish] must be greater then [Actual Start]');
-				} else if(today > new Date(taskData.actualStartTime)){
+				} else if(today > new Date(taskData.actualStartTime)) {
 					dataChecking = false;
 					errorMessage.push('When [Pending] is Yes, [Actual Start] can\'t be before now');
 				}
 			}
-			if (taskData.isFinish === true || taskData.isFinish == "true"){
-				if(!taskData.actualStartTime || !taskData.actualSetupFinishTime || !taskData.actualFinishTime){
-					if (!taskData.actualStartTime){
+			if (taskData.isFinish === true || taskData.isFinish === true) {
+				if(!taskData.actualStartTime || !taskData.actualSetupFinishTime || !taskData.actualFinishTime) {
+					if (!taskData.actualStartTime) {
 						dataChecking = false;
 						errorMessage.push('When [Finish] is Yes, [Actual Start] must not be empty');
 					}
-					if (!taskData.actualSetupFinishTime){
+					if (!taskData.actualSetupFinishTime) {
 						dataChecking = false;
 						errorMessage.push('When [Finish] is Yes, [Actual Setup Finish] must not be empty');
 					}
-					if (!taskData.actualFinishTime){
+					if (!taskData.actualFinishTime) {
 						dataChecking = false;
 						errorMessage.push('When [Finish] is Yes, [Actual Production Finish] must not be empty');
 					}
-				} else if(today > new Date(taskData.actualStartTime)){
+				} else if(today > new Date(taskData.actualStartTime)) {
 					dataChecking = false;
 					errorMessage.push('When [Finish] is Yes, [Actual Start] can\'t be before now');
-				} else if(taskData.actualStartTime <= taskData.actualSetupFinishTime && taskData.actualSetupFinishTime <= taskData.actualFinishTime){
+				} else if(taskData.actualStartTime <= taskData.actualSetupFinishTime && taskData.actualSetupFinishTime <= taskData.actualFinishTime) {
 					dataChecking = false;
 					errorMessage.push('[Actual Production Finish] must be greater then [Actual Setup Finish] and [Actual Start]');
 				}
 			}
-			if(taskData.isFinish != true && taskData.inProcessing != true && taskData.isFinish != 'true' && taskData.inProcessing != 'true'){
-				if (taskData.actualStartTime){
+			if(taskData.isFinish !== true && taskData.inProcessing !== true && taskData.isFinish !== true && taskData.inProcessing !== true) {
+				if (taskData.actualStartTime) {
 					dataChecking = false;
 					errorMessage.push('When [Pending] & [Finish] is No, [Actual Start] must be empty');
 				}
-				if (taskData.actualSetupFinishTime){
+				if (taskData.actualSetupFinishTime) {
 					dataChecking = false;
 					errorMessage.push('When [Pending] & [Finish] is No, [Actual Setup Finish] must be empty');
 				}
-				if (taskData.actualFinishTime){
+				if (taskData.actualFinishTime) {
 					dataChecking = false;
 					errorMessage.push('When [Pending] & [Finish] is No, [Actual Production Finish] must be empty');
 				}
 			}
 
-			if(dataChecking){
+			if(dataChecking) {
 				// 如果檢查通過
 				return {
 					state: 'ok'
