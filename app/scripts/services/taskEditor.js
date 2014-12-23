@@ -26,8 +26,8 @@ angular.module('HarvardApp')
                 part: 0,
                 job: {},
                 process: {},
-                previousOperations: [],
-                nextOperations: '',
+                previousOperation: '',
+                nextOperations: [],
                 runOnMachineId: 0,
                 actualRunOnMachineId: 0,
                 quantity: 0,
@@ -114,7 +114,8 @@ angular.module('HarvardApp')
                 nextTask: [],
                 previousTaskId: 0,
                 nextTaskId: 0,
-                check: false
+                check: false,
+                color: '#AA8833'
             },
             editTaskModalOptions: {
                 scope: null,

@@ -462,7 +462,6 @@ angular.module('HarvardApp')
         }
     };
     var editTaskHandleSuccess = function(response) {
-        $log.info(response);
         var responseType = response.headers('Content-Type').replace(/;(.*)$/gi, '');
         if (responseType === 'application/json' && response.data !== null) {
             if (response.data.messagesEmpty === true) {
@@ -585,6 +584,9 @@ angular.module('HarvardApp')
         }
     };
     $scope.$watch('editTask.poNo', function(newValue, oldValue) {
+        if ($scope.editTask === undefined) {
+            return;
+        }
         if (newValue !== undefined && !angular.equals(newValue, oldValue)) {
             $timeout(function() {
                 var result = ($http({
@@ -597,6 +599,9 @@ angular.module('HarvardApp')
         }
     });
     $scope.$watch('editTask.fuzzyPoNo', function(newValue, oldValue) {
+        if ($scope.editTask === undefined) {
+            return;
+        }
         if (newValue !== undefined && !angular.equals(newValue, oldValue)) {
             $timeout(function() {
                 var result = ($http({
@@ -609,6 +614,9 @@ angular.module('HarvardApp')
         }
     });
     $scope.$watch('editTask.poId', function(newValue, oldValue) {
+        if ($scope.editTask === undefined) {
+            return;
+        }
         if (newValue !== undefined && !angular.equals(newValue, oldValue)) {
             $timeout(function() {
                 var result = ($http({
@@ -621,6 +629,9 @@ angular.module('HarvardApp')
         }
     });
     $scope.$watch('editTask.comboId', function(newValue, oldValue) {
+        if ($scope.editTask === undefined) {
+            return;
+        }
         if (newValue !== undefined && !angular.equals(newValue, oldValue)) {
             $timeout(function() {
                 var result = ($http({
@@ -633,6 +644,9 @@ angular.module('HarvardApp')
         }
     });
     $scope.$watch('editTask.productId', function(newValue, oldValue) {
+        if ($scope.editTask === undefined) {
+            return;
+        }
         if (newValue !== undefined && !angular.equals(newValue, oldValue)) {
             var rowIndex = (function($scope) {
                 for (var i = 0, l = $scope.data.length; i < l; i++) {
@@ -656,6 +670,9 @@ angular.module('HarvardApp')
         }
     });
     $scope.$watch('editTask.processId', function(newValue, oldValue) {
+        if ($scope.editTask === undefined) {
+            return;
+        }
         $scope.editTask.previousTask = [];
         $scope.editTask.nextTask = [];
         var _task = [], _tasks = [];
@@ -700,6 +717,9 @@ angular.module('HarvardApp')
         }
     });
     $scope.$watch('editTask.previousTaskId', function(newValue, oldValue) {
+        if ($scope.editTask === undefined) {
+            return;
+        }
         $scope.editTask.nextTask = [];
         var _task = [], _tasks = [];
         var nextProcesses = function(process) {
@@ -774,12 +794,30 @@ angular.module('HarvardApp')
                 }
             }
             $scope.editTask.modal.hide();
+            $scope.editTask = undefined;
         }
     };
 
     $scope.checkTaskData = function() {
         if ($scope.editTask !== undefined) {
+            // Initialize the datetime with moment.
+            $scope.editTask.expectedStartTime = $scope.editTask.expectedStartTime === null ? null : typeof($scope.editTask.expectedStartTime) === 'object' ? moment((new Date($scope.editTask.expectedStartTime)).getTime(), 'x') : moment($scope.editTask.expectedStartTime, 'YYYY-MM-DDTHH:mm:ss');
+            $scope.editTask.expectedSetupFinishTime = $scope.editTask.expectedSetupFinishTime === null ? null : typeof($scope.editTask.expectedSetupFinishTime) === 'object' ? moment((new Date($scope.editTask.expectedSetupFinishTime)).getTime(), 'x') : moment($scope.editTask.expectedSetupFinishTime, 'YYYY-MM-DDTHH:mm:ss');
+            $scope.editTask.expectedFinishTime = $scope.editTask.expectedFinishTime === null ? null : typeof($scope.editTask.expectedFinishTime) === 'object' ? moment((new Date($scope.editTask.expectedFinishTime)).getTime(), 'x') : moment($scope.editTask.expectedFinishTime, 'YYYY-MM-DDTHH:mm:ss');
+            $scope.editTask.actualStartTime = $scope.editTask.actualStartTime === null ? null : typeof($scope.editTask.actualStartTime) === 'object' ? moment((new Date($scope.editTask.actualStartTime)).getTime(), 'x') : moment($scope.editTask.actualStartTime, 'YYYY-MM-DDTHH:mm:ss');
+            $scope.editTask.actualSetupFinishTime = $scope.editTask.actualSetupFinishTime === null ? null : typeof($scope.editTask.actualSetupFinishTime) === 'object' ? moment((new Date($scope.editTask.actualSetupFinishTime)).getTime(), 'x') : moment($scope.editTask.actualSetupFinishTime, 'YYYY-MM-DDTHH:mm:ss');
+            $scope.editTask.actualFinishTime = $scope.editTask.actualFinishTime === null ? null : typeof($scope.editTask.actualFinishTime) === 'object' ? moment((new Date($scope.editTask.actualFinishTime)).getTime(), 'x') : moment($scope.editTask.actualFinishTime, 'YYYY-MM-DDTHH:mm:ss');
+
             var result = Matt.addTaskData($scope.editTask), task;
+            var rowIndex = (function($scope) {
+                for (var i = 0, l = $scope.data.length; i < l; i++) {
+                    if ($scope.data[i].id === $scope.editTask.runOnMachineId) {
+                        return i;
+                    }
+                }
+                return false;
+            })($scope);
+
             if (result.state === 'ok') {
                 task = TaskEditor.taskTemplate;
                 task.id = $scope.editTask.id;
@@ -810,8 +848,8 @@ angular.module('HarvardApp')
                 task.finished = $scope.editTask.isFinish;
                 task.pin = $scope.editTask.isPin;
                 task.inProcessing = $scope.editTask.inProcessing;
-                task.previousOperation = $scope.editTask.previousTask;
-                task.nextOperations = [$scope.editTask.nextTask];
+                task.previousOperation = $scope.editTask.previousTaskId;
+                task.nextOperations = [$scope.editTask.nextTaskId];
                 task.runOnMachineId = $scope.editTask.runOnMachineId;
                 task.actualRunOnMachineId = $scope.editTask.actualRunOnMachineId;
                 task.machineShiftLabel = $scope.editTask.machineShiftLabel;
@@ -827,28 +865,24 @@ angular.module('HarvardApp')
                 task.part = $scope.editTask.part;
                 task.s2sMins = $scope.editTask.s2sMins;
                 task.timeclockEmployeeId = $scope.editTask.timeclockEmployeeId;
-                task.expectedStartTime = typeof($scope.editTask.expectedStartTime) === 'object' ? moment((new Date($scope.editTask.expectedStartTime)).getTime(), 'x') : moment($scope.editTask.expectedStartTime, 'YYYY-MM-DDTHH:mm:ss');
-                task.expectedSetupFinishTime = typeof($scope.editTask.expectedSetupFinishTime) === 'object' ? moment((new Date($scope.editTask.expectedSetupFinishTime)).getTime(), 'x') : moment($scope.editTask.expectedSetupFinishTime, 'YYYY-MM-DDTHH:mm:ss');
-                task.expectedFinishTime = typeof($scope.editTask.expectedFinishTime) === 'object' ? moment((new Date($scope.editTask.expectedFinishTime)).getTime(), 'x') : moment($scope.editTask.expectedFinishTime, 'YYYY-MM-DDTHH:mm:ss');
-                task.actualStartTime = typeof($scope.editTask.actualStartTime) === 'object' ? moment((new Date($scope.editTask.actualStartTime)).getTime(), 'x') : moment($scope.editTask.actualStartTime, 'YYYY-MM-DDTHH:mm:ss');
-                task.actualSetupFinishTime = typeof($scope.editTask.actualSetupFinishTime) === 'object' ? moment((new Date($scope.editTask.actualSetupFinishTime)).getTime(), 'x') : moment($scope.editTask.actualSetupFinishTime, 'YYYY-MM-DDTHH:mm:ss');
-                task.actualFinishTime = typeof($scope.editTask.actualFinishTime) === 'object' ? moment((new Date($scope.editTask.actualFinishTime)).getTime(), 'x') : moment($scope.editTask.actualFinishTime, 'YYYY-MM-DDTHH:mm:ss');
+                task.expectedStartTime = $scope.editTask.expectedStartTime;
+                task.expectedSetupFinishTime = $scope.editTask.expectedSetupFinishTime;
+                task.expectedFinishTime = $scope.editTask.expectedFinishTime;
+                task.actualStartTime = $scope.editTask.actualStartTime;
+                task.actualSetupFinishTime = $scope.editTask.actualSetupFinishTime;
+                task.actualFinishTime = $scope.editTask.actualFinishTime;
                 task.actualQuantity = $scope.editTask.actualQuantity;
-                task.tooltip = [];
-
-                $scope.tasksMap['t'+$scope.editTask.id] = task;
+                task.tooltip = (function(rowIndex) {
+                    var tooltip = [];
+                    for (var i = 0, l = objectModel.api.gantt.rowsManager.rows[rowIndex].model.title.length; i < l; i++) {
+                        tooltip.push('N');
+                    }
+                    return tooltip;
+                })(rowIndex);
 
                 $scope.editTask.check = true;
                 if ($scope.editTask.drawTask === false) {
-                    var rowIndex = (function($scope) {
-                        for (var i = 0, l = $scope.data.length; i < l; i++) {
-                            if ($scope.data[i].id === $scope.editTask.runOnMachineId) {
-                                return i;
-                            }
-                        }
-                        return false;
-                    })($scope);
-                    $scope.data[rowIndex].tasks.push(task);
+                    objectModel.api.gantt.rowsManager.rows[rowIndex].addTask(task);
                 }
 
                 $alert({
@@ -862,9 +896,18 @@ angular.module('HarvardApp')
                     container: '#gantt-editor-alert',
                     show: true
                 });
-                // $scope.editTask.modal.hide();
             } else {
-
+                $alert({
+                    title: 'ERROR! '+result.messages.title+'<br>',
+                    content: result.messages.content.join('<br>'),
+                    placement: 'top',
+                    type: 'info',
+                    duration: 10,
+                    dismissable: true,
+                    html: true,
+                    container: '#gantt-editor-alert',
+                    show: true
+                });
             }
         }
     };
@@ -932,8 +975,6 @@ angular.module('HarvardApp')
             }
         }
 
-        $log.info(machines);
-
         $http({
             method: 'post',
             responseType: 'json',
@@ -942,7 +983,7 @@ angular.module('HarvardApp')
             data: machines,
             params: {
                 calculate: true,
-                calculateFrom: moment.utc($scope.api.gantt.columnsManager.getFirstColumn().date.format(), 'YYYY-MM-DD HH:mm:ss.SSS').format('YYYY-MM-DDTHH:mm:ss'),
+                calculateFrom: moment.utc($scope.api.gantt.columnsManager.getFirstColumn().date.format(), 'YYYY-MM-DDTHH:mm:ss').format('YYYY-MM-DDTHH:mm:ss'),
                 calculateWeeks: 52,
                 save: type === 'save' ? true : false
             }
@@ -952,7 +993,7 @@ angular.module('HarvardApp')
                 $scope.readyToGo(result.data);
             } else {
                 $alert({
-                    title: result.messages.title+'<br>',
+                    title: 'ERROR! '+result.messages.title+'<br>',
                     content: result.messages.content,
                     placement: 'top',
                     type: 'info',
@@ -966,12 +1007,11 @@ angular.module('HarvardApp')
         }, function(response) {
             var result = mattCallback.error(response);
             $alert({
-                title: result.messages.title+'<br>',
+                title: 'ERROR! '+result.messages.title+'<br>',
                 content: result.messages.content,
                 placement: 'top',
                 type: 'info',
-                duration: 3,
-                dismissable: false,
+                dismissable: true,
                 html: true,
                 container: '#gantt-chart-alert',
                 show: true
@@ -1289,6 +1329,9 @@ angular.module('HarvardApp')
         $scope.editTask.modifyType = 'create';
         $scope.editTask.priority = Object.keys($scope.tasksMap).length + 1;
         $scope.editTask.drawTask = true;
+        $scope.editTask.expectedStartTime = task.model.from.clone().format('YYYY/MM/DD HH:mm');
+        $scope.editTask.expectedSetupFinishTime = task.model.from.clone().add(1, 'm').format('YYYY/MM/DD HH:mm');
+        $scope.editTask.expectedFinishTime = task.model.to.clone().format('YYYY/MM/DD HH:mm');
         $scope.editTask.modal = $modal(editTaskModalOptions);
     };
     var contextMenuEvent = function(eventName, data) {
@@ -1375,18 +1418,30 @@ angular.module('HarvardApp')
         }
     };
     var moveTaskBeginEvent = function(eventName, task) {
+        var i, t, l;
         task.model.highlight = true;
         _movingTask = task.model.from.clone();
-        $log.info(_movingTask);
         if ($scope.groupTask === true) {
             if (multipleTaskSelected.length > 0) {
-                for (var i = 0, t = multipleTaskSelected, l = t.length; i < l; i++) {
+                for (i = 0, t = multipleTaskSelected, l = t.length; i < l; i++) {
                     $scope.tasksMap['t'+t[i]].model.highlight = false;
                 }
             }
             multipleTaskSelected = [];
             if ($scope.taskGroups['g' + task.model.taskGroup] !== undefined) {
                 multipleTaskSelected = $scope.taskGroups['g' + task.model.taskGroup];
+                for (i = 0, t = multipleTaskSelected, l = t.length; i < l; i++) {
+                    $scope.tasksMap['t'+t[i]].model.highlight = true;
+                }
+            }
+        } else {
+            if (multipleTaskSelected.length > 0) {
+                if (multipleTaskSelected.indexOf(task.model.id) < 0) {
+                    for (i = 0, t = multipleTaskSelected, l = t.length; i < l; i++) {
+                        $scope.tasksMap['t'+t[i]].model.highlight = false;
+                    }
+                    multipleTaskSelected = [];
+                }
             }
         }
     };
@@ -1404,12 +1459,22 @@ angular.module('HarvardApp')
         }
     };
     var moveTaskEndEvent = function(eventName, task) {
-        if (multipleTaskSelected.length > 0) {
-            for (var i = 0, t = multipleTaskSelected, l = t.length; i < l; i++) {
-                $scope.tasksMap['t'+t[i]].model.highlight = false;
+        var i, t, l;
+        if ($scope.groupTask === true) {
+            if (multipleTaskSelected.length > 0) {
+                for (i = 0, t = multipleTaskSelected, l = t.length; i < l; i++) {
+                    $scope.tasksMap['t'+t[i]].model.highlight = false;
+                }
+            }
+            task.model.highlight = false;
+        } else {
+            for (i = 0, t = Object.keys($scope.tasksMap), l = t.length; i < l; i++) {
+                $scope.tasksMap[t[i]].model.highlight = false;
             }
         }
+        task.model.highlight = false;
         multipleTaskSelected = [];
+        _movingTask = undefined;
     };
     // Event handler
     var logTaskEvent = function(eventName, task) {
@@ -1425,7 +1490,6 @@ angular.module('HarvardApp')
         if (data.type !== undefined) {
             switch(data.type) {
                 case 'create':
-                    $log.info(data);
                     $scope.editTask = TaskEditor.editTaskTemplate;
                     $scope.editTask.id = utils.randomUuid();
                     $scope.editTask.rowId = data.row.model.id;
