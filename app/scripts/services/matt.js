@@ -69,6 +69,7 @@ angular.module('HarvardApp')
         };
 
         var genericEditorValidation = function(taskData){
+			console.log(taskData);
 			var data_checking = true;
     		var error_message = new Array();
 			var today = new Date();
@@ -148,7 +149,7 @@ angular.module('HarvardApp')
 				data_checking = false;
 				error_message.push('Some thing is error');
 			}
-			if (taskData.inProcessing === true){
+			if (taskData.inProcessing === true || taskData.inProcessing == "true"){
 				if (!taskData.actualStartTime){
 					data_checking = false;
 					error_message.push('When [Pending] is Yes, [Actual Start] must not be empty');
@@ -157,10 +158,10 @@ angular.module('HarvardApp')
 					error_message.push('When [Pending] is Yes, [Actual Setup Finish] must be greater then [Actual Start]');
 				} else if(today > new Date(taskData.actualStartTime)){
 					data_checking = false;
-					error_message = 'When [Pending] is Yes, [Actual Start] can\'t be after now';
+					error_message.push('When [Pending] is Yes, [Actual Start] can\'t be before now');
 				}
 			}
-			if (taskData.isFinished == true || taskData.isFinished == "true"){
+			if (taskData.isFinish === true || taskData.isFinish == "true"){
 				if(!taskData.actualStartTime || !taskData.actualSetupFinishTime || !taskData.actualFinishTime){
 					if (!taskData.actualStartTime){
 						data_checking = false;
@@ -176,13 +177,13 @@ angular.module('HarvardApp')
 					}
 				} else if(today > new Date(taskData.actualStartTime)){
 					data_checking = false;
-					error_message = 'When [Finish] is Yes, [Actual Start] can\'t be after now';
+					error_message.push('When [Finish] is Yes, [Actual Start] can\'t be before now');
 				} else if(taskData.actualStartTime <= taskData.actualSetupFinishTime && taskData.actualSetupFinishTime <= taskData.actualFinishTime){
 					data_checking = false;
-					error_message = '[Actual Production Finish] must be greater then [Actual Setup Finish] and [Actual Start]';
+					error_message.push('[Actual Production Finish] must be greater then [Actual Setup Finish] and [Actual Start]');
 				}
 			}
-			if(taskData.isFinished != true && taskData.inProcessing != true){
+			if(taskData.isFinish != true && taskData.inProcessing != true && taskData.isFinish != 'true' && taskData.inProcessing != 'true'){
 				if (taskData.actualStartTime){
 					data_checking = false;
 					error_message.push('When [Pending] & [Finish] is No, [Actual Start] must be empty');
