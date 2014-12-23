@@ -21,9 +21,9 @@
       			<div class="task ng-scope" ng-style="taskColoured(task.model.color, task.model.textColor)" as-sortable-item-handle>
 	      			<span class="column ng-binding multiple"><i class="multiple-tasks fa {{ multipleTasksCheck(task.model.id) === true && 'fa-check-square-o' || 'fa-square-o' }}" ng-click="multipleTasksToggle(task.model.id)"></i></span>
 	      			<span class="column ng-binding data" ng-repeat="data in task.model.tooltip track by $index">{{ data }}</span>
-					<span class="column ng-binding from">{{ task.model.from.utc().format("YYYY/MM/DD HH:mm") }}</span>
-					<span class="column ng-binding to">{{ task.model.to.utc().format("YYYY/MM/DD HH:mm") }}</span>
-					<span class="column ng-binding during">{{ (task.model.to.utc() - task.model.from.utc()) / 60 / 1000 }}</span>
+					<span class="column ng-binding from">{{ task.model.from.format("YYYY/MM/DD HH:mm") }}</span>
+					<span class="column ng-binding to">{{ task.model.to.format("YYYY/MM/DD HH:mm") }}</span>
+					<span class="column ng-binding during">{{ (task.model.to - task.model.from) / 60 / 1000 }}</span>
 					<span class="column ng-binding pin"><a class="btn {{ task.isPin === true && 'btn-warning' || 'btn-default' }} pin" ng-model="task.isPin" bs-checkbox><i class="fa {{ task.isPin === true && 'fa-check' || 'fa-close' }}"></i></a></span>
 				</div>
       		</div>
