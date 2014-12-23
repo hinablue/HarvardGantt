@@ -29,7 +29,7 @@ angular.module('HarvardApp')
     $scope.departmentMenuDefault = 'Select';
     $scope.subDepartmentMenuDefault = 'Select';
     $scope.pagination = [1];
-    $scope.paginationPrePage = 6;
+    $scope.paginationPrePage = 15;
     $scope.currentPage = 1;
 
     $scope.configuration = Matt.configuration();
