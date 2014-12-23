@@ -8,7 +8,7 @@
  * Service in the HarvardApp.
  */
 angular.module('HarvardApp')
-    .service('Matt', ['$http', '$timeout', '$log', '$location', function Matt($http, $timeout, $log, $location) {
+    .service('Matt', ['$http', '$timeout', '$log', '$location', 'moment', function Matt($http, $timeout, $log, $location, moment) {
         var configuration = {
             // 奇怪$location.path()沒有用, 所以先用absUrl(), 7是’http://‘的長度
             serverLocation: '/' + $location.absUrl().substr(7).split('/')[1],
@@ -68,137 +68,137 @@ angular.module('HarvardApp')
             confirmGanttUrl: '/company/scheduler/gantt/calculate/',
         };
 
-        var genericEditorValidation = function(taskData){
+        var genericEditorValidation = function(taskData) {
 			console.log(taskData);
-			var data_checking = true;
-    		var error_message = new Array();
-			var today = new Date();
-			
+			var dataChecking = true;
+    		var errorMessage = [];
+			var today = moment();
+
 			if(!taskData.poNo){
-				data_checking = false;
-				error_message.push('[PO#] must not be empty');
+				dataChecking = false;
+				errorMessage.push('[PO#] must not be empty');
 			}
 			if(!taskData.comboId){
-				data_checking = false;
-				error_message.push('[ComboId] must not be empty');
+				dataChecking = false;
+				errorMessage.push('[ComboId] must not be empty');
 			}
 			if(!taskData.processId){
-				data_checking = false;
-				error_message.push('[Process] must not be empty');
+				dataChecking = false;
+				errorMessage.push('[Process] must not be empty');
 			}
 			if(!taskData.processingType){
-				data_checking = false;
-				error_message.push('[Processing Type] must not be empty');
+				dataChecking = false;
+				errorMessage.push('[Processing Type] must not be empty');
 			}
 			if(!taskData.operationCode){
-				data_checking = false;
-				error_message.push('[Operation Code] must not be empty');
+				dataChecking = false;
+				errorMessage.push('[Operation Code] must not be empty');
 			}
 			if(taskData.rounds === null){
-				data_checking = false;
-				error_message.push('[Rounds] must not be empty');
+				dataChecking = false;
+				errorMessage.push('[Rounds] must not be empty');
 			} else if(taskData.rounds <= 0){
-				data_checking = false;
-				error_message.push('[Rounds] must be greater then 0');
+				dataChecking = false;
+				errorMessage.push('[Rounds] must be greater then 0');
 			}
 			if(!taskData.priority){
-				data_checking = false;
-				error_message.push('[Priority] must not be empty');
+				dataChecking = false;
+				errorMessage.push('[Priority] must not be empty');
 			}
 			if(!taskData.capacity){
-				data_checking = false;
-				error_message.push('[Capacity] must not be empty');
+				dataChecking = false;
+				errorMessage.push('[Capacity] must not be empty');
 			}
 			if(!taskData.expectedStartTime){
-				data_checking = false;
-				error_message.push('[Expect Start] must not be empty');
+				dataChecking = false;
+				errorMessage.push('[Expect Start] must not be empty');
 			}
 			if(!taskData.expectedSetupFinishTime){
-				data_checking = false;
-				error_message.push('[Expect Setup Finish] must not be empty');
+				dataChecking = false;
+				errorMessage.push('[Expect Setup Finish] must not be empty');
 			}
 			if(!taskData.expectedFinishTime){
-				data_checking = false;
-				error_message.push('[Expect Production Finish] must not be empty');
+				dataChecking = false;
+				errorMessage.push('[Expect Production Finish] must not be empty');
 			}
 			if(taskData.quantity === null){
-				data_checking = false;
-				error_message.push('[Expect Quantity] must not be empty');
+				dataChecking = false;
+				errorMessage.push('[Expect Quantity] must not be empty');
 			} else if(taskData.quantity <= 0){
-				data_checking = false;
-				error_message.push('[Expect Quantity] must be greater then 0');
+				dataChecking = false;
+				errorMessage.push('[Expect Quantity] must be greater then 0');
 			}
 
 			if(taskData.expectedStartTime && taskData.expectedSetupFinishTime && taskData.expectedFinishTime &&
 				!(taskData.expectedStartTime <= taskData.expectedSetupFinishTime && taskData.expectedSetupFinishTime <= taskData.expectedFinishTime)){
-				data_checking = false;
-				error_message.push('[Expect Production Finish] must be greater then [Expect Setup Finish] and [Expect Start]');
+				dataChecking = false;
+				errorMessage.push('[Expect Production Finish] must be greater then [Expect Setup Finish] and [Expect Start]');
 			}
 
 			if(taskData.up === null || taskData.up <= 0){
-				data_checking = false;
-				error_message.push('[Up] must not be empty or less then 0');
+				dataChecking = false;
+				errorMessage.push('[Up] must not be empty or less then 0');
 			}
 
 			if(taskData.sheetUp === null || taskData.sheetUp <= 0){
-				data_checking = false;
-				error_message.push('[SheetUp] must not be empty or less then 0');
+				dataChecking = false;
+				errorMessage.push('[SheetUp] must not be empty or less then 0');
 			}
 
 			if (taskData.isParallel === true && taskData.parallelCode === null) {
-				data_checking = false;
-				error_message.push('Some thing is error');
+				dataChecking = false;
+				errorMessage.push('Some thing is error');
 			}
 			if (taskData.inProcessing === true || taskData.inProcessing == "true"){
 				if (!taskData.actualStartTime){
-					data_checking = false;
-					error_message.push('When [Pending] is Yes, [Actual Start] must not be empty');
+					dataChecking = false;
+					errorMessage.push('When [Pending] is Yes, [Actual Start] must not be empty');
 				} else if(taskData.actualSetupFinishTime && !(taskData.actualStartTime <= taskData.actualSetupFinishTime)){
-					data_checking = false;
-					error_message.push('When [Pending] is Yes, [Actual Setup Finish] must be greater then [Actual Start]');
+					dataChecking = false;
+					errorMessage.push('When [Pending] is Yes, [Actual Setup Finish] must be greater then [Actual Start]');
 				} else if(today > new Date(taskData.actualStartTime)){
-					data_checking = false;
-					error_message.push('When [Pending] is Yes, [Actual Start] can\'t be before now');
+					dataChecking = false;
+					errorMessage.push('When [Pending] is Yes, [Actual Start] can\'t be before now');
 				}
 			}
 			if (taskData.isFinish === true || taskData.isFinish == "true"){
 				if(!taskData.actualStartTime || !taskData.actualSetupFinishTime || !taskData.actualFinishTime){
 					if (!taskData.actualStartTime){
-						data_checking = false;
-						error_message.push('When [Finish] is Yes, [Actual Start] must not be empty');
+						dataChecking = false;
+						errorMessage.push('When [Finish] is Yes, [Actual Start] must not be empty');
 					}
 					if (!taskData.actualSetupFinishTime){
-						data_checking = false;
-						error_message.push('When [Finish] is Yes, [Actual Setup Finish] must not be empty');
+						dataChecking = false;
+						errorMessage.push('When [Finish] is Yes, [Actual Setup Finish] must not be empty');
 					}
 					if (!taskData.actualFinishTime){
-						data_checking = false;
-						error_message.push('When [Finish] is Yes, [Actual Production Finish] must not be empty');
+						dataChecking = false;
+						errorMessage.push('When [Finish] is Yes, [Actual Production Finish] must not be empty');
 					}
 				} else if(today > new Date(taskData.actualStartTime)){
-					data_checking = false;
-					error_message.push('When [Finish] is Yes, [Actual Start] can\'t be before now');
+					dataChecking = false;
+					errorMessage.push('When [Finish] is Yes, [Actual Start] can\'t be before now');
 				} else if(taskData.actualStartTime <= taskData.actualSetupFinishTime && taskData.actualSetupFinishTime <= taskData.actualFinishTime){
-					data_checking = false;
-					error_message.push('[Actual Production Finish] must be greater then [Actual Setup Finish] and [Actual Start]');
+					dataChecking = false;
+					errorMessage.push('[Actual Production Finish] must be greater then [Actual Setup Finish] and [Actual Start]');
 				}
 			}
 			if(taskData.isFinish != true && taskData.inProcessing != true && taskData.isFinish != 'true' && taskData.inProcessing != 'true'){
 				if (taskData.actualStartTime){
-					data_checking = false;
-					error_message.push('When [Pending] & [Finish] is No, [Actual Start] must be empty');
+					dataChecking = false;
+					errorMessage.push('When [Pending] & [Finish] is No, [Actual Start] must be empty');
 				}
 				if (taskData.actualSetupFinishTime){
-					data_checking = false;
-					error_message.push('When [Pending] & [Finish] is No, [Actual Setup Finish] must be empty');
+					dataChecking = false;
+					errorMessage.push('When [Pending] & [Finish] is No, [Actual Setup Finish] must be empty');
 				}
 				if (taskData.actualFinishTime){
-					data_checking = false;
-					error_message.push('When [Pending] & [Finish] is No, [Actual Production Finish] must be empty');
+					dataChecking = false;
+					errorMessage.push('When [Pending] & [Finish] is No, [Actual Production Finish] must be empty');
 				}
 			}
-			
-			if(data_checking){
+
+			if(dataChecking){
 				// 如果檢查通過
 				return {
 					state: 'ok'
@@ -209,7 +209,7 @@ angular.module('HarvardApp')
 					state: 'err',
 					messages: {
 						title: 'Data validation failed',
-						content: error_message
+						content: errorMessage
 					}
 				};
 			}
