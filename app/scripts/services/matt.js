@@ -178,10 +178,7 @@ angular.module('HarvardApp')
 				} else if(today > taskData.actualStartTime) {
 					dataChecking = false;
 					errorMessage.push('When [Finish] is Yes, [Actual Start] can\'t be before now');
-				} else if(taskData.actualStartTime > taskData.actualSetupFinishTime) {
-					dataChecking = false;
-					errorMessage.push('[Actual Setup Finish] must be greater then [Actual Start]');
-				} else if(taskData.actualSetupFinishTime > taskData.actualFinishTime) {
+				} else if(!(taskData.actualStartTime <= taskData.actualSetupFinishTime && taskData.actualSetupFinishTime <= taskData.actualFinishTime)) {
 					dataChecking = false;
 					errorMessage.push('[Actual Production Finish] must be greater then [Actual Setup Finish] and [Actual Start]');
 				}
