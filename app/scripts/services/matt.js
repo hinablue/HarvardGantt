@@ -84,7 +84,7 @@ angular.module('HarvardApp')
 			}
 			if(!taskData.productId) {
 				dataChecking = false;
-				errorMessage.push('[Process] must not be empty');
+				errorMessage.push('[Product] must not be empty');
 			}
 			if(!taskData.processId) {
 				dataChecking = false;
