@@ -808,7 +808,7 @@ angular.module('HarvardApp')
         }
     });
     $scope.$watchGroup(['editTask.previousTaskId', 'editTask.nextTaskId'], function(newValue, oldValue) {
-        if (!angular.equals(newValue, oldValue) && newValue[0] !== 0 && newValue[1] !== 0) {
+        if ($scope.editTask.modifyType !== 'edit' && !angular.equals(newValue, oldValue) && newValue[0] !== 0 && newValue[1] !== 0) {
             newValue.sort(function(a, b) { return parseInt(a, 10) - parseInt(b, 10); });
             $scope.editTask.priority = Math.floor(Math.random() * (parseInt(newValue[1], 10) - parseInt(newValue[0], 10))) + parseInt(newValue[0], 10);
             if ($scope.editTask.priority === parseInt(newValue[0], 10)) {
@@ -970,63 +970,64 @@ angular.module('HarvardApp')
 
     // Save or Calculate buttons
     $scope.saveGanttData = function(type) {
-        var mattCallback = Matt.saveOrCalcGanttData(), machine = {}, machines = [];
+        var mattCallback = Matt.saveOrCalcGanttData(), machine = {}, machines = [], _task;
         for (var i = 0, m = $scope.data, l = m.length; i < l; i++) {
             if (m[i].tasks.length > 0) {
                 machine = {
-                    machine: {
+                    machine: angular.copy({
                         id: m[i].id,
                         settingsMachine: m[i].settingsMachine,
                         factoryOperation: m[i].factoryOperation,
                         title: m[i].title.join('|'),
                         currentTimeWorks: m[i].currentTimeWorks,
                         online: m[i].online
-                    },
+                    }),
                     operationQueue: []
                 };
                 for (var j = 0, t = m[i].tasks, q = t.length; j < q; j++) {
-                    machine.operationQueue.push({
-                        id: t[j].id,
-                        oid: t[j].id,
-                        part: t[j].part,
-                        operationCode: t[j].operationCode,
-                        priority: t[j].priority,
-                        job: t[j].job,
-                        process: t[j].process,
-                        previousOperation: t[j].previousOperation,
-                        nextOperations: t[j].nextOperations,
-                        runOnMachineId: t[j].runOnMachineId,
-                        actualRunOnMachineId: t[j].actualRunOnMachineId,
-                        quantity: t[j].quantity,
-                        actualQuantity: t[j].actualQuantity,
-                        processingType: t[j].processingType,
-                        factoryOperation: t[j].factoryOperation,
-                        pin: t[j].pin,
-                        capacity: t[j].capacity,
-                        s2sMins: t[j].s2sMins,
-                        up: t[j].up,
-                        sheetUp: t[j].sheetUp,
-                        face: t[j].face,
-                        pendingMinutes: t[j].pendingMinutes,
-                        expectedStartTime: t[j].expectedStartTime.utc().format('YYYY-MM-DDTHH:mm:ss'),
-                        expectedSetupFinishTime: t[j].expectedSetupFinishTime.utc().format('YYYY-MM-DDTHH:mm:ss'),
-                        expectedFinishTime: t[j].expectedFinishTime.utc().format('YYYY-MM-DDTHH:mm:ss'),
-                        actualStartTime: t[j].actualStartTime !== null ? t[j].actualStartTime.utc().format('YYYY-MM-DDTHH:mm:ss') : null,
-                        actualSetupFinishTime: t[j].actualSetupFinishTime !== null ? t[j].actualSetupFinishTime.utc().format('YYYY-MM-DDTHH:mm:ss') : null,
-                        actualFinishTime: t[j].actualFinishTime !== null ? t[j].actualFinishTime.utc().format('YYYY-MM-DDTHH:mm:ss') : null,
-                        finished: t[j].finished,
-                        inProcessing: t[j].inProcessing,
-                        delete: t[j].delete,
-                        parallelCode: t[j].parallelCode,
-                        expectedMoldId: t[j].expectedMoldId,
-                        tooltip: t[j].tooltip.join('|'),
-                        color: t[j].color,
-                        timeclockEmployeeId: t[j].timeclockEmployeeId,
-                        rounds: t[j].rounds,
-                        taskGroup: t[j].taskGroup,
-                        machineShiftLabel: t[j].machineShiftLabel,
-                        new: t[j].new
-                    });
+                    _task = $scope.tasksMap['t'+t[j].id];
+                    machine.operationQueue.push(angular.copy({
+                        id: _task.model.id,
+                        oid: _task.model.id,
+                        part: _task.model.part,
+                        operationCode: _task.model.operationCode,
+                        priority: _task.model.priority,
+                        job: _task.model.job,
+                        process: _task.model.process,
+                        previousOperation: _task.model.previousOperation,
+                        nextOperations: _task.model.nextOperations,
+                        runOnMachineId: _task.model.runOnMachineId,
+                        actualRunOnMachineId: _task.model.actualRunOnMachineId,
+                        quantity: _task.model.quantity,
+                        actualQuantity: _task.model.actualQuantity,
+                        processingType: _task.model.processingType,
+                        factoryOperation: _task.model.factoryOperation,
+                        pin: _task.model.pin,
+                        capacity: _task.model.capacity,
+                        s2sMins: _task.model.s2sMins,
+                        up: _task.model.up,
+                        sheetUp: _task.model.sheetUp,
+                        face: _task.model.face,
+                        pendingMinutes: _task.model.pendingMinutes,
+                        expectedStartTime: _task.model.expectedStartTime.utc().format('YYYY-MM-DDTHH:mm:ss'),
+                        expectedSetupFinishTime: _task.model.expectedSetupFinishTime.utc().format('YYYY-MM-DDTHH:mm:ss'),
+                        expectedFinishTime: _task.model.expectedFinishTime.utc().format('YYYY-MM-DDTHH:mm:ss'),
+                        actualStartTime: _task.model.actualStartTime !== null ? _task.model.actualStartTime.utc().format('YYYY-MM-DDTHH:mm:ss') : null,
+                        actualSetupFinishTime: _task.model.actualSetupFinishTime !== null ? _task.model.actualSetupFinishTime.utc().format('YYYY-MM-DDTHH:mm:ss') : null,
+                        actualFinishTime: _task.model.actualFinishTime !== null ? _task.model.actualFinishTime.utc().format('YYYY-MM-DDTHH:mm:ss') : null,
+                        finished: _task.model.finished,
+                        inProcessing: _task.model.inProcessing,
+                        delete: _task.model.delete,
+                        parallelCode: _task.model.parallelCode,
+                        expectedMoldId: _task.model.expectedMoldId,
+                        tooltip: _task.model.tooltip.join('|'),
+                        color: _task.model.color,
+                        timeclockEmployeeId: _task.model.timeclockEmployeeId,
+                        rounds: _task.model.rounds,
+                        taskGroup: _task.model.taskGroup,
+                        machineShiftLabel: _task.model.machineShiftLabel,
+                        new: _task.model.new
+                    }));
                 }
                 machines.push(machine);
             }
@@ -1489,6 +1490,12 @@ angular.module('HarvardApp')
                 $scope.tasksMap[t[i]].model.highlight = false;
             }
         }
+        t = task.model.from.clone() - task.model.expectedStartTime.clone();
+        task.model.expectedStartTime = task.model.from.clone();
+        task.model.expectedSetupFinishTime.add(t, 'ms');
+        task.model.expectedFinishTime = task.model.to.clone();
+
+        $log.info(task);
         task.model.highlight = false;
         multipleTaskSelected = [];
         _movingTask = undefined;
