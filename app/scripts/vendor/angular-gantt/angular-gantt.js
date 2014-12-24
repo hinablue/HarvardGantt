@@ -4188,14 +4188,14 @@ Github: https://github.com/angular-gantt/angular-gantt.git
             $scope.row.$element = $element;
             $scope.row.$scope = $scope;
 
-            $scope.createTask = function() {
-                $scope.row.rowsManager.gantt.api.rows.raise.change({row: $scope.row, type: 'create'});
+            $scope.createTask = function(evt) {
+                $scope.row.rowsManager.gantt.api.rows.raise.change({row: $scope.row, type: 'create', event: evt});
             };
-            $scope.zoomIn = function() {
-                $scope.row.rowsManager.gantt.api.rows.raise.change({row: $scope.row, type: 'zoomIn'});
+            $scope.zoomIn = function(evt) {
+                $scope.row.rowsManager.gantt.api.rows.raise.change({row: $scope.row, type: 'zoomIn', event: evt});
             };
-            $scope.zoomOut = function() {
-                $scope.row.rowsManager.gantt.api.rows.raise.change({row: $scope.row, type: 'zoomOut'});
+            $scope.zoomOut = function(evt) {
+                $scope.row.rowsManager.gantt.api.rows.raise.change({row: $scope.row, type: 'zoomOut', event: evt});
             };
         };
         return builder.build();
@@ -4313,23 +4313,23 @@ Github: https://github.com/angular-gantt/angular-gantt.git
     angular.module('gantt').directive('ganttTaskForeground', ['$window', 'GanttDirectiveBuilder', function($window, Builder) {
         var builder = new Builder('ganttTaskForeground');
         builder.controller = function($scope) {
-        	$scope.deleteTask = function() {
-                $scope.task.rowsManager.gantt.api.tasks.raise.change({task: $scope.task, type: 'delete'});
+        	$scope.deleteTask = function(evt) {
+                $scope.task.rowsManager.gantt.api.tasks.raise.change({task: $scope.task, type: 'delete', event: evt});
         	};
-            $scope.switchPin = function() {
-                $scope.task.rowsManager.gantt.api.tasks.raise.change({task: $scope.task, type: 'pin'});
+            $scope.switchPin = function(evt) {
+                $scope.task.rowsManager.gantt.api.tasks.raise.change({task: $scope.task, type: 'pin', event: evt});
             };
-            $scope.editTask = function() {
-                $scope.task.rowsManager.gantt.api.tasks.raise.change({task: $scope.task, type: 'edit'});
+            $scope.editTask = function(evt) {
+                $scope.task.rowsManager.gantt.api.tasks.raise.change({task: $scope.task, type: 'edit', event: evt});
             };
-            $scope.createTask = function() {
-                $scope.task.rowsManager.gantt.api.tasks.raise.change({task: $scope.task.row, type: 'create'});
+            $scope.createTask = function(evt) {
+                $scope.task.rowsManager.gantt.api.tasks.raise.change({task: $scope.task.row, type: 'create', event: evt});
             };
-            $scope.zoomIn = function() {
-                $scope.task.rowsManager.gantt.api.tasks.raise.change({task: $scope.task, type: 'zoomIn'});
+            $scope.zoomIn = function(evt) {
+                $scope.task.rowsManager.gantt.api.tasks.raise.change({task: $scope.task, type: 'zoomIn', event: evt});
             };
-            $scope.zoomOut = function() {
-                $scope.task.rowsManager.gantt.api.tasks.raise.change({task: $scope.task, type: 'zoomOut'});
+            $scope.zoomOut = function(evt) {
+                $scope.task.rowsManager.gantt.api.tasks.raise.change({task: $scope.task, type: 'zoomOut', event: evt});
             };
         };
         return builder.build();
@@ -4704,13 +4704,13 @@ angular.module('gantt.templates', []).run(['$templateCache', function($templateC
         '                        <div class="dropdown position-fixed" id="rowmenu-{{row.model.id}}">\n' +
         '                            <ul class="dropdown-menu" role="menu">\n' +
         '                                <li>\n' +
-        '                                    <a class="pointer" role="menuitem" tabindex="1" ng-click="createTask()">Create</a>\n' +
+        '                                    <a class="pointer" role="menuitem" tabindex="1" ng-click="createTask($event)">Create</a>\n' +
         '                                </li>\n' +
         '                                <li>\n' +
-        '                                    <a class="pointer" role="menuitem" tabindex="2" ng-click="zoomIn()">Zoom In</a>\n' +
+        '                                    <a class="pointer" role="menuitem" tabindex="2" ng-click="zoomIn($event)">Zoom In</a>\n' +
         '                                </li>\n' +
         '                                <li>\n' +
-        '                                    <a class="pointer" role="menuitem" tabindex="3" ng-click="zoomOut()">Zoom Out</a>\n' +
+        '                                    <a class="pointer" role="menuitem" tabindex="3" ng-click="zoomOut($event)">Zoom Out</a>\n' +
         '                                </li>\n' +
         '                            </ul>\n' +
         '                        </div>\n' +
@@ -4838,22 +4838,22 @@ angular.module('gantt.templates', []).run(['$templateCache', function($templateC
         '            <div class="dropdown position-fixed" id="taskmenu-{{task.model.id}}">\n' +
         '                <ul class="dropdown-menu" role="menu">\n' +
         '                    <li>\n' +
-        '                        <a class="pointer" role="menuitem" tabindex="1" ng-click="switchPin()">{{ task.model.pin === true && \'Pined\' || \'Pin\' }}</a>\n' +
+        '                        <a class="pointer" role="menuitem" tabindex="1" ng-click="switchPin($event)">{{ task.model.pin === true && \'Pined\' || \'Pin\' }}</a>\n' +
         '                    </li>\n' +
         '                    <li>\n' +
-        '                        <a class="pointer" role="menuitem" tabindex="2" ng-click="editTask()">Edit</a>\n' +
+        '                        <a class="pointer" role="menuitem" tabindex="2" ng-click="editTask($event)">Edit</a>\n' +
         '                    </li>\n' +
         '                    <li>\n' +
-        '                        <a class="pointer" role="menuitem" tabindex="3" ng-click="createTask()">Create</a>\n' +
+        '                        <a class="pointer" role="menuitem" tabindex="3" ng-click="createTask($event)">Create</a>\n' +
         '                    </li>\n' +
         '                    <li>\n' +
-        '                        <a class="pointer" role="menuitem" tabindex="4" ng-click="zoomIn()">Zoom In</a>\n' +
+        '                        <a class="pointer" role="menuitem" tabindex="4" ng-click="zoomIn($event)">Zoom In</a>\n' +
         '                    </li>\n' +
         '                    <li>\n' +
-        '                        <a class="pointer" role="menuitem" tabindex="5" ng-click="zoomOut()">Zoom Out</a>\n' +
+        '                        <a class="pointer" role="menuitem" tabindex="5" ng-click="zoomOut($event)">Zoom Out</a>\n' +
         '                    </li>\n' +
         '                    <li>\n' +
-        '                        <a class="pointer" role="menuitem" tabindex="6" ng-click="deleteTask()">Delete</a>\n' +
+        '                        <a class="pointer" role="menuitem" tabindex="6" ng-click="deleteTask($event)">Delete</a>\n' +
         '                    </li>\n' +
         '                </ul>\n' +
         '            </div>\n' +
