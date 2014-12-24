@@ -82,6 +82,10 @@ angular.module('HarvardApp')
 				dataChecking = false;
 				errorMessage.push('[ComboId] must not be empty');
 			}
+			if(!taskData.productId) {
+				dataChecking = false;
+				errorMessage.push('[Process] must not be empty');
+			}
 			if(!taskData.processId) {
 				dataChecking = false;
 				errorMessage.push('[Process] must not be empty');
@@ -132,7 +136,7 @@ angular.module('HarvardApp')
 			if(taskData.expectedStartTime && taskData.expectedSetupFinishTime && taskData.expectedFinishTime &&
 				!(taskData.expectedStartTime <= taskData.expectedSetupFinishTime && taskData.expectedSetupFinishTime <= taskData.expectedFinishTime)) {
 				dataChecking = false;
-				errorMessage.push('[Expect Production Finish] must be greater then [Expect Setup Finish] and [Expect Start]');
+				errorMessage.push('Some conflict in [Expect Time], please check');
 			}
 
 			if(taskData.up === null || taskData.up <= 0) {
@@ -144,21 +148,26 @@ angular.module('HarvardApp')
 				dataChecking = false;
 				errorMessage.push('[SheetUp] must not be empty or less then 0');
 			}
+			
+			if(taskData.up != null && taskData.sheetUp !=null && taskData.up < taskData.sheetUp) {
+				dataChecking = false;
+				errorMessage.push('[SheetUp] must not be less then [Up]');
+			}
 
 			if (taskData.isParallel === true && taskData.parallelCode === null) {
 				dataChecking = false;
 				errorMessage.push('Some thing is error');
 			}
-			if (taskData.inProcessing === '1' || taskData.inProcessing === '1') {
+			if (taskData.inProcessing === '1') {
 				if (!taskData.actualStartTime) {
 					dataChecking = false;
 					errorMessage.push('When [Pending] is Yes, [Actual Start] must not be empty');
 				} else if(taskData.actualSetupFinishTime && taskData.actualStartTime > taskData.actualSetupFinishTime) {
 					dataChecking = false;
 					errorMessage.push('When [Pending] is Yes, [Actual Setup Finish] must be greater then [Actual Start]');
-				} else if(today > taskData.actualStartTime) {
+				} else if(today < taskData.actualStartTime) {
 					dataChecking = false;
-					errorMessage.push('When [Pending] is Yes, [Actual Start] can\'t be before now');
+					errorMessage.push('When [Pending] is Yes, [Actual Start] can\'t be after now');
 				}
 			}
 			if (taskData.isFinish === '1' || taskData.isFinish === '1') {
@@ -175,15 +184,27 @@ angular.module('HarvardApp')
 						dataChecking = false;
 						errorMessage.push('When [Finish] is Yes, [Actual Production Finish] must not be empty');
 					}
-				} else if(today > taskData.actualStartTime) {
-					dataChecking = false;
-					errorMessage.push('When [Finish] is Yes, [Actual Start] can\'t be before now');
-				} else if(!(taskData.actualStartTime <= taskData.actualSetupFinishTime && taskData.actualSetupFinishTime <= taskData.actualFinishTime)) {
-					dataChecking = false;
-					errorMessage.push('[Actual Production Finish] must be greater then [Actual Setup Finish] and [Actual Start]');
+				} else {
+					if(today < taskData.actualStartTime) {
+						dataChecking = false;
+						errorMessage.push('When [Finish] is Yes, [Actual Start] can\'t be after now');
+					}
+					if(today < taskData.actualSetupFinishTime) {
+						dataChecking = false;
+						errorMessage.push('When [Finish] is Yes, [Actual Setup Finish] can\'t be after now');
+					}
+					if(today < taskData.actualFinishTime) {
+						dataChecking = false;
+						errorMessage.push('When [Finish] is Yes, [Actual Production Finish] can\'t be after now');
+					}
+					
+					if(!(taskData.actualStartTime <= taskData.actualSetupFinishTime && taskData.actualSetupFinishTime <= taskData.actualFinishTime)) {
+						dataChecking = false;
+						errorMessage.push('Some conflict in [Actual Time], please check');
+					}
 				}
 			}
-			if(taskData.isFinish !== '1' && taskData.inProcessing !== '1' && taskData.isFinish !== '1' && taskData.inProcessing !== '1') {
+			if(taskData.isFinish !== '1' && taskData.inProcessing !== '1') {
 				if (taskData.actualStartTime) {
 					dataChecking = false;
 					errorMessage.push('When [Pending] & [Finish] is No, [Actual Start] must be empty');
@@ -195,6 +216,10 @@ angular.module('HarvardApp')
 				if (taskData.actualFinishTime) {
 					dataChecking = false;
 					errorMessage.push('When [Pending] & [Finish] is No, [Actual Production Finish] must be empty');
+				}
+				if (taskData.actualQuantity) {
+					dataChecking = false;
+					errorMessage.push('When [Pending] & [Finish] is No, [Actual Quantity] must be empty');
 				}
 			}
 
