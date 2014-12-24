@@ -815,7 +815,8 @@ Github: https://github.com/angular-gantt/angular-gantt.git
                 enabled: '=?',
                 dateFormat: '=?'
             },
-            link: function(scope, element, attrs, ganttCtrl) {
+            link: function(scope, element, attrs, ganttCtrl)
+             {
                 var api = ganttCtrl.gantt.api;
 
                 // Load options from global options attribute.
@@ -1085,7 +1086,7 @@ Github: https://github.com/angular-gantt/angular-gantt.git
             },
             scope: true,
             replace: true,
-            controller: ['$scope', '$element', '$log', 'ganttUtils', function($scope, $element, $log, utils) {
+            controller: ['$scope', '$element', 'ganttUtils', function($scope, $element, utils) {
                 var bodyElement = angular.element($document[0].body);
                 var parentElement = $scope.task.$element;
                 var showTooltipPromise;
@@ -1129,6 +1130,7 @@ Github: https://github.com/angular-gantt/angular-gantt.git
                 var mouseMoveHandler = smartEvent($scope, bodyElement, 'mousemove', debounce(function(e) {
                     if (!visible) {
                         mouseEnterX = e.clientX;
+                        displayTooltip(true, false);
                     } else {
                         updateTooltip(e.clientX);
                     }
@@ -1329,8 +1331,6 @@ angular.module('gantt.tooltips.templates', []).run(['$templateCache', function($
         '        Duration: {{((task.model.to - task.model.from) / 1000 / 3600).toFixed(2)}} (hrs)</br>\n' +
         '        <small>\n' +
         '            {{task.isMilestone() === true && (getFromLabel()) || (getFromLabel() + \' - \' + getToLabel())}}<br>\n' +
-        '            <span ng-if="task.model.pin"><i class="task-tootip-icon glyphicon glyphicon-pushpin"></i>Pined&nbsp;</span>\n' +
-        '            <span ng-if="task.model.finished"><i class="task-tootip-icon glyphicon glyphicon-minus-sign"></i>Finished&nbsp;</span>\n' +
         '        </small>\n' +
         '    </div>\n' +
         '</div>\n' +

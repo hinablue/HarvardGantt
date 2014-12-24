@@ -130,10 +130,9 @@ angular.module('HarvardApp')
                 api.core.on.ready($scope, logReadyEvent);
 
                 api.tasks.on.add($scope, addEventName('tasks.on.add', logTaskEvent));
+                api.tasks.on.change($scope, addEventName('tasks.on.change', logTaskEvent));
                 api.tasks.on.rowChange($scope, addEventName('tasks.on.rowChange', logTaskEvent));
                 api.tasks.on.remove($scope, addEventName('tasks.on.remove', logTaskEvent));
-
-                api.tasks.on.change($scope, addEventName('tasks.on.change', contextMenuEvent));
 
                 if (api.tasks.on.moveBegin) {
                     api.tasks.on.moveBegin($scope, addEventName('tasks.on.moveBegin', moveTaskBeginEvent));
@@ -186,6 +185,16 @@ angular.module('HarvardApp')
                             directiveScope.$digest();
 
                             logTaskEvent('task-click', directiveScope.task);
+                        });
+                        element.bind('mouseenter', function(evt) {
+                            element.css('z-index', directiveScope.task.model.priority * 1000);
+                        });
+                        element.bind('mouseleave', function(evt) {
+                            var _dropdown = angular.element(document.getElementById('taskmenu-'+directiveScope.task.model.id));
+                            if (_dropdown[0] !== undefined && _dropdown[0].classList !== undefined && _dropdown[0].classList.contains('open')) {
+                                _dropdown[0].classList.remove('open');
+                            }
+                            element.css('z-index', directiveScope.task.model.priority);
                         });
 
                         // element.bind('mousedown touchstart', function(event) {
@@ -1322,109 +1331,107 @@ angular.module('HarvardApp')
         $scope.editTask.expectedFinishTime = task.model.to.clone().format('YYYY/MM/DD HH:mm');
         $scope.editTask.modal = $modal(editTaskModalOptions);
     };
-    var contextMenuEvent = function(eventName, data) {
+    var taskContextMenuEvent = function(data) {
         var key;
-        if (data.type !== undefined) {
-            switch(data.type) {
-                case 'pin':
-                    if ($scope.options.readOnly === false) {
-                        data.task.model.pin = !data.task.model.pin;
-                    }
-                break;
-                case 'edit':
-                    if ($scope.options.readOnly === false) {
-                        // Calculate the expected setup finish datetime.
-                        var _setupFinishTime = moment(data.task.model.expectedSetupFinishTime) + (data.task.model.from - moment(data.task.model.expectedStartTime));
-                        _setupFinishTime = moment(_setupFinishTime).format('YYYY/MM/DD HH:mm');
+        switch(data.type) {
+            case 'pin':
+                if ($scope.options.readOnly === false) {
+                    data.task.model.pin = !data.task.model.pin;
+                }
+            break;
+            case 'edit':
+                if ($scope.options.readOnly === false) {
+                    // Calculate the expected setup finish datetime.
+                    var _setupFinishTime = moment(data.task.model.expectedSetupFinishTime) + (data.task.model.from - moment(data.task.model.expectedStartTime));
+                    _setupFinishTime = moment(_setupFinishTime).format('YYYY/MM/DD HH:mm');
 
-                        $scope.editTask = {
-                            id: data.task.model.id,
-                            rowId: data.task.row.model.id,
-                            poNo: data.task.model.job.poNo,
-                            fuzzyPoNo: data.task.model.job.poNo,
-                            processId: data.task.model.process.id,
-                            productId: data.task.model.process.productId,
-                            comboId: data.task.model.job.comboId,
-                            processingType: data.task.model.processingType,
-                            operationCode: data.task.model.operationCode,
-                            rounds: data.task.model.rounds,
-                            priority: data.task.model.priority,
-                            isPin: data.task.model.pin ? '1' : '0',
-                            isFinish: data.task.model.finished ? '1' : '0',
-                            inProcessing: data.task.model.inProcessing ? '1' : '0',
-                            runOnMachineId: data.task.model.runOnMachineId,
-                            actualRunOnMachineId: data.task.model.actualRunOnMachineId,
-                            machineShiftLabel: data.task.model.machineShiftLabel,
-                            parallelCode: data.task.model.parallelCode,
-                            pendingMinutes: data.task.model.pendingMinutes,
-                            capacity: data.task.model.capacity,
-                            face: data.task.model.face,
-                            part: data.task.model.part,
-                            up: data.task.model.up,
-                            sheetUp: data.task.model.sheetUp,
-                            s2sMins: data.task.model.s2sMins,
-                            timeclockEmployeeId: data.task.model.timeclockEmployeeId,
-                            expectedMoldId: data.task.model.expectedMoldId,
-                            expectedStartTime: data.task.model.from.format('YYYY/MM/DD HH:mm'),
-                            expectedSetupFinishTime: _setupFinishTime,
-                            expectedFinishTime: data.task.model.to.format('YYYY/MM/DD HH:mm'),
-                            quantity: data.task.model.quantity,
-                            actualStartTime: data.task.model.actualStartTime,
-                            actualSetupFinishTime: data.task.model.actualSetupFinishTime,
-                            actualFinishTime: data.task.model.actualFinishTime,
-                            actualQuantity: data.task.model.actualQuantity,
-                            previousTask: 0,
-                            nextTask: 0,
-                            tooltip: data.task.model.tooltip,
-                            modifyType: data.type,
-                            color: data.task.model.color,
-                            drawTask: false,
-                            modal: undefined,
-                            check: false
-                        };
-                        $scope.editTask.modal = $modal(editTaskModalOptions);
+                    $scope.editTask = {
+                        id: data.task.model.id,
+                        rowId: data.task.row.model.id,
+                        poNo: data.task.model.job.poNo,
+                        fuzzyPoNo: data.task.model.job.poNo,
+                        processId: data.task.model.process.id,
+                        productId: data.task.model.process.productId,
+                        comboId: data.task.model.job.comboId,
+                        processingType: data.task.model.processingType,
+                        operationCode: data.task.model.operationCode,
+                        rounds: data.task.model.rounds,
+                        priority: data.task.model.priority,
+                        isPin: data.task.model.pin ? '1' : '0',
+                        isFinish: data.task.model.finished ? '1' : '0',
+                        inProcessing: data.task.model.inProcessing ? '1' : '0',
+                        runOnMachineId: data.task.model.runOnMachineId,
+                        actualRunOnMachineId: data.task.model.actualRunOnMachineId,
+                        machineShiftLabel: data.task.model.machineShiftLabel,
+                        parallelCode: data.task.model.parallelCode,
+                        pendingMinutes: data.task.model.pendingMinutes,
+                        capacity: data.task.model.capacity,
+                        face: data.task.model.face,
+                        part: data.task.model.part,
+                        up: data.task.model.up,
+                        sheetUp: data.task.model.sheetUp,
+                        s2sMins: data.task.model.s2sMins,
+                        timeclockEmployeeId: data.task.model.timeclockEmployeeId,
+                        expectedMoldId: data.task.model.expectedMoldId,
+                        expectedStartTime: data.task.model.from.format('YYYY/MM/DD HH:mm'),
+                        expectedSetupFinishTime: _setupFinishTime,
+                        expectedFinishTime: data.task.model.to.format('YYYY/MM/DD HH:mm'),
+                        quantity: data.task.model.quantity,
+                        actualStartTime: data.task.model.actualStartTime,
+                        actualSetupFinishTime: data.task.model.actualSetupFinishTime,
+                        actualFinishTime: data.task.model.actualFinishTime,
+                        actualQuantity: data.task.model.actualQuantity,
+                        previousTask: 0,
+                        nextTask: 0,
+                        tooltip: data.task.model.tooltip,
+                        modifyType: data.type,
+                        color: data.task.model.color,
+                        drawTask: false,
+                        modal: undefined,
+                        check: false
+                    };
+                    $scope.editTask.modal = $modal(editTaskModalOptions);
+                }
+            break;
+            case 'create':
+                if ($scope.options.readOnly === false) {
+                    var _point = moment();
+                    if (data.event !== undefined) {
+                        _point = event.x - data.row.rowsManager.gantt.side.getWidth() + data.row.rowsManager.gantt.scroll.getScrollLeft() - 60;
+                        _point = data.row.rowsManager.gantt.getDateByPosition(_point);
                     }
-                break;
-                case 'create':
-                    if ($scope.options.readOnly === false) {
-                        var _point = moment();
-                        if (data.event !== undefined) {
-                            _point = event.x - data.row.rowsManager.gantt.side.getWidth() + data.row.rowsManager.gantt.scroll.getScrollLeft() - 60;
-                            _point = data.row.rowsManager.gantt.getDateByPosition(_point);
-                        }
-                        $scope.editTask = angular.copy(TaskEditor.editTaskTemplate);
-                        $scope.editTask.id = utils.randomUuid();
-                        $scope.editTask.rowId = data.task.row.model.id;
-                        $scope.editTask.runOnMachineId = data.task.row.model.id;
-                        $scope.editTask.modifyType = data.type;
-                        $scope.editTask.priority = Object.keys($scope.tasksMap).length + 1;
-                        $scope.editTask.expectedStartTime = _point.clone().format('YYYY/MM/DD HH:mm');
-                        $scope.editTask.expectedSetupFinishTime = _point.clone().add(1, 'm').format('YYYY/MM/DD HH:mm');
-                        $scope.editTask.expectedFinishTime = _point.clone().add(2, 'm').format('YYYY/MM/DD HH:mm');
-                        $scope.editTask.modal = $modal(editTaskModalOptions);
+                    $scope.editTask = angular.copy(TaskEditor.editTaskTemplate);
+                    $scope.editTask.id = utils.randomUuid();
+                    $scope.editTask.rowId = data.task.row.model.id;
+                    $scope.editTask.runOnMachineId = data.task.row.model.id;
+                    $scope.editTask.modifyType = data.type;
+                    $scope.editTask.priority = Object.keys($scope.tasksMap).length + 1;
+                    $scope.editTask.expectedStartTime = _point.clone().format('YYYY/MM/DD HH:mm');
+                    $scope.editTask.expectedSetupFinishTime = _point.clone().add(1, 'm').format('YYYY/MM/DD HH:mm');
+                    $scope.editTask.expectedFinishTime = _point.clone().add(2, 'm').format('YYYY/MM/DD HH:mm');
+                    $scope.editTask.modal = $modal(editTaskModalOptions);
+                }
+            break;
+            case 'delete':
+                if ($scope.options.readOnly === false) {
+                    if ($window.confirm('Are you sure to delete this task?') === true) {
+                        data.task.model.delete = true;
+                        data.task.row.removeTask(data.task.model.id, true, false);
                     }
-                break;
-                case 'delete':
-                    if ($scope.options.readOnly === false) {
-                        if ($window.confirm('Are you sure to delete this task?') === true) {
-                            data.task.model.delete = true;
-                            data.task.row.removeTask(data.task.model.id, true, false);
-                        }
-                    }
-                break;
-                case 'zoomIn':
-                    key = $scope.defaultScale.indexOf($scope.options.scale);
-                    if (key - 1 >= 0) {
-                        $scope.options.scale = $scope.defaultScale[(key - 1)];
-                    }
-                break;
-                case 'zoomOut':
-                    key = $scope.defaultScale.indexOf($scope.options.scale);
-                    if (key + 1 < $scope.defaultScale.length) {
-                        $scope.options.scale = $scope.defaultScale[(key + 1)];
-                    }
-                break;
-            }
+                }
+            break;
+            case 'zoomIn':
+                key = $scope.defaultScale.indexOf($scope.options.scale);
+                if (key - 1 >= 0) {
+                    $scope.options.scale = $scope.defaultScale[(key - 1)];
+                }
+            break;
+            case 'zoomOut':
+                key = $scope.defaultScale.indexOf($scope.options.scale);
+                if (key + 1 < $scope.defaultScale.length) {
+                    $scope.options.scale = $scope.defaultScale[(key + 1)];
+                }
+            break;
         }
     };
     var moveTaskBeginEvent = function(eventName, task) {
@@ -1499,8 +1506,11 @@ angular.module('HarvardApp')
                 }
             }
             $scope.tasksMap['t' + task.model.id] = task;
-        }
-        if (eventName === 'task-click') {
+        } else if (eventName === 'tasks.on.change') {
+            if (task.type !== undefined) {
+                taskContextMenuEvent(task);
+            }
+        } else if (eventName === 'task-click') {
             $log.info(task);
         }
     };
