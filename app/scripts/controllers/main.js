@@ -1525,6 +1525,11 @@ angular.module('HarvardApp')
             if (task.type !== undefined) {
                 taskContextMenuEvent(task);
             }
+        } else if (eventName === 'tasks.on.rowChange') {
+            task.model.runOnMachineId = task.row.model.id;
+            if (task.model.actualRunOnMachineId !== null && task.model.actualRunOnMachineId !== undefined) {
+                task.model.actualRunOnMachineId = task.row.model.id;
+            }
         } else if (eventName === 'task-click') {
             $log.info(task);
         }
