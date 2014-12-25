@@ -12,6 +12,23 @@ angular.module('HarvardApp')
     var objectModel, dataToRemove, saveGanttModal, _movingTask;
     var editTaskModalOptions = TaskEditor.editTaskModalOptions;
     var multipleTaskSelected = [];
+    var movableEnableCondition = function() {
+        return !$scope.options.readOnly;
+    };
+    var allowMovingCondition = function() {
+        return !$scope.options.readOnly;
+    };
+    var allowRowSwitchingCondition= function(sourceRow, targetRow, task) {
+        if ($scope.options.readOnly === true) {
+            return false;
+        } else {
+            if (Matt.switchMachineCondition !== undefined && typeof(Matt.switchMachineCondition) === 'function') {
+                return Matt.switchMachineCondition(sourceRow, targetRow, task);
+            } else {
+                return false;
+            }
+        }
+    };
     editTaskModalOptions.scope = $scope;
 
     $scope.editTask = angular.copy(TaskEditor.editTaskTemplate);
@@ -105,14 +122,11 @@ angular.module('HarvardApp')
             task.id = utils.randomUuid();
             task.oid = task.id;
             task.movable = {
-                enabled: function() {
-                    return $scope.options.readOnly === false;
-                },
-                allowMoving: function() {
-                    return $scope.options.readOnly === false;
-                },
+                enabled: movableEnableCondition,
+                allowMoving: allowMovingCondition,
                 allowResizing: false,
-                allowRowSwitching: false
+                allowRowSwitching: true,
+                allowRowSwitchingCondition: allowRowSwitchingCondition
             };
 
             if (false === ('t'+task.id in $scope.tasksMap)) {
@@ -926,14 +940,11 @@ angular.module('HarvardApp')
                     task.tooltip = $scope.editTask.tooltip;
                 }
                 task.movable = {
-                    enabled: function() {
-                        return $scope.options.readOnly === false;
-                    },
-                    allowMoving: function() {
-                        return $scope.options.readOnly === false;
-                    },
+                    enabled: movableEnableCondition,
+                    allowMoving: allowMovingCondition,
                     allowResizing: false,
-                    allowRowSwitching: false
+                    allowRowSwitching: true,
+                    allowRowSwitchingCondition: allowRowSwitchingCondition
                 };
 
                 $scope.editTask.check = true;
@@ -1188,14 +1199,11 @@ angular.module('HarvardApp')
                         new: t[j].new,
                         highlight: false,
                         movable: {
-                            enabled: function() {
-                                return $scope.options.readOnly === false;
-                            },
-                            allowMoving: function() {
-                                return $scope.options.readOnly === false;
-                            },
+                            enabled: movableEnableCondition,
+                            allowMoving: allowMovingCondition,
                             allowResizing: false,
-                            allowRowSwitching: false
+                            allowRowSwitching: true,
+                            allowRowSwitchingCondition: allowRowSwitchingCondition
                         }
                     };
 

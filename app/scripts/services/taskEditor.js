@@ -62,7 +62,10 @@ angular.module('HarvardApp')
                     enabled: false,
                     allowMoving: false,
                     allowResizing: false,
-                    allowRowSwitching: false
+                    allowRowSwitching: false,
+                    allowRowSwitchingCondition: function(source, target, task) {
+                        return false;
+                    }
                 }
             },
             editTaskTemplate: {

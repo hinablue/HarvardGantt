@@ -196,7 +196,8 @@ Github: https://github.com/angular-gantt/angular-gantt.git
                     enabled: '=?',
                     allowMoving: '=?',
                     allowResizing: '=?',
-                    allowRowSwitching: '=?'
+                    allowRowSwitching: '=?',
+                    allowRowSwitchingCondition: '=?'
                 },
                 link: function(scope, element, attrs, ganttCtrl) {
                     var api = ganttCtrl.gantt.api;
@@ -326,11 +327,12 @@ Github: https://github.com/angular-gantt/angular-gantt.git
                                 if (taskScope.task.moveMode === 'M') {
                                     var allowRowSwitching = utils.firstProperty([taskMovable, rowMovable], 'allowRowSwitching', scope.allowRowSwitching);
                                     if (allowRowSwitching) {
+                                        var allowRowSwitchingCondition = utils.firstProperty([taskMovable, rowMovable], 'allowRowSwitchingCondition', scope.allowRowSwitchingCondition);
                                         var scrollRect = ganttScrollElement[0].getBoundingClientRect();
                                         var rowCenterLeft = scrollRect.left + scrollRect.width / 2;
 
                                         var targetRowElement = utils.findElementFromPoint(rowCenterLeft, evt.clientY, function(element) {
-                                            return angular.element(element).hasClass('gantt-row');
+                                            return angular.element(element).hasClass('gantt-row-height');
                                         });
                                         var rows = ganttCtrl.gantt.rowsManager.rows;
                                         var targetRow;
@@ -343,7 +345,7 @@ Github: https://github.com/angular-gantt/angular-gantt.git
 
                                         var sourceRow = taskScope.task.row;
 
-                                        if (targetRow !== undefined && sourceRow !== targetRow) {
+                                        if (targetRow !== undefined && sourceRow !== targetRow && allowRowSwitchingCondition(sourceRow.model, targetRow.model, taskScope.task.model)) {
                                             targetRow.moveTaskToRow(taskScope.task, true);
                                             sourceRow.$scope.$digest();
                                             targetRow.$scope.$digest();
@@ -815,8 +817,7 @@ Github: https://github.com/angular-gantt/angular-gantt.git
                 enabled: '=?',
                 dateFormat: '=?'
             },
-            link: function(scope, element, attrs, ganttCtrl)
-             {
+            link: function(scope, element, attrs, ganttCtrl) {
                 var api = ganttCtrl.gantt.api;
 
                 // Load options from global options attribute.

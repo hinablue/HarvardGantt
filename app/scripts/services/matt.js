@@ -148,7 +148,7 @@ angular.module('HarvardApp')
 				dataChecking = false;
 				errorMessage.push('[SheetUp] must not be empty or less then 0');
 			}
-			
+
 			if(taskData.up != null && taskData.sheetUp !=null && taskData.up < taskData.sheetUp) {
 				dataChecking = false;
 				errorMessage.push('[SheetUp] must not be less then [Up]');
@@ -197,7 +197,7 @@ angular.module('HarvardApp')
 						dataChecking = false;
 						errorMessage.push('When [Finish] is Yes, [Actual Production Finish] can\'t be after now');
 					}
-					
+
 					if(!(taskData.actualStartTime <= taskData.actualSetupFinishTime && taskData.actualSetupFinishTime <= taskData.actualFinishTime)) {
 						dataChecking = false;
 						errorMessage.push('Some conflict in [Actual Time], please check');
@@ -246,6 +246,9 @@ angular.module('HarvardApp')
             },
             addTaskData: function(taskData) {
                 return genericEditorValidation(taskData);
+            },
+            switchMachineCondition: function(sourceMachine, targetMachine, task) {
+            	return true;
             },
             getGanttData: function() {
                 return {
