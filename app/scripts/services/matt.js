@@ -248,7 +248,17 @@ angular.module('HarvardApp')
                 return genericEditorValidation(taskData);
             },
             switchMachineCondition: function(sourceMachine, targetMachine, task) {
-            	return true;
+            	// to prevent old style json file, which not contains 'group' in factoryOperation, gets error
+            	if (!!targetMachine.factoryOperation.group) {
+            		for (var i in targetMachine.factoryOperation.group) {
+            			if (targetMachine.factoryOperation.group[i] === sourceMachine.factoryOperation.code) {
+            				return true;
+            			}
+            		}
+            		return false;
+            	} else {
+            		return sourceMachine.factoryOperation.code === targetMachine.factoryOperation.code;
+            	}
             },
             getGanttData: function() {
                 return {
