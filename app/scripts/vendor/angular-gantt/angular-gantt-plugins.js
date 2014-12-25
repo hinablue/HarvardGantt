@@ -1324,16 +1324,9 @@ angular.module('gantt.sortable.templates', []).run(['$templateCache', function($
 angular.module('gantt.tooltips.templates', []).run(['$templateCache', function($templateCache) {
     $templateCache.put('plugins/tooltips/tooltip.tmpl.html',
         '<div ng-cloak class="gantt-task-info">\n' +
-        '    <div class="gantt-task-info-content">\n' +
-        '        Po#: {{task.model.job.poNo}}</br>\n' +
-        '        Operaction Code: {{task.model.operationCode}}</br>\n' +
-        '        Processing Type: {{task.model.processingType}}</br>\n' +
-        '        QTY: {{task.model.quantity}}</br>\n' +
-        '        Duration: {{((task.model.to - task.model.from) / 1000 / 3600).toFixed(2)}} (hrs)</br>\n' +
-        '        <small>\n' +
-        '            {{task.isMilestone() === true && (getFromLabel()) || (getFromLabel() + \' - \' + getToLabel())}}<br>\n' +
-        '        </small>\n' +
-        '    </div>\n' +
+        '    <div class="gantt-task-info-content" ng-include="task.model.taskInfoContent"></div>\n' +
         '</div>\n' +
         '');
 }]);
+
+//# sourceMappingURL=angular-gantt-plugins.js.map

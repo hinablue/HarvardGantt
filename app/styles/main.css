@@ -85,6 +85,9 @@ textarea.live-task, textarea.live-row {
     position: fixed;
     z-index: 9990;
 }
+.tooltip-icon {
+    color: red;
+}
 
 #machineTasks {
     overflow: hidden;

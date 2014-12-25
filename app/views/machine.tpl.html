@@ -9,7 +9,7 @@
       	<div class="machine" ng-style="autoExpand">
 	      	<div class="header">
 	  			<span class="column multiple">&nbsp;</span>
-	  			<span class="column data" ng-repeat="title in row.model.title">{{ title }}</span>
+	  			<span class="column data" ng-repeat="title in row.model.title track by $index">{{ title }}</span>
 	  			<span class="column from">From</span>
 	  			<span class="column to">To</span>
 	  			<span class="column during">During(Min)</span>
@@ -19,12 +19,12 @@
       	<div class="machine ng-scope" ng-style="autoExpand" ng-model="row.tasks" as-sortable="dragControlListeners">
       		<div class="tasks ng-scope" ng-repeat="task in row.tasks" as-sortable-item>
       			<div class="task ng-scope" ng-style="taskColoured(task.model.color, task.model.textColor)" as-sortable-item-handle>
-	      			<span class="column ng-binding multiple"><i class="multiple-tasks fa {{ multipleTasksCheck(task.model.id) === true && 'fa-check-square-o' || 'fa-square-o' }}" ng-click="multipleTasksToggle(task.model.id)"></i></span>
-	      			<span class="column ng-binding data" ng-repeat="data in task.model.tooltip track by $index">{{ data }}</span>
-					<span class="column ng-binding from">{{ task.model.from.format("YYYY/MM/DD HH:mm") }}</span>
-					<span class="column ng-binding to">{{ task.model.to.format("YYYY/MM/DD HH:mm") }}</span>
-					<span class="column ng-binding during">{{ (task.model.to - task.model.from) / 60 / 1000 }}</span>
-					<span class="column ng-binding pin"><a class="btn {{ task.isPin === true && 'btn-warning' || 'btn-default' }} pin" ng-model="task.isPin" bs-checkbox><i class="fa {{ task.isPin === true && 'fa-check' || 'fa-close' }}"></i></a></span>
+	      			<span class="column multiple"><i class="multiple-tasks fa {{ multipleTasksCheck(task.model.id) === true && 'fa-check-square-o' || 'fa-square-o' }}" ng-click="multipleTasksToggle(task.model.id)"></i></span>
+	      			<span class="column data" ng-repeat="data in task.model.tooltip track by $index">{{ data }}</span>
+					<span class="column from">{{ task.model.from.format("YYYY/MM/DD HH:mm") }}</span>
+					<span class="column to">{{ task.model.to.format("YYYY/MM/DD HH:mm") }}</span>
+					<span class="column during">{{ (task.model.to - task.model.from) / 60 / 1000 }}</span>
+					<span class="column pin"><a class="btn {{ task.model.pin === true && 'btn-warning' || 'btn-default' }} pin" ng-model="task.model.pin" bs-checkbox><i class="fa {{ task.model.pin === true && 'fa-check' || 'fa-close' }}"></i></a></span>
 				</div>
       		</div>
       	</div>

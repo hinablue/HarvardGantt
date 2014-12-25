@@ -1,0 +1,20 @@
+<ul class="dropdown-menu" role="menu">
+    <li>
+        <a class="pointer" role="menuitem" tabindex="1" ng-click="task.switchPin(task, $event)">{{ task.model.pin === true && 'Pined' || 'Pin' }}</a>
+    </li>
+    <li>
+        <a class="pointer" role="menuitem" tabindex="2" ng-click="task.editTask(task, $event)">Edit</a>
+    </li>
+    <li>
+        <a class="pointer" role="menuitem" tabindex="3" ng-click="task.createTask(task, $event)">Create</a>
+    </li>
+    <li>
+        <a class="pointer" role="menuitem" tabindex="4" ng-click="task.zoomIn(task, $event)">Zoom In</a>
+    </li>
+    <li>
+        <a class="pointer" role="menuitem" tabindex="5" ng-click="task.zoomOut(task, $event)">Zoom Out</a>
+    </li>
+    <li>
+        <a class="pointer" role="menuitem" tabindex="6" ng-click="task.deleteTask(task, $event)">Delete</a>
+    </li>
+</ul>

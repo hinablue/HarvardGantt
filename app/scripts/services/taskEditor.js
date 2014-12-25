@@ -66,7 +66,10 @@ angular.module('HarvardApp')
                     allowRowSwitchingCondition: function(source, target, task) {
                         return false;
                     }
-                }
+                },
+                taskContent: '/views/taskContent.tpl.html',
+                taskContextMenu: '/views/taskContextMenu.tpl.html',
+                taskInfoContent: '/views/taskTooltip.tpl.html'
             },
             editTaskTemplate: {
                 id: 0,
