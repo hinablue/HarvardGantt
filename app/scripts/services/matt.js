@@ -113,6 +113,10 @@ angular.module('HarvardApp')
 				dataChecking = false;
 				errorMessage.push('[Capacity] must not be empty');
 			}
+			if(taskData.inProcessing === '1' && taskData.isFinish === '1') {
+				dataChecking = false;
+				errorMessage.push('[Pending] & [Finish] can\'t set to Yes in the same time');
+			}
 			if(!taskData.expectedStartTime) {
 				dataChecking = false;
 				errorMessage.push('[Expect Start] must not be empty');
