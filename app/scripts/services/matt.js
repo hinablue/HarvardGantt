@@ -149,7 +149,7 @@ angular.module('HarvardApp')
 				errorMessage.push('[SheetUp] must not be empty or less then 0');
 			}
 
-			if(taskData.up != null && taskData.sheetUp !=null && taskData.up < taskData.sheetUp) {
+			if(taskData.up != null && taskData.sheetUp !=null && taskData.up > taskData.sheetUp) {
 				dataChecking = false;
 				errorMessage.push('[SheetUp] must not be less then [Up]');
 			}
