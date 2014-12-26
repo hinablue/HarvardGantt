@@ -1507,6 +1507,7 @@ angular.module('HarvardApp')
                     }
                 break;
             }
+            evt.stopPropagation();
         };
         var moveTaskBeginEvent = function(eventName, task) {
             var i, t, l;
@@ -1623,8 +1624,23 @@ angular.module('HarvardApp')
                 task.deleteTask = function(task, evt) {
                     taskContextMenuEvent('delete', task, evt);
                 };
-                task.moreInfo = function(task, evt) {
-
+                task.moreInformation = function(task, evt) {
+                    evt.stopPropagation();
+                    var _url = $scope.configuration.serverLocation + $scope.configuration.getMoreInformationPage.replace('#operationIds#', task.model.id);
+                    var _dropdown = angular.element(document.getElementById('taskmenu-'+task.model.id));
+                    $modal({
+                        scope: $scope,
+                        title: 'More Information',
+                        content: '<iframe src="'+_url+'" style="width:100%;height:'+($window.innerHeight * 0.75)+'px;border:0 none;"></iframe>',
+                        template: $scope.configuration.serverLocation + $scope.configuration.viewsFolder + '/moreInformation.tpl.html',
+                        backdrop: false,
+                        placement: 'center',
+                        show: true
+                    });
+                    if (_dropdown[0] !== undefined && _dropdown[0].classList !== undefined && _dropdown[0].classList.contains('open')) {
+                        _dropdown[0].classList.remove('open');
+                    }
+                    task.$element.css('z-index', task.model.priority);
                 };
                 $scope.tasksMap['t' + task.model.id] = task;
             } else if (eventName === 'tasks.on.rowChange') {
