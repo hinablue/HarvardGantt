@@ -113,6 +113,14 @@ angular.module('HarvardApp')
 				dataChecking = false;
 				errorMessage.push('[Capacity] must not be empty');
 			}
+			if(taskData.isPin === '1' && taskData.inProcessing === '1') {
+				dataChecking = false;
+				errorMessage.push('Pin can\'t use on finished task');
+			}
+			if(taskData.isPin === '1' && taskData.isFinish === '1') {
+				dataChecking = false;
+				errorMessage.push('Pin can\'t use pending task');
+			}
 			if(taskData.inProcessing === '1' && taskData.isFinish === '1') {
 				dataChecking = false;
 				errorMessage.push('[Pending] & [Finish] can\'t set to Yes in the same time');
