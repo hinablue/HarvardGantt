@@ -20,7 +20,7 @@ angular.module('HarvardApp')
              * 如果要新增屬性，請先在此新增屬性與預設值。
              * 例如：
              *
-             * task.newPriority = 1000;
+             * newPriority = 1000,
              */
             taskTemplate: {
                 id: 0,
