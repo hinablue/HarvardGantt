@@ -1193,7 +1193,7 @@ angular.module('HarvardApp')
                             id: t[j].id,
                             oid: t[j].oid,
                             color: t[j].color,
-                            name: t[j].operationCode.toString().replace(/(^[0]+)/, ''),
+                            name: t[j].operationCode,
                             from: moment(t[j].expectedStartTime, 'YYYY-MM-DDTHH:mm:ssZ'),
                             to: moment(t[j].expectedFinishTime, 'YYYY-MM-DDTHH:mm:ssZ'),
                             textColor: Coloured.isDarkColoured(t[j].color) ? '#ffffff' : '#000000',
