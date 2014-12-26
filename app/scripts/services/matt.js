@@ -346,6 +346,10 @@ angular.module('HarvardApp')
 angular.module('HarvardApp')
 .filter('trimLeadingZero', function () {
 	return function (input) {
-		input?return input.replace(/^0+/, ''):return "";
+		if(input){
+			return input.replace(/^0+/, '');
+		} else {
+			return "";
+		}
 	};
 });
