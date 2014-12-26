@@ -88,6 +88,9 @@ textarea.live-task, textarea.live-row {
 .tooltip-icon {
     color: red;
 }
+.gantt-task-content {
+    text-align: left;
+}
 
 #machineTasks {
     overflow: hidden;
