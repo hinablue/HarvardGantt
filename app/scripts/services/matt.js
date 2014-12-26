@@ -344,7 +344,7 @@ angular.module('HarvardApp')
 );
 
 angular.module('HarvardApp')
-.filter('trimZero', function () {
+.filter('trimLeadingZero', function () {
 	return function (input) {
 		if (input) {
 			return input.replace(/^0+/, '');
