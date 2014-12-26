@@ -12,6 +12,16 @@ angular.module('HarvardApp')
         var configuration = Matt.configuration();
 
         return {
+            /**
+             * [taskTemplate Task 預設樣版]
+             * @type {Object}
+             *
+             * Task Modify Hint.
+             * 如果要新增屬性，請先在此新增屬性與預設值。
+             * 例如：
+             *
+             * task.newPriority = 1000;
+             */
             taskTemplate: {
                 id: 0,
                 oid: 0,

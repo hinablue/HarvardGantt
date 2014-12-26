@@ -997,6 +997,15 @@ angular.module('HarvardApp')
                     task.taskContextMenu = $scope.configuration.serverLocation + $scope.configuration.viewsFolder + '/taskContextMenu.tpl.html';
                     task.taskInfoContent = $scope.configuration.serverLocation + $scope.configuration.viewsFolder + '/taskTooltip.tpl.html';
 
+                    /**
+                     * Task Modify Hint.
+                     * 所有編輯器沒有使用到的 Task 屬性，請在這裡手動加入。
+                     *
+                     * 例如：
+                     *
+                     * task.newPriority = $scope.tasksMap['t' + $scope.editTask.id].newPriority;
+                     */
+
                     $scope.editTask.check = true;
                     if ($scope.editTask.drawTask === false) {
                         objectModel.api.gantt.rowsManager.rows[rowIndex].addTask(task);
@@ -1047,9 +1056,18 @@ angular.module('HarvardApp')
                     };
                     for (var j = 0, t = m[i].tasks, q = t.length; j < q; j++) {
                         _task = $scope.tasksMap['t'+t[j].id];
+
+                        /**
+                         * Task Modify Hint.
+                         * 這裡是必須要傳回 Server 的 Task 資料
+                         *
+                         * 例如：
+                         *
+                         * newPriority = _task.model.newPriority;
+                         */
                         machine.operationQueue.push(angular.copy({
                             id: _task.model.id,
-                            oid: _task.model.id,
+                            oid: _task.model.oid,
                             part: _task.model.part,
                             operationCode: _task.model.operationCode,
                             priority: _task.model.priority,
@@ -1188,7 +1206,14 @@ angular.module('HarvardApp')
 
                 if (m[i].operationQueue.length > 0) {
                     for(j = 0, t = m[i].operationQueue, q = t.length; j < q; j++) {
-                        // Prepare and cleanup the task data.
+                        /**
+                         * Task Modify Hint.
+                         * 這裡是初始化 Gantt 所有 Tasks 資料的物件。
+                         *
+                         * 例如：
+                         *
+                         * newPriority = t[j].newPriority;
+                         */
                         task = {
                             id: t[j].id,
                             oid: t[j].oid,
