@@ -1217,7 +1217,6 @@ angular.module('HarvardApp')
                     container: '#gantt-chart-alert',
                     show: true
                 });
-                $scope.readyToGo(angular.copy(Harvard.testServerResponse()));
             });
         };
 
@@ -1226,7 +1225,7 @@ angular.module('HarvardApp')
 
             $scope.clear();
 
-            $log.info('[Event] Beginning parse JSON data.', $scope.tasksMap);
+            $log.info('[Event] Beginning parse JSON data.');
 
             for(i = 0, m = originalData.machines, l = m.length; i < l; i++) {
                 // if (m[i].operationQueue.length === 0) continue;
@@ -1697,9 +1696,7 @@ angular.module('HarvardApp')
         // Event handler
         var logTaskEvent = function(eventName, task) {
             var i, k, l;
-            if (eventName === 'tasks.on.change') {
-                // $log.info(eventName, task.model);
-            }
+
             if (eventName === 'tasks.on.add' || eventName === 'tasks.on.change') {
                 if (task.model.color === '') {
                     task.model.color = '#AA8833';
