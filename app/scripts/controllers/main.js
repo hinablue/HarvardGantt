@@ -1658,7 +1658,6 @@ angular.module('HarvardApp')
                 if (multipleTaskSelected.length > 0) {
                     for (var i = 0, t = multipleTaskSelected, l = t.length; i < l; i++) {
                         if ($scope.tasksMap['t'+t[i]].model.id !== task.model.id && task.row.model.id === $scope.tasksMap['t'+t[i]].row.model.id) {
-                            $log.info($scope.tasksMap['t'+t[i]].model.to > task.model.from);
                             if ($scope.tasksMap['t'+t[i]].model.to > task.model.from) {
                                 _dateline = $scope.tasksMap['t'+t[i]].model.to.clone().add(1, 'm');
                                 _dateline = objectModel.api.gantt.getPositionByDate(_dateline, false);
