@@ -4814,5 +4814,3 @@ angular.module('gantt.templates', []).run(['$templateCache', function($templateC
         '</div>\n' +
         '');
 }]);
-
-//# sourceMappingURL=angular-gantt.js.map

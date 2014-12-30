@@ -909,7 +909,11 @@ angular.module('HarvardApp')
                 $scope.editTask.actualSetupFinishTime = $scope.editTask.actualSetupFinishTime === null ? null : typeof($scope.editTask.actualSetupFinishTime) === 'object' ? moment((new Date($scope.editTask.actualSetupFinishTime)).getTime(), 'x') : moment($scope.editTask.actualSetupFinishTime, 'YYYY-MM-DDTHH:mm:ss');
                 $scope.editTask.actualFinishTime = $scope.editTask.actualFinishTime === null ? null : typeof($scope.editTask.actualFinishTime) === 'object' ? moment((new Date($scope.editTask.actualFinishTime)).getTime(), 'x') : moment($scope.editTask.actualFinishTime, 'YYYY-MM-DDTHH:mm:ss');
 
-                $scope.editTask.taskGroupIdsVo = $scope.tasksMap['t' + $scope.editTask.id].model.taskGroupIdsVo;
+                if ($scope.tasksMap['t' + $scope.editTask.id].model === undefined) {
+                    $scope.editTask.taskGroupIdsVo = [];
+                } else {
+                    $scope.editTask.taskGroupIdsVo = $scope.tasksMap['t' + $scope.editTask.id].model.taskGroupIdsVo;
+                }
 
                 var result = Matt.addTaskData($scope.editTask), task;
                 var rowIndex = (function($scope) {
@@ -1031,8 +1035,13 @@ angular.module('HarvardApp')
                      *
                      * task.newPriority = $scope.tasksMap['t' + $scope.editTask.id].model.newPriority;
                      */
-                    task.taskGroupIdsVo = $scope.tasksMap['t' + $scope.editTask.id].model.taskGroupIdsVo;
-                    task.taskGroup = $scope.tasksMap['t' + $scope.editTask.id].model.taskGroup;
+                    if ($scope.tasksMap['t' + $scope.editTask.id].model === undefined) {
+                        task.taskGroupIdsVo = [];
+                        task.taskGroup = '';
+                    } else {
+                        task.taskGroupIdsVo = $scope.tasksMap['t' + $scope.editTask.id].model.taskGroupIdsVo;
+                        task.taskGroup = $scope.tasksMap['t' + $scope.editTask.id].model.taskGroup;
+                    }
 
                     $scope.editTask.check = true;
                     if ($scope.editTask.drawTask === false) {
@@ -1609,10 +1618,7 @@ angular.module('HarvardApp')
                 for (var i = 0, t = multipleTaskSelected, l = t.length; i < l; i++) {
                     if ($scope.tasksMap['t'+t[i]].model.id !== task.model.id) {
                         _dateline = $scope.tasksMap['t'+t[i]].model.from.clone().add(_shift, 'ms');
-                        if (_dateline <= _firstColumn) {
-                            task.rowsManager.gantt.api.tasks.raise.moveEnd(task);
-                            return false;
-                        } else if ($scope.tasksMap['t'+t[i]].model.finished === true ||  $scope.tasksMap['t'+t[i]].model.inProcessing === true) {
+                        if (_dateline <= _firstColumn || $scope.tasksMap['t'+t[i]].model.finished === true ||  $scope.tasksMap['t'+t[i]].model.inProcessing === true) {
                             continue;
                         } else {
                             _dateline = objectModel.api.gantt.getPositionByDate(_dateline, false);
@@ -1628,7 +1634,7 @@ angular.module('HarvardApp')
             }
         };
         var moveTaskEndEvent = function(eventName, task) {
-            var i, t, l;
+            var i, t, l, _dateline;
             if ($scope.groupTask === true) {
                 if (multipleTaskSelected.length > 0) {
                     for (i = 0, t = multipleTaskSelected, l = t.length; i < l; i++) {
@@ -1646,6 +1652,18 @@ angular.module('HarvardApp')
                         $scope.tasksMap[t[i]].model.highlight = false;
                         if ($scope.tasksMap[t[i]].$scope !== undefined) {
                             $scope.tasksMap[t[i]].$scope.$digest();
+                        }
+                    }
+                }
+                if (multipleTaskSelected.length > 0) {
+                    for (var i = 0, t = multipleTaskSelected, l = t.length; i < l; i++) {
+                        if ($scope.tasksMap['t'+t[i]].model.id !== task.model.id && task.row.model.id === $scope.tasksMap['t'+t[i]].row.model.id) {
+                            $log.info($scope.tasksMap['t'+t[i]].model.to > task.model.from);
+                            if ($scope.tasksMap['t'+t[i]].model.to > task.model.from) {
+                                _dateline = $scope.tasksMap['t'+t[i]].model.to.clone().add(1, 'm');
+                                _dateline = objectModel.api.gantt.getPositionByDate(_dateline, false);
+                                task.moveTo(_dateline, false);
+                            }
                         }
                     }
                 }
