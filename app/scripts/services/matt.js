@@ -234,7 +234,7 @@ angular.module('HarvardApp')
 					errorMessage.push('When [Pending] & [Finish] is No, [Actual Quantity] must be empty');
 				}
 			}
-
+			
 			if(dataChecking) {
 				// 如果檢查通過
 				return {

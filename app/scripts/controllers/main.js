@@ -996,7 +996,6 @@ angular.module('HarvardApp')
                     task.taskContent = $scope.configuration.serverLocation + $scope.configuration.viewsFolder + '/taskContent.tpl.html';
                     task.taskContextMenu = $scope.configuration.serverLocation + $scope.configuration.viewsFolder + '/taskContextMenu.tpl.html';
                     task.taskInfoContent = $scope.configuration.serverLocation + $scope.configuration.viewsFolder + '/taskTooltip.tpl.html';
-                    task.taskGroupIdsVo = $scope.tasksMap['t' + $scope.editTask.id].taskGroupIdsVo;
                     
                     /**
                      * Task Modify Hint.
@@ -1006,6 +1005,8 @@ angular.module('HarvardApp')
                      *
                      * task.newPriority = $scope.tasksMap['t' + $scope.editTask.id].newPriority;
                      */
+                    
+                    task.taskGroupIdsVo = $scope.editTask.taskGroupIdsVo;
 
                     $scope.editTask.check = true;
                     if ($scope.editTask.drawTask === false) {
