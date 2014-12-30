@@ -1,0 +1,37 @@
+<div class="modal" id="machineTasks" tabindex="-1" role="dialog">
+  <div class="modal-dialog" style="width: 90%;">
+    <div class="modal-content">
+      <div class="modal-header" ng-show="title">
+        <button type="button" class="close" ng-click="$hide()">&times;</button>
+        <h4 class="modal-title" ng-bind-html="title"></h4>
+      </div>
+      <div class="modal-body clearfix">
+      	<div class="machine" ng-style="autoExpand">
+	      	<div class="header">
+	  			<span class="column multiple">&nbsp;</span>
+	  			<span class="column data" ng-repeat="title in row.model.title track by $index">{{ title }}</span>
+	  			<span class="column from">From</span>
+	  			<span class="column to">To</span>
+	  			<span class="column during">During(Min)</span>
+	  			<span class="column pin">Pin</span>
+	  		</div>
+	  	</div>
+      	<div class="machine ng-scope" ng-style="autoExpand" ng-model="row.tasks" as-sortable="dragControlListeners">
+      		<div class="tasks ng-scope" ng-repeat="task in row.tasks" as-sortable-item>
+      			<div class="task ng-scope" ng-style="taskColoured(task.model.color, task.model.textColor)" as-sortable-item-handle>
+	      			<span class="column multiple"><i class="multiple-tasks fa {{ multipleTasksCheck(task.model.id) === true && 'fa-check-square-o' || 'fa-square-o' }}" ng-click="multipleTasksToggle(task.model.id)"></i></span>
+	      			<span class="column data" ng-repeat="data in task.model.tooltip track by $index">{{ data }}</span>
+					<span class="column from">{{ task.model.from.format("YYYY/MM/DD HH:mm") }}</span>
+					<span class="column to">{{ task.model.to.format("YYYY/MM/DD HH:mm") }}</span>
+					<span class="column during">{{ ((task.model.to - task.model.from) / 60 / 1000).toFixed(0) }}</span>
+					<span class="column pin"><a class="btn {{ task.model.pin === true && 'btn-warning' || 'btn-default' }} pin" ng-model="task.model.pin" bs-checkbox><i class="fa {{ task.model.pin === true && 'fa-check' || 'fa-close' }}"></i></a></span>
+				</div>
+      		</div>
+      	</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" ng-click="$hide()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

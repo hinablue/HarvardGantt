@@ -27,6 +27,7 @@ module.exports = function(config) {
       'bower_components/angular-strap/dist/angular-strap.tpl.js',
       'bower_components/moment/moment.js',
       'bower_components/angular-moment/angular-moment.js',
+      'bower_components/angular-ui-tree/dist/angular-ui-tree.js',
       'bower_components/angular-native-dragdrop/draganddrop.js',
       'bower_components/ng-context-menu/dist/ng-context-menu.js',
       'bower_components/ng-sortable/dist/ng-sortable.js',

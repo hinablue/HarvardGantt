@@ -80,7 +80,8 @@ angular.module('HarvardApp')
                 taskContent: '/views/taskContent.tpl.html',
                 taskContextMenu: '/views/taskContextMenu.tpl.html',
                 taskInfoContent: '/views/taskTooltip.tpl.html',
-                taskGroupIdsVo: []
+                taskGroupIdsVo: [],
+                weight: 0
             },
             editTaskTemplate: {
                 id: 0,
@@ -133,7 +134,8 @@ angular.module('HarvardApp')
                 nextTaskId: 0,
                 check: false,
                 color: '#AA8833',
-                taskGroupIdsVo: []
+                taskGroupIdsVo: [],
+                weight: 0
             },
             editTaskModalOptions: {
                 scope: null,

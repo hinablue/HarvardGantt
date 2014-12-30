@@ -90,7 +90,6 @@ angular.module('HarvardApp')
             fromDate: undefined,
             toDate: undefined,
             labelsEnabled: true,
-            sideWidth: 200,
             allowSideResizing: true,
             currentDate: 'line',
             currentDateValue: moment(),
@@ -98,6 +97,9 @@ angular.module('HarvardApp')
             readOnly: false,
             filterTask: '',
             filterRow: '',
+            options: {
+                sideWidth: 200
+            },
             filterRowComparator: function(actual, expected) {
                 if (expected === '' || true === new RegExp(expected, 'i').test(actual.name) || true === new RegExp(expected, 'i').test(actual.subDept)) {
                     return true;
@@ -258,28 +260,81 @@ angular.module('HarvardApp')
                         } else if (directiveName === 'ganttRowLabel') {
                             var i, l, t;
 
-                            directiveScope.multipleTasks = [];
-                            directiveScope.multipleTasksToggle = function(id) {
-                                var _multipleTasks = [];
-                                if (directiveScope.multipleTasks.indexOf(id) >= 0) {
-                                    for(var i = 0, mt = directiveScope.multipleTasks, l = mt.length; i < l; i += 1) {
-                                        if (mt[i] === id) {
-                                            continue;
-                                        }
-                                        _multipleTasks.push(mt[i]);
-                                    }
-                                    directiveScope.multipleTasks = _multipleTasks;
-                                } else {
-                                    directiveScope.multipleTasks.push(id);
-                                }
-                            };
-                            directiveScope.multipleTasksCheck = function(id) {
-                                if (directiveScope.multipleTasks.indexOf(id) >= 0) {
-                                    return true;
-                                } else {
-                                    return false;
-                                }
-                            };
+                            // directiveScope.multipleTasks = [];
+                            // directiveScope.multipleTasksToggle = function(id) {
+                            //     var _multipleTasks = [];
+                            //     if (directiveScope.multipleTasks.indexOf(id) >= 0) {
+                            //         for(var i = 0, mt = directiveScope.multipleTasks, l = mt.length; i < l; i += 1) {
+                            //             if (mt[i] === id) {
+                            //                 continue;
+                            //             }
+                            //             _multipleTasks.push(mt[i]);
+                            //         }
+                            //         directiveScope.multipleTasks = _multipleTasks;
+                            //     } else {
+                            //         directiveScope.multipleTasks.push(id);
+                            //     }
+                            // };
+                            // directiveScope.multipleTasksCheck = function(id) {
+                            //     if (directiveScope.multipleTasks.indexOf(id) >= 0) {
+                            //         return true;
+                            //     } else {
+                            //         return false;
+                            //     }
+                            // };
+                            // directiveScope.dragControlListeners = {
+                            //     containment: '#machineTasks',
+                            //     scrollableContainer: '#machineTasks',
+                            //     // accept: function (sourceItemHandleScope, destSortableScope) {
+                            //     //     return true;
+                            //     // },
+                            //     orderChanged: function(event) {
+                            //         var target;
+                            //         if (event.dest.index === 0) {
+                            //             target = 0;
+                            //         } else {
+                            //             target = event.dest.index > event.source.index ? event.dest.index - 1 : event.dest.index;
+                            //         }
+                            //         var _dropTarget = directiveScope.row.tasks[event.dest.index].model, _sortedTasks = [], _shiftDuring = 60 * 1000;
+                            //         if (directiveScope.multipleTasks.length > 0 && directiveScope.multipleTasks.indexOf(_dropTarget.id) > -1) {
+                            //             for (i = 0, t = directiveScope.multipleTasks, l = t.length; i < l; i += 1) {
+                            //                 _sortedTasks.push(directiveScope.row.tasksMap[t[i]].model);
+                            //             }
+                            //             _sortedTasks.sort(function(a, b) { return a.from - b.from; });
+                            //             if (target === 0) {
+                            //                 _shiftDuring += Math.abs(_dropTarget.to - directiveScope.row.tasks[1].model.from);
+                            //             } else {
+                            //                 _shiftDuring += Math.abs(directiveScope.row.tasks[(target - 1)].model.to - _dropTarget.from);
+                            //             }
+                            //             _shiftDuring = _shiftDuring / 60 / 1000 * (event.dest.index > event.source.index ? 1 : -1);
+                            //             for (i = 0, t = directiveScope.row.tasks, l = t.length; i < l; i += 1) {
+                            //                 if (directiveScope.multipleTasks.indexOf(t[i].model.id) > -1 && Math.abs(_shiftDuring) > 0) {
+                            //                     t[i].model.from = t[i].model.from.clone().add(_shiftDuring, 'm');
+                            //                     t[i].model.to = t[i].model.to.clone().add(_shiftDuring, 'm');
+                            //                     t[i].model.expectedSetupFinishTime = t[i].model.expectedSetupFinishTime.clone().add(_shiftDuring, 'm');
+                            //                 }
+                            //             }
+                            //             directiveScope.row.tasks.sort(function(a, b) { return a.model.from - b.model.from; });
+                            //             target = 0;
+                            //         }
+
+                            //         for (i = target, t = directiveScope.row.tasks, l = t.length; i < l; i += 1) {
+                            //             if (t[i].model.id === _dropTarget.id || i === target) {
+                            //                 continue;
+                            //             }
+                            //             if (t[i].model.from < t[(i-1)].model.to) {
+                            //                 var during = t[i].model.to.clone() - t[i].model.from.clone(),
+                            //                     setupDuring = t[i].model.expectedSetupFinishTime.clone() - t[i].model.from.clone();
+
+                            //                 t[i].model.from = t[(i-1)].model.to.clone().add(1, 'm');
+                            //                 t[i].model.to = t[i].model.from.clone().add(during, 'ms');
+                            //                 t[i].model.expectedSetupFinishTime = t[i].model.from.clone().add(setupDuring, 'ms');
+                            //             }
+                            //         }
+                            //         directiveScope.row.tasks.sort(function(a, b) { return a.model.from - b.model.from; });
+                            //     }
+                            // };
+
                             directiveScope.autoExpand = {
                                 width: (directiveScope.row.model.title.length * 10 + 33) + 'em'
                             };
@@ -289,57 +344,11 @@ angular.module('HarvardApp')
                                     color: textColor
                                 };
                             };
-                            directiveScope.dragControlListeners = {
-                                containment: '#machineTasks',
-                                scrollableContainer: '#machineTasks',
-                                // accept: function (sourceItemHandleScope, destSortableScope) {
-                                //     return true;
-                                // },
-                                orderChanged: function(event) {
-                                    var target;
-                                    if (event.dest.index === 0) {
-                                        target = 0;
-                                    } else {
-                                        target = event.dest.index > event.source.index ? event.dest.index - 1 : event.dest.index;
-                                    }
-                                    var _dropTarget = directiveScope.row.tasks[event.dest.index].model, _sortedTasks = [], _shiftDuring = 60 * 1000;
-                                    if (directiveScope.multipleTasks.length > 0 && directiveScope.multipleTasks.indexOf(_dropTarget.id) > -1) {
-                                        for (i = 0, t = directiveScope.multipleTasks, l = t.length; i < l; i += 1) {
-                                            _sortedTasks.push(directiveScope.row.tasksMap[t[i]].model);
-                                        }
-                                        _sortedTasks.sort(function(a, b) { return a.from - b.from; });
-                                        if (target === 0) {
-                                            _shiftDuring += Math.abs(_dropTarget.to - directiveScope.row.tasks[1].model.from);
-                                        } else {
-                                            _shiftDuring += Math.abs(directiveScope.row.tasks[(target - 1)].model.to - _dropTarget.from);
-                                        }
-                                        _shiftDuring = _shiftDuring / 60 / 1000 * (event.dest.index > event.source.index ? 1 : -1);
-                                        for (i = 0, t = directiveScope.row.tasks, l = t.length; i < l; i += 1) {
-                                            if (directiveScope.multipleTasks.indexOf(t[i].model.id) > -1 && Math.abs(_shiftDuring) > 0) {
-                                                t[i].model.from = t[i].model.from.clone().add(_shiftDuring, 'm');
-                                                t[i].model.to = t[i].model.to.clone().add(_shiftDuring, 'm');
-                                                t[i].model.expectedSetupFinishTime = t[i].model.expectedSetupFinishTime.clone().add(_shiftDuring, 'm');
-                                            }
-                                        }
-                                        directiveScope.row.tasks.sort(function(a, b) { return a.model.from - b.model.from; });
-                                        target = 0;
-                                    }
-
-                                    for (i = target, t = directiveScope.row.tasks, l = t.length; i < l; i += 1) {
-                                        if (t[i].model.id === _dropTarget.id || i === target) {
-                                            continue;
-                                        }
-                                        if (t[i].model.from < t[(i-1)].model.to) {
-                                            var during = t[i].model.to.clone() - t[i].model.from.clone(),
-                                                setupDuring = t[i].model.expectedSetupFinishTime.clone() - t[i].model.from.clone();
-
-                                            t[i].model.from = t[(i-1)].model.to.clone().add(1, 'm');
-                                            t[i].model.to = t[i].model.from.clone().add(during, 'ms');
-                                            t[i].model.expectedSetupFinishTime = t[i].model.from.clone().add(setupDuring, 'ms');
-                                        }
-                                    }
-                                    directiveScope.row.tasks.sort(function(a, b) { return a.model.from - b.model.from; });
-                                }
+                            directiveScope.reSortingTasks = function() {
+                                $timeout(function() {
+                                    directiveScope.row.tasks.sort(function(a, b) { return a.model.weight - b.model.weight; });
+                                    directiveScope.$digest();
+                                }, 100);
                             };
                             directiveScope.tasksOnMachine = $modal({
                                 scope: directiveScope,
@@ -350,6 +359,7 @@ angular.module('HarvardApp')
                                 show: false
                             });
                             element.bind('dblclick', function() {
+                                directiveScope.row.tasks.sort(function(a, b) { return a.model.weight - b.model.weight; });
                                 directiveScope.tasksOnMachine.$promise.then(directiveScope.tasksOnMachine.show);
                             });
                         }
@@ -895,7 +905,7 @@ angular.module('HarvardApp')
                 }
                 $scope.editTask.modal.hide();
             }
-            $scope.editTask = angular.copy({});
+            $scope.editTask = {};
         };
 
         $scope.checkTaskData = function() {
@@ -965,6 +975,7 @@ angular.module('HarvardApp')
                     task.actualSetupFinishTime = $scope.editTask.actualSetupFinishTime;
                     task.actualFinishTime = $scope.editTask.actualFinishTime;
                     task.actualQuantity = $scope.editTask.actualQuantity;
+                    task.weight = $scope.editTask.weight;
 
                     task.job = undefined;
                     for (i = 0, k = Object.keys($scope.jobsMap), l = k.length; i < l; i++) {
@@ -1077,7 +1088,7 @@ angular.module('HarvardApp')
 
         // Save or Calculate buttons
         $scope.saveGanttData = function(type) {
-            var mattCallback = Matt.saveOrCalcGanttData(), machine = {}, machines = [], _task;
+            var mattCallback = Matt.saveOrCalcGanttData(), machine = {}, machines = [], _taskModel;
             for (var i = 0, m = $scope.data, l = m.length; i < l; i++) {
                 if (m[i].tasks.length > 0) {
                     machine = {
@@ -1092,7 +1103,7 @@ angular.module('HarvardApp')
                         operationQueue: []
                     };
                     for (var j = 0, t = m[i].tasks, q = t.length; j < q; j++) {
-                        _task = $scope.tasksMap['t'+t[j].id];
+                        _taskModel = angular.copy($scope.tasksMap['t'+t[j].id].model);
 
                         /**
                          * Task Modify Hint.
@@ -1102,49 +1113,50 @@ angular.module('HarvardApp')
                          *
                          * newPriority = _task.model.newPriority;
                          */
-                        machine.operationQueue.push(angular.copy({
-                            id: _task.model.id,
-                            oid: _task.model.oid,
-                            part: _task.model.part,
-                            operationCode: _task.model.operationCode,
-                            priority: _task.model.priority,
-                            job: _task.model.job,
-                            process: _task.model.process,
-                            previousOperation: _task.model.previousOperation,
-                            nextOperations: _task.model.nextOperations,
-                            runOnMachineId: _task.model.runOnMachineId,
-                            actualRunOnMachineId: _task.model.actualRunOnMachineId,
-                            quantity: _task.model.quantity,
-                            actualQuantity: _task.model.actualQuantity,
-                            processingType: _task.model.processingType,
-                            factoryOperation: _task.model.factoryOperation,
-                            pin: _task.model.pin,
-                            capacity: _task.model.capacity,
-                            s2sMins: _task.model.s2sMins,
-                            up: _task.model.up,
-                            sheetUp: _task.model.sheetUp,
-                            face: _task.model.face,
-                            pendingMinutes: _task.model.pendingMinutes,
-                            expectedStartTime: _task.model.expectedStartTime.utc().format('YYYY-MM-DDTHH:mm:ss'),
-                            expectedSetupFinishTime: _task.model.expectedSetupFinishTime.utc().format('YYYY-MM-DDTHH:mm:ss'),
-                            expectedFinishTime: _task.model.expectedFinishTime.utc().format('YYYY-MM-DDTHH:mm:ss'),
-                            actualStartTime: _task.model.actualStartTime !== null ? _task.model.actualStartTime.utc().format('YYYY-MM-DDTHH:mm:ss') : null,
-                            actualSetupFinishTime: _task.model.actualSetupFinishTime !== null ? _task.model.actualSetupFinishTime.utc().format('YYYY-MM-DDTHH:mm:ss') : null,
-                            actualFinishTime: _task.model.actualFinishTime !== null ? _task.model.actualFinishTime.utc().format('YYYY-MM-DDTHH:mm:ss') : null,
-                            finished: _task.model.finished,
-                            inProcessing: _task.model.inProcessing,
-                            delete: _task.model.delete,
-                            parallelCode: _task.model.parallelCode,
-                            expectedMoldId: _task.model.expectedMoldId,
-                            tooltip: _task.model.tooltip.join('|'),
-                            color: _task.model.color,
-                            timeclockEmployeeId: _task.model.timeclockEmployeeId,
-                            rounds: _task.model.rounds,
-                            taskGroup: _task.model.taskGroup,
-                            taskGroupIdsVo: _task.model.taskGroupIdsVo,
-                            machineShiftLabel: _task.model.machineShiftLabel,
-                            new: _task.model.new
-                        }));
+                        machine.operationQueue.push({
+                            id: _taskModel.id,
+                            oid: _taskModel.oid,
+                            part: _taskModel.part,
+                            operationCode: _taskModel.operationCode,
+                            priority: _taskModel.priority,
+                            job: _taskModel.job,
+                            process: _taskModel.process,
+                            previousOperation: _taskModel.previousOperation,
+                            nextOperations: _taskModel.nextOperations,
+                            runOnMachineId: _taskModel.runOnMachineId,
+                            actualRunOnMachineId: _taskModel.actualRunOnMachineId,
+                            quantity: _taskModel.quantity,
+                            actualQuantity: _taskModel.actualQuantity,
+                            processingType: _taskModel.processingType,
+                            factoryOperation: _taskModel.factoryOperation,
+                            pin: _taskModel.pin,
+                            capacity: _taskModel.capacity,
+                            s2sMins: _taskModel.s2sMins,
+                            up: _taskModel.up,
+                            sheetUp: _taskModel.sheetUp,
+                            face: _taskModel.face,
+                            pendingMinutes: _taskModel.pendingMinutes,
+                            expectedStartTime: _taskModel.expectedStartTime.utc().format('YYYY-MM-DDTHH:mm:ss'),
+                            expectedSetupFinishTime: _taskModel.expectedSetupFinishTime.utc().format('YYYY-MM-DDTHH:mm:ss'),
+                            expectedFinishTime: _taskModel.expectedFinishTime.utc().format('YYYY-MM-DDTHH:mm:ss'),
+                            actualStartTime: _taskModel.actualStartTime !== null ? _taskModel.actualStartTime.utc().format('YYYY-MM-DDTHH:mm:ss') : null,
+                            actualSetupFinishTime: _taskModel.actualSetupFinishTime !== null ? _taskModel.actualSetupFinishTime.utc().format('YYYY-MM-DDTHH:mm:ss') : null,
+                            actualFinishTime: _taskModel.actualFinishTime !== null ? _taskModel.actualFinishTime.utc().format('YYYY-MM-DDTHH:mm:ss') : null,
+                            finished: _taskModel.finished,
+                            inProcessing: _taskModel.inProcessing,
+                            delete: _taskModel.delete,
+                            parallelCode: _taskModel.parallelCode,
+                            expectedMoldId: _taskModel.expectedMoldId,
+                            tooltip: _taskModel.tooltip.join('|'),
+                            color: _taskModel.color,
+                            timeclockEmployeeId: _taskModel.timeclockEmployeeId,
+                            rounds: _taskModel.rounds,
+                            taskGroup: _taskModel.taskGroup,
+                            taskGroupIdsVo: _taskModel.taskGroupIdsVo,
+                            machineShiftLabel: _taskModel.machineShiftLabel,
+                            new: _taskModel.new,
+                            weight: _taskModel.weight
+                        });
                     }
                     machines.push(machine);
                 }
@@ -1178,7 +1190,7 @@ angular.module('HarvardApp')
                 saveGanttModal.hide();
                 var result = mattCallback.success(response);
                 if (result.state === 'ok' && result.data.machines !== undefined && result.data.machines.length > 0) {
-                    $scope.readyToGo(result.data);
+                    $scope.readyToGo(angular.copy(result.data));
                 } else {
                     $alert({
                         title: 'ERROR! '+result.messages.title+'<br>',
@@ -1205,25 +1217,16 @@ angular.module('HarvardApp')
                     container: '#gantt-chart-alert',
                     show: true
                 });
+                $scope.readyToGo(angular.copy(Harvard.testServerResponse()));
             });
         };
 
         $scope.readyToGo = function(originalData) {
             var obj, task, i, j, l, m, q, t, p;
 
-            $scope.data = [];
-            $scope.tasksMap = angular.copy({});
-            $scope.processesMap = angular.copy({});
-            $scope.departmentsMap = angular.copy({});
-            $scope.jobsMap = angular.copy({});
-            $scope.machinesMap = angular.copy({});
-            $scope.departmentMenu = ['Select'];
-            $scope.subDepartmentMenu = ['Select'];
-            $scope.departmentMenuDefault = 'Select';
-            $scope.subDepartmentMenuDefault = 'Select';
-            $scope.pagination = [1];
-            $scope.paginationPrePage = 15;
-            $scope.currentPage = 1;
+            $scope.clear();
+
+            $log.info('[Event] Beginning parse JSON data.', $scope.tasksMap);
 
             for(i = 0, m = originalData.machines, l = m.length; i < l; i++) {
                 // if (m[i].operationQueue.length === 0) continue;
@@ -1233,6 +1236,7 @@ angular.module('HarvardApp')
                     id: m[i].machine.id,
                     name: m[i].machine.settingsMachine.name,
                     dept: m[i].machine.settingsMachine.dept,
+                    sortable: false,
                     settingsMachine: m[i].machine.settingsMachine,
                     factoryOperation: m[i].machine.factoryOperation,
                     title: m[i].machine.title.split('|'),
@@ -1257,8 +1261,8 @@ angular.module('HarvardApp')
                             oid: t[j].oid,
                             color: t[j].color,
                             name: t[j].operationCode,
-                            from: moment(t[j].expectedStartTime, 'YYYY-MM-DDTHH:mm:ssZ'),
-                            to: moment(t[j].expectedFinishTime, 'YYYY-MM-DDTHH:mm:ssZ'),
+                            from: moment(t[j].expectedStartTime, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
+                            to: moment(t[j].expectedFinishTime, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
                             textColor: Coloured.isDarkColoured(t[j].color) ? '#ffffff' : '#000000',
                             operationCode: t[j].operationCode,
                             priority: t[j].priority,
@@ -1279,12 +1283,12 @@ angular.module('HarvardApp')
                             sheetUp: t[j].sheetUp,
                             face: t[j].face,
                             pendingMinutes: t[j].pendingMinutes,
-                            expectedStartTime: moment(t[j].expectedStartTime, 'YYYY-MM-DDTHH:mm:ssZ'),
-                            expectedSetupFinishTime: moment(t[j].expectedSetupFinishTime, 'YYYY-MM-DDTHH:mm:ssZ'),
-                            expectedFinishTime: moment(t[j].expectedFinishTime, 'YYYY-MM-DDTHH:mm:ssZ'),
-                            actualStartTime: (t[j].actualStartTime === null) ? null : moment(t[j].actualStartTime, 'YYYY-MM-DDTHH:mm:ssZ'),
-                            actualSetupFinishTime: (t[j].actualSetupFinishTime === null) ? null : moment(t[j].actualSetupFinishTime, 'YYYY-MM-DDTHH:mm:ssZ'),
-                            actualFinishTime: (t[j].actualFinishTime === null) ? null : moment(t[j].actualFinishTime, 'YYYY-MM-DDTHH:mm:ssZ'),
+                            expectedStartTime: moment(t[j].expectedStartTime, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
+                            expectedSetupFinishTime: moment(t[j].expectedSetupFinishTime, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
+                            expectedFinishTime: moment(t[j].expectedFinishTime, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
+                            actualStartTime: (t[j].actualStartTime === null) ? null : moment(t[j].actualStartTime, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
+                            actualSetupFinishTime: (t[j].actualSetupFinishTime === null) ? null : moment(t[j].actualSetupFinishTime, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
+                            actualFinishTime: (t[j].actualFinishTime === null) ? null : moment(t[j].actualFinishTime, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
                             finished: t[j].finished,
                             inProcessing: t[j].inProcessing,
                             delete: t[j].delete,
@@ -1298,6 +1302,7 @@ angular.module('HarvardApp')
                             machineShiftLabel: t[j].machineShiftLabel,
                             new: t[j].new,
                             highlight: false,
+                            loaded: moment(),
                             movable: {
                                 enabled: movableEnableCondition,
                                 allowMoving: allowMovingCondition,
@@ -1308,7 +1313,8 @@ angular.module('HarvardApp')
                             taskContent: $scope.configuration.serverLocation + $scope.configuration.viewsFolder + '/taskContent.tpl.html',
                             taskContextMenu: $scope.configuration.serverLocation + $scope.configuration.viewsFolder + '/taskContextMenu.tpl.html',
                             taskInfoContent: $scope.configuration.serverLocation + $scope.configuration.viewsFolder + '/taskTooltip.tpl.html',
-                            taskGroupIdsVo: t[j].taskGroupIdsVo
+                            taskGroupIdsVo: t[j].taskGroupIdsVo,
+                            weight: t[j].weight || 0
                         };
 
                         // Prepare processesMap
@@ -1392,7 +1398,6 @@ angular.module('HarvardApp')
             dataToRemove = undefined;
 
             $scope.timespans = Harvard.getGanttTimespans();
-
             $scope.options.filterRow = '-Page ' + '00001';
         };
 
@@ -1400,6 +1405,7 @@ angular.module('HarvardApp')
         $scope.load = function() {
             var mattCallback = Matt.getGanttData();
 
+            $log.info('[Event] Loading data.');
             $http({
                 method: 'get',
                 responseType: 'json',
@@ -1455,6 +1461,18 @@ angular.module('HarvardApp')
         // Clear data action
         $scope.clear = function() {
             $scope.data = [];
+            $scope.tasksMap = {};
+            $scope.processesMap = {};
+            $scope.departmentsMap = {};
+            $scope.jobsMap = {};
+            $scope.machinesMap = {};
+            $scope.departmentMenu = ['Select'];
+            $scope.subDepartmentMenu = ['Select'];
+            $scope.departmentMenuDefault = 'Select';
+            $scope.subDepartmentMenuDefault = 'Select';
+            $scope.pagination = [1];
+            $scope.paginationPrePage = 15;
+            $scope.currentPage = 1;
         };
 
         var drawResizeEndEvent = function(eventName, task) {
@@ -1533,7 +1551,8 @@ angular.module('HarvardApp')
                             color: task.model.color,
                             drawTask: false,
                             modal: undefined,
-                            check: false
+                            check: false,
+                            weight: task.model.weight
                         };
                         $scope.editTask.modal = $modal(editTaskModalOptions);
                     }
@@ -1678,6 +1697,9 @@ angular.module('HarvardApp')
         // Event handler
         var logTaskEvent = function(eventName, task) {
             var i, k, l;
+            if (eventName === 'tasks.on.change') {
+                // $log.info(eventName, task.model);
+            }
             if (eventName === 'tasks.on.add' || eventName === 'tasks.on.change') {
                 if (task.model.color === '') {
                     task.model.color = '#AA8833';
