@@ -93,7 +93,6 @@ textarea.live-task, textarea.live-row {
 }
 
 #machineTasks {
-    overflow: hidden;
 }
 #machineTasks .modal-body {
     overflow: auto;
