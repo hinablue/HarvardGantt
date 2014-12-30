@@ -996,7 +996,8 @@ angular.module('HarvardApp')
                     task.taskContent = $scope.configuration.serverLocation + $scope.configuration.viewsFolder + '/taskContent.tpl.html';
                     task.taskContextMenu = $scope.configuration.serverLocation + $scope.configuration.viewsFolder + '/taskContextMenu.tpl.html';
                     task.taskInfoContent = $scope.configuration.serverLocation + $scope.configuration.viewsFolder + '/taskTooltip.tpl.html';
-
+                    task.taskGroupIdsVo = $scope.tasksMap['t' + $scope.editTask.id].taskGroupIdsVo;
+                    
                     /**
                      * Task Modify Hint.
                      * 所有編輯器沒有使用到的 Task 屬性，請在這裡手動加入。
@@ -1104,6 +1105,7 @@ angular.module('HarvardApp')
                             timeclockEmployeeId: _task.model.timeclockEmployeeId,
                             rounds: _task.model.rounds,
                             taskGroup: _task.model.taskGroup,
+                            taskGroupIdsVo: _task.model.taskGroupIdsVo,
                             machineShiftLabel: _task.model.machineShiftLabel,
                             new: _task.model.new
                         }));
@@ -1255,6 +1257,7 @@ angular.module('HarvardApp')
                             tooltip: t[j].tooltip.split('|'),
                             timeclockEmployeeId: t[j].timeclockEmployeeId,
                             rounds: t[j].rounds,
+                            part: t[j].part,
                             taskGroup: t[j].taskGroup,
                             machineShiftLabel: t[j].machineShiftLabel,
                             new: t[j].new,
@@ -1268,7 +1271,8 @@ angular.module('HarvardApp')
                             },
                             taskContent: $scope.configuration.serverLocation + $scope.configuration.viewsFolder + '/taskContent.tpl.html',
                             taskContextMenu: $scope.configuration.serverLocation + $scope.configuration.viewsFolder + '/taskContextMenu.tpl.html',
-                            taskInfoContent: $scope.configuration.serverLocation + $scope.configuration.viewsFolder + '/taskTooltip.tpl.html'
+                            taskInfoContent: $scope.configuration.serverLocation + $scope.configuration.viewsFolder + '/taskTooltip.tpl.html',
+                            taskGroupIdsVo: t[j].taskGroupIdsVo
                         };
 
                         // Prepare processesMap

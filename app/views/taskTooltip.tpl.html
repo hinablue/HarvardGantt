@@ -1,6 +1,7 @@
 Po#: {{task.model.job.poNo}}</br>
 Operaction Code: {{task.model.operationCode}}</br>
 Processing Type: {{task.model.processingType}}</br>
+Round-Part: {{task.model.rounds}} - {{task.model.part}}</br>
 Priority: {{task.model.priority}}</br>
 QTY: {{task.model.quantity}}</br>
 Duration: {{((task.model.to - task.model.from) / 1000 / 3600).toFixed(2)}} (hrs)</br>
@@ -10,3 +11,4 @@ Duration: {{((task.model.to - task.model.from) / 1000 / 3600).toFixed(2)}} (hrs)
 <span class="tooltip-icon" ng-if="task.model.pin"><i class="glyphicon glyphicon-pushpin"></i>&nbsp;Pined</span>
 <span class="tooltip-icon" ng-if="task.model.inProcessing"><i class="glyphicon glyphicon-transfer"></i>&nbsp;Pending</span>
 <span class="tooltip-icon" ng-if="task.model.finished"><i class="glyphicon glyphicon-thumbs-up"></i>&nbsp;Finished</span>
+<span class="tooltip-icon" ng-if="task.model.taskGroupIdsVo.length"><i class="glyphicon glyphicon-exclamation-sign"></i>&nbsp;Gang Group</span>
