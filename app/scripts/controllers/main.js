@@ -919,7 +919,7 @@ angular.module('HarvardApp')
                 $scope.editTask.actualSetupFinishTime = $scope.editTask.actualSetupFinishTime === null ? null : typeof($scope.editTask.actualSetupFinishTime) === 'object' ? moment((new Date($scope.editTask.actualSetupFinishTime)).getTime(), 'x') : moment($scope.editTask.actualSetupFinishTime, 'YYYY-MM-DDTHH:mm:ss');
                 $scope.editTask.actualFinishTime = $scope.editTask.actualFinishTime === null ? null : typeof($scope.editTask.actualFinishTime) === 'object' ? moment((new Date($scope.editTask.actualFinishTime)).getTime(), 'x') : moment($scope.editTask.actualFinishTime, 'YYYY-MM-DDTHH:mm:ss');
 
-                if ($scope.tasksMap['t' + $scope.editTask.id].model === undefined) {
+                if ($scope.tasksMap['t' + $scope.editTask.id] === undefined) {
                     $scope.editTask.taskGroupIdsVo = [];
                 } else {
                     $scope.editTask.taskGroupIdsVo = $scope.tasksMap['t' + $scope.editTask.id].model.taskGroupIdsVo;
@@ -1046,7 +1046,7 @@ angular.module('HarvardApp')
                      *
                      * task.newPriority = $scope.tasksMap['t' + $scope.editTask.id].model.newPriority;
                      */
-                    if ($scope.tasksMap['t' + $scope.editTask.id].model === undefined) {
+                    if ($scope.tasksMap['t' + $scope.editTask.id] === undefined) {
                         task.taskGroupIdsVo = [];
                         task.taskGroup = '';
                     } else {

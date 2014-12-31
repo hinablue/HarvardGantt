@@ -115,11 +115,11 @@ angular.module('HarvardApp')
 			}
 			if(taskData.isPin === '1' && taskData.inProcessing === '1') {
 				dataChecking = false;
-				errorMessage.push('Pin can\'t use on finished task');
+				errorMessage.push('Pin can\'t use on pending task');
 			}
 			if(taskData.isPin === '1' && taskData.isFinish === '1') {
 				dataChecking = false;
-				errorMessage.push('Pin can\'t use pending task');
+				errorMessage.push('Pin can\'t use on finished task');
 			}
 			if(taskData.inProcessing === '1' && taskData.isFinish === '1') {
 				dataChecking = false;
