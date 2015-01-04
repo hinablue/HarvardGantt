@@ -3,7 +3,9 @@
 		Po#: {{item.split('_')[1].split('&')[3]}}</br>
 	</span>
 </span>
-<span ng-if="!task.model.taskGroupIdsVo.length || task.model.taskGroupIdsVo.length <= 1">Po#: {{task.model.job.poNo}}</br></span>
+<span ng-if="!task.model.taskGroupIdsVo.length || task.model.taskGroupIdsVo.length <= 1">
+	Po#: {{task.model.job.poNo}} Combo: {{task.model.job.comboId}}</br>
+</span>
 Operaction Code: {{task.model.operationCode}}</br>
 Processing Type: {{task.model.processingType}}</br>
 Round-Part: {{task.model.rounds}} - {{task.model.part}}</br>
