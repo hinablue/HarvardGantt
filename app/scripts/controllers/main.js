@@ -1743,6 +1743,9 @@ angular.module('HarvardApp')
                     }
                     task.$element.css('z-index', task.model.priority);
                 };
+                if (task.model.delete === true) {
+                    objectModel.api.gantt.rowsManager.rowsMap[task.row.model.id].removeTask(task.model.id, true, false);
+                }
                 $scope.tasksMap['t' + task.model.id] = task;
             } else if (eventName === 'tasks.on.rowChange') {
                 task.model.runOnMachineId = task.row.model.id;
