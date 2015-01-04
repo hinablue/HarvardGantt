@@ -6,7 +6,7 @@
 <span ng-if="!task.model.taskGroupIdsVo.length || task.model.taskGroupIdsVo.length <= 1">
 	Po#: {{task.model.job.poNo}} Combo: {{task.model.job.comboId}}</br>
 </span>
-Operaction Code: {{task.model.operationCode}}</br>
+Operaction Code: {{task.model.operationCode | trimLeadingZero}}</br>
 Processing Type: {{task.model.processingType}}</br>
 Round-Part: {{task.model.rounds}} - {{task.model.part}}</br>
 Priority: {{task.model.priority}}</br>
