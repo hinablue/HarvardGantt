@@ -21,6 +21,10 @@ angular.module('HarvardApp')
             getGanttDataTimeout: 15 * 60,
             // 儲存或是運算 Gantt 的 Server response Timeout，單位秒
             saveGanttDataTimeout: 15 * 60,
+            // 計算長度，單位週
+            calculateWeeks: 12,
+            // 計算演算法版本, 對應server端的tw.com.softleader.harvard.aps.enums.SolveStrategy
+            solveStrategy: 'V2',
             // 以字串(term)模糊查詢符合的PoNo
             // url: GET /company/sales/pos/like/{term}
             // return: list of labelValueModel, label: poNo, value: poNo
@@ -354,10 +358,6 @@ angular.module('HarvardApp')
 angular.module('HarvardApp')
 .filter('trimLeadingZero', function () {
 	return function (input) {
-		if(input){
-			return input.replace(/^0+/, '');
-		} else {
-			return "";
-		}
+		return (input) ? input.replace(/^0+/, '') : input;
 	};
 });

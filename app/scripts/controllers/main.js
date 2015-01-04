@@ -1183,7 +1183,8 @@ angular.module('HarvardApp')
                 params: {
                     calculate: true,
                     calculateFrom: moment.utc($scope.api.gantt.columnsManager.getFirstColumn().date.format(), 'YYYY-MM-DDTHH:mm:ss').format('YYYY-MM-DDTHH:mm:ss'),
-                    calculateWeeks: 52,
+                    calculateWeeks: $scope.configuration.calculateWeeks,
+                    solveStrategy: $scope.configuration.solveStrategy,
                     save: type === 'save' ? true : false
                 }
             }).then(function(response) {
