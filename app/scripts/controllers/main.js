@@ -697,28 +697,28 @@ angular.module('HarvardApp')
                 editTaskHandleError(response);
             }
         };
-        $scope.$watch('editTask.poNo', function(newValue, oldValue) {
-            if ($scope.editTask === undefined) {
-                return;
-            }
-            if (newValue === '' || newValue === undefined) {
-                $scope.editTask.fuzzyPoNo = '';
-                $scope.editTask.poId = '';
-                $scope.editTask.comboId = '';
-                $scope.editTask.productId = '';
-                $scope.editTask.processId = '';
-            }
-            if (newValue !== undefined && newValue !== '' && !angular.equals(newValue, oldValue)) {
-                $timeout(function() {
-                    $http({
-                        method: 'get',
-                        responseType: 'json',
-                        url: $scope.configuration.serverLocation + $scope.configuration.poFuzzySearch.replace('#poNo#', newValue),
-                        data: 'poFuzzySearch'
-                    }).then(editTaskHandleSuccess, editTaskHandleError);
-                }, 300);
-            }
-        });
+        // $scope.$watch('editTask.poNo', function(newValue, oldValue) {
+        //     if ($scope.editTask === undefined) {
+        //         return;
+        //     }
+        //     if (newValue === '' || newValue === undefined) {
+        //         $scope.editTask.fuzzyPoNo = '';
+        //         $scope.editTask.poId = '';
+        //         $scope.editTask.comboId = '';
+        //         $scope.editTask.productId = '';
+        //         $scope.editTask.processId = '';
+        //     }
+        //     if (newValue !== undefined && newValue !== '' && !angular.equals(newValue, oldValue)) {
+        //         $timeout(function() {
+        //             $http({
+        //                 method: 'get',
+        //                 responseType: 'json',
+        //                 url: $scope.configuration.serverLocation + $scope.configuration.poFuzzySearch.replace('#poNo#', newValue),
+        //                 data: 'poFuzzySearch'
+        //             }).then(editTaskHandleSuccess, editTaskHandleError);
+        //         }, 300);
+        //     }
+        // });
         $scope.$watch('editTask.fuzzyPoNo', function(newValue, oldValue) {
             if ($scope.editTask === undefined) {
                 return;
@@ -1592,6 +1592,24 @@ angular.module('HarvardApp')
                         $scope.editTask.expectedSetupFinishTime = _point.clone().add(1, 'm').format('YYYY/MM/DD HH:mm');
                         $scope.editTask.expectedFinishTime = _point.clone().add(2, 'm').format('YYYY/MM/DD HH:mm');
                         $scope.editTask.modal = $modal(editTaskModalOptions);
+
+                        $scope.editTask.poFuzzySearch = [];
+                        var _poNo = [];
+                        var _clickFunc = function(poNo) {
+                            return function(poNo) {
+                                $scope.editTask.poNo = poNo;
+                                $scope.editTask.fuzzyPoNo = poNo;
+                            }.bind(this, poNo);
+                        };
+                        for (var i = 0, k = Object.keys($scope.jobsMap), l = k.length; i < l; i++) {
+                            if (_poNo.indexOf($scope.jobsMap[k[i]].poNo) < 0) {
+                                $scope.editTask.poFuzzySearch.push({
+                                    text: $scope.jobsMap[k[i]].poNo,
+                                    click: _clickFunc.call(null, $scope.jobsMap[k[i]].poNo)
+                                });
+                                _poNo.push($scope.jobsMap[k[i]].poNo);
+                            }
+                        }
                     }
                 break;
                 case 'delete':
@@ -1816,6 +1834,24 @@ angular.module('HarvardApp')
                         $scope.editTask.expectedSetupFinishTime = _point.clone().add(1, 'm').format('YYYY/MM/DD HH:mm');
                         $scope.editTask.expectedFinishTime = _point.clone().add(2, 'm').format('YYYY/MM/DD HH:mm');
                         $scope.editTask.modal = $modal(editTaskModalOptions);
+
+                        $scope.editTask.poFuzzySearch = [];
+                        var _poNo = [];
+                        var _clickFunc = function(poNo) {
+                            return function(poNo) {
+                                $scope.editTask.poNo = poNo;
+                                $scope.editTask.fuzzyPoNo = poNo;
+                            }.bind(this, poNo);
+                        };
+                        for (var i = 0, k = Object.keys($scope.jobsMap), l = k.length; i < l; i++) {
+                            if (_poNo.indexOf($scope.jobsMap[k[i]].poNo) < 0) {
+                                $scope.editTask.poFuzzySearch.push({
+                                    text: $scope.jobsMap[k[i]].poNo,
+                                    click: _clickFunc.call(null, $scope.jobsMap[k[i]].poNo)
+                                });
+                                _poNo.push($scope.jobsMap[k[i]].poNo);
+                            }
+                        }
                     }
                 };
                 row.zoomIn = function(row, evt) {
