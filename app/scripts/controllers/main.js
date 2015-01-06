@@ -1228,8 +1228,8 @@ angular.module('HarvardApp')
                 if (result.state === 'ok' && result.data.machines !== undefined && result.data.machines.length > 0) {
                     $scope.readyToGo(angular.copy(result.data));
                     $alert({
-                        title: result.data.messages.title+'<br>',
-                        content: result.data.messages.content,
+                        title: result.messages.title+'<br>',
+                        content: result.messages.content,
                         placement: 'top',
                         type: 'info',
                         duration: $scope.configuration.alertTimeout,
