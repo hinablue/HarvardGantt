@@ -1755,7 +1755,7 @@ angular.module('HarvardApp')
                 };
                 task.moreInformation = function(task, evt) {
                     evt.stopPropagation();
-                    var _url = $scope.configuration.serverLocation + $scope.configuration.getMoreInformationPage.replace('#operationIds#', task.model.id);
+                    var _url = Matt.showMoreInformation(task.model);
                     var _dropdown = angular.element(document.getElementById('taskmenu-'+task.model.id));
                     $modal({
                         scope: $scope,
