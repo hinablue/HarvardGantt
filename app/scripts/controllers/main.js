@@ -228,7 +228,7 @@ angular.module('HarvardApp')
                                 logTaskEvent('task-click', directiveScope.task);
                             });
                             element.bind('mouseenter', function(evt) {
-                                element.css('z-index', directiveScope.task.model.priority * 1000);
+                                element.css('z-index', directiveScope.task.model.priority * 10000);
                             });
                             element.bind('mouseleave', function(evt) {
                                 var _dropdown = angular.element(document.getElementById('taskmenu-'+directiveScope.task.model.id));
@@ -346,7 +346,7 @@ angular.module('HarvardApp')
                             };
                             directiveScope.reSortingTasks = function() {
                                 $timeout(function() {
-                                    directiveScope.row.tasks.sort(function(a, b) { return a.model.weight - b.model.weight; });
+                                    directiveScope.row.tasks.sort(function(a, b) { return a.model.from - b.model.from; });
                                     directiveScope.$digest();
                                 }, 100);
                             };
@@ -359,7 +359,12 @@ angular.module('HarvardApp')
                                 show: false
                             });
                             element.bind('dblclick', function() {
-                                directiveScope.row.tasks.sort(function(a, b) { return a.model.weight - b.model.weight; });
+                                for (i = 0, t = directiveScope.row.tasks, l = t.length; i < l; i++) {
+                                    if (t[i].model.weight === 0) {
+                                        t[i].model.weight = i + 1;
+                                    }
+                                }
+                                directiveScope.row.tasks.sort(function(a, b) { return a.model.from - b.model.from; });
                                 directiveScope.tasksOnMachine.$promise.then(directiveScope.tasksOnMachine.show);
                             });
                         }
@@ -486,8 +491,8 @@ angular.module('HarvardApp')
                 content: errorMessages,
                 placement: 'top',
                 type: 'info',
-                duration: 3,
-                dismissable: false,
+                duration: $scope.configuration.alertTimeout,
+                dismissable: true,
                 html: true,
                 container: '#gantt-editor-alert',
                 show: true
@@ -678,8 +683,8 @@ angular.module('HarvardApp')
                                 content: 'Server JSON Data error.',
                                 placement: 'top',
                                 type: 'info',
-                                duration: 3,
-                                dismissable: false,
+                                duration: $scope.configuration.alertTimeout,
+                                dismissable: true,
                                 html: true,
                                 container: '#gantt-editor-alert',
                                 show: true
@@ -1064,8 +1069,8 @@ angular.module('HarvardApp')
                         content: 'The task save success.',
                         placement: 'top',
                         type: 'info',
-                        duration: 3,
-                        dismissable: false,
+                        duration: $scope.configuration.alertTimeout,
+                        dismissable: true,
                         html: true,
                         container: '#gantt-editor-alert',
                         show: true
@@ -1076,7 +1081,7 @@ angular.module('HarvardApp')
                         content: result.messages.content.join('<br>'),
                         placement: 'top',
                         type: 'info',
-                        duration: 10,
+                        duration: $scope.configuration.alertTimeout,
                         dismissable: true,
                         html: true,
                         container: '#gantt-editor-alert',
@@ -1192,14 +1197,25 @@ angular.module('HarvardApp')
                 var result = mattCallback.success(response);
                 if (result.state === 'ok' && result.data.machines !== undefined && result.data.machines.length > 0) {
                     $scope.readyToGo(angular.copy(result.data));
+                    $alert({
+                        title: result.data.messages.title+'<br>',
+                        content: result.data.messages.content,
+                        placement: 'top',
+                        type: 'info',
+                        duration: $scope.configuration.alertTimeout,
+                        dismissable: true,
+                        html: true,
+                        container: '#gantt-chart-alert',
+                        show: true
+                    });
                 } else {
                     $alert({
                         title: 'ERROR! '+result.messages.title+'<br>',
                         content: result.messages.content,
                         placement: 'top',
                         type: 'info',
-                        duration: 3,
-                        dismissable: false,
+                        duration: $scope.configuration.alertTimeout,
+                        dismissable: true,
                         html: true,
                         container: '#gantt-chart-alert',
                         show: true
@@ -1213,6 +1229,7 @@ angular.module('HarvardApp')
                     content: result.messages.content,
                     placement: 'top',
                     type: 'info',
+                    duration: $scope.configuration.alertTimeout,
                     dismissable: true,
                     html: true,
                     container: '#gantt-chart-alert',
@@ -1422,8 +1439,8 @@ angular.module('HarvardApp')
                         content: result.messages.content,
                         placement: 'top',
                         type: 'info',
-                        duration: 3,
-                        dismissable: false,
+                        duration: $scope.configuration.alertTimeout,
+                        dismissable: true,
                         html: true,
                         container: '#gantt-chart-alert',
                         show: true
@@ -1438,8 +1455,8 @@ angular.module('HarvardApp')
                     content: result.messages.content,
                     placement: 'top',
                     type: 'info',
-                    duration: 3,
-                    dismissable: false,
+                    duration: $scope.configuration.alertTimeout,
+                    dismissable: true,
                     html: true,
                     container: '#gantt-chart-alert',
                     show: true
@@ -1489,6 +1506,7 @@ angular.module('HarvardApp')
             $scope.editTask.modal = $modal(editTaskModalOptions);
         };
         var taskContextMenuEvent = function(type, task, evt) {
+            evt.stopPropagation();
             var key;
             var _dropdown = angular.element(document.getElementById('taskmenu-'+task.model.id));
             if (_dropdown[0] !== undefined && _dropdown[0].classList !== undefined && _dropdown[0].classList.contains('open')) {
@@ -1604,6 +1622,13 @@ angular.module('HarvardApp')
             if (task.model.finished === true || task.model.inProcessing === true) {
                 return false;
             }
+            if (task.model.tooltips !== undefined && task.model.tooltips.enabled !== undefined) {
+                task.model.tooltips.enabled = false;
+            } else {
+                task.model.tooltips = {
+                    enabled: false
+                };
+            }
             task.model.highlight = true;
             _movingTask = task.model.from.clone();
             if ($scope.groupTask === true) {
@@ -1690,6 +1715,8 @@ angular.module('HarvardApp')
             task.model.expectedStartTime = task.model.from.clone();
             task.model.expectedSetupFinishTime.add(t, 'ms');
             task.model.expectedFinishTime = task.model.to.clone();
+
+            task.model.tooltips.enabled = true;
 
             multipleTaskSelected = [];
             _movingTask = undefined;
