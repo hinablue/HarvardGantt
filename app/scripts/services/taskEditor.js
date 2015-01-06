@@ -77,6 +77,9 @@ angular.module('HarvardApp')
                         return false;
                     }
                 },
+                tooltips: {
+                    enabled: false
+                },
                 taskContent: '/views/taskContent.tpl.html',
                 taskContextMenu: '/views/taskContextMenu.tpl.html',
                 taskInfoContent: '/views/taskTooltip.tpl.html',

@@ -13,7 +13,7 @@ Priority: {{task.model.priority}}</br>
 QTY: {{task.model.quantity}}</br>
 Duration: {{((task.model.to - task.model.from) / 1000 / 3600).toFixed(2)}} (hrs)</br>
 <small>
-    {{task.isMilestone() === true && (getFromLabel()) || (getFromLabel() + ' - ' + getToLabel())}}</br>
+    {{task.isMilestone() === true && (task.model.from.format('MMM DD, HH:mm')) || (task.model.from.format('MMM DD, HH:mm') + ' - ' + task.model.to.format('MMM DD, HH:mm'))}}</br>
 </small>
 <span class="tooltip-icon" ng-if="task.model.pin"><i class="glyphicon glyphicon-pushpin"></i>&nbsp;Pined</span>
 <span class="tooltip-icon" ng-if="task.model.inProcessing"><i class="glyphicon glyphicon-transfer"></i>&nbsp;Pending</span>

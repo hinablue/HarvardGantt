@@ -156,6 +156,9 @@ angular.module('HarvardApp')
                     allowRowSwitching: true,
                     allowRowSwitchingCondition: allowRowSwitchingCondition
                 };
+                task.tooltips = {
+                    enabled: false
+                };
 
                 if (false === ('t'+task.id in $scope.tasksMap)) {
                     $scope.tasksMap['t'+task.id] = task;
@@ -221,7 +224,7 @@ angular.module('HarvardApp')
                                     directiveScope.task.model.highlight = true;
                                 } else {
                                     multipleTaskSelected = [];
-                                    directiveScope.task.model.highlight = !directiveScope.task.model.highlight;
+                                    // directiveScope.task.model.highlight = !directiveScope.task.model.highlight;
                                 }
                                 directiveScope.$digest();
 
@@ -349,6 +352,12 @@ angular.module('HarvardApp')
                                     directiveScope.row.tasks.sort(function(a, b) { return a.model.from - b.model.from; });
                                     directiveScope.$digest();
                                 }, 100);
+                            };
+                            directiveScope.renderHtml = function(text) {
+                                text = text.replace(/\r\n/g, '<br>');
+                                text = text.replace(/\n/g, '<br>');
+                                $log.info(text);
+                                return $sce.trustAsHtml(text);
                             };
                             directiveScope.tasksOnMachine = $modal({
                                 scope: directiveScope,
@@ -1039,6 +1048,9 @@ angular.module('HarvardApp')
                         allowRowSwitching: true,
                         allowRowSwitchingCondition: allowRowSwitchingCondition
                     };
+                    task.tooltips = {
+                        enabled: false
+                    };
                     task.taskContent = $scope.configuration.serverLocation + $scope.configuration.viewsFolder + '/taskContent.tpl.html';
                     task.taskContextMenu = $scope.configuration.serverLocation + $scope.configuration.viewsFolder + '/taskContextMenu.tpl.html';
                     task.taskInfoContent = $scope.configuration.serverLocation + $scope.configuration.viewsFolder + '/taskTooltip.tpl.html';
@@ -1326,6 +1338,9 @@ angular.module('HarvardApp')
                                 allowResizing: false,
                                 allowRowSwitching: true,
                                 allowRowSwitchingCondition: allowRowSwitchingCondition
+                            },
+                            tooltips: {
+                                enabled: false
                             },
                             taskContent: $scope.configuration.serverLocation + $scope.configuration.viewsFolder + '/taskContent.tpl.html',
                             taskContextMenu: $scope.configuration.serverLocation + $scope.configuration.viewsFolder + '/taskContextMenu.tpl.html',
@@ -1640,14 +1655,7 @@ angular.module('HarvardApp')
             if (task.model.finished === true || task.model.inProcessing === true) {
                 return false;
             }
-            if (task.model.tooltips !== undefined && task.model.tooltips.enabled !== undefined) {
-                task.model.tooltips.enabled = false;
-            } else {
-                task.model.tooltips = {
-                    enabled: false
-                };
-            }
-            task.model.highlight = true;
+            // task.model.highlight = true;
             _movingTask = task.model.from.clone();
             if ($scope.groupTask === true) {
                 if (multipleTaskSelected.length > 0) {
@@ -1697,26 +1705,17 @@ angular.module('HarvardApp')
         };
         var moveTaskEndEvent = function(eventName, task) {
             var i, t, l, _dateline;
+            for (i = 0, t = Object.keys($scope.tasksMap), l = t.length; i < l; i++) {
+                if ($scope.tasksMap[t[i]].model.highlight === true) {
+                    $scope.tasksMap[t[i]].model.highlight = false;
+                    if ($scope.tasksMap[t[i]].$scope !== undefined) {
+                        $scope.tasksMap[t[i]].$scope.$digest();
+                    }
+                }
+            }
             if ($scope.groupTask === true) {
-                if (multipleTaskSelected.length > 0) {
-                    for (i = 0, t = multipleTaskSelected, l = t.length; i < l; i++) {
-                        if ($scope.tasksMap['t'+t[i]].model.id !== task.model.id && $scope.tasksMap['t'+t[i]].model.highlight === true) {
-                            $scope.tasksMap['t'+t[i]].model.highlight = false;
-                            if ($scope.tasksMap['t'+t[i]].$scope !== undefined) {
-                                $scope.tasksMap['t'+t[i]].$scope.$digest();
-                            }
-                        }
-                    }
-                }
+                // DO NOTHING
             } else {
-                for (i = 0, t = Object.keys($scope.tasksMap), l = t.length; i < l; i++) {
-                    if ($scope.tasksMap[t[i]].model.id !== task.model.id && $scope.tasksMap[t[i]].model.highlight === true) {
-                        $scope.tasksMap[t[i]].model.highlight = false;
-                        if ($scope.tasksMap[t[i]].$scope !== undefined) {
-                            $scope.tasksMap[t[i]].$scope.$digest();
-                        }
-                    }
-                }
                 if (multipleTaskSelected.length > 0) {
                     for (var i = 0, t = multipleTaskSelected, l = t.length; i < l; i++) {
                         if ($scope.tasksMap['t'+t[i]].model.id !== task.model.id && task.row.model.id === $scope.tasksMap['t'+t[i]].row.model.id) {
@@ -1733,8 +1732,6 @@ angular.module('HarvardApp')
             task.model.expectedStartTime = task.model.from.clone();
             task.model.expectedSetupFinishTime.add(t, 'ms');
             task.model.expectedFinishTime = task.model.to.clone();
-
-            task.model.tooltips.enabled = true;
 
             multipleTaskSelected = [];
             _movingTask = undefined;
@@ -1801,16 +1798,20 @@ angular.module('HarvardApp')
             } else if (eventName === 'task-click') {
                 $log.info(task);
 
-                if ($scope.groupTask === false && ('j'+task.model.job.id) in $scope.jobTasksMap) {
-                    for (i = 0, k = $scope.jobTasksMap['j'+task.model.job.id], l = k.length; i < l; i++) {
-                        if (k[i] !== task.model.id) {
-                            $scope.tasksMap['t'+k[i]].model.highlight = !$scope.tasksMap['t'+k[i]].model.highlight;
-                            if ($scope.tasksMap['t'+k[i]].$scope !== undefined) {
-                                $scope.tasksMap['t'+k[i]].$scope.$digest();
-                            }
-                        }
-                    }
-                }
+                $scope.task = task;
+                $scope.tooltipsTmpl = $scope.configuration.serverLocation + $scope.configuration.viewsFolder + '/taskTooltip.tpl.html';
+                $scope.$digest();
+
+                // if ($scope.groupTask === false && ('j'+task.model.job.id) in $scope.jobTasksMap) {
+                //     for (i = 0, k = $scope.jobTasksMap['j'+task.model.job.id], l = k.length; i < l; i++) {
+                //         if (k[i] !== task.model.id) {
+                //             $scope.tasksMap['t'+k[i]].model.highlight = !$scope.tasksMap['t'+k[i]].model.highlight;
+                //             if ($scope.tasksMap['t'+k[i]].$scope !== undefined) {
+                //                 $scope.tasksMap['t'+k[i]].$scope.$digest();
+                //             }
+                //         }
+                //     }
+                // }
             }
         };
 
