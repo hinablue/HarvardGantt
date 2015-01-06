@@ -8,9 +8,7 @@
  * Service in the HarvardApp.
  */
 angular.module('HarvardApp')
-    .service('TaskEditor', ['$http', '$timeout', '$log', '$alert', 'Coloured', 'Matt', 'moment', function TaskEditor($http, $timeout, $log, $alert, Coloured, Matt, moment) {
-        var configuration = Matt.configuration();
-
+    .service('TaskEditor', ['$log', 'Coloured', 'Matt', 'moment', function TaskEditor($log, Coloured, Matt, moment) {
         return {
             /**
              * [taskTemplate Task 預設樣版]
@@ -143,7 +141,7 @@ angular.module('HarvardApp')
             editTaskModalOptions: {
                 scope: null,
                 title: 'Task Creator',
-                template: configuration.serverLocation + configuration.viewsFolder + '/editor.tpl.html',
+                template: '../app/views/editor.tpl.html',
                 backdrop: false,
                 show: true
             }

@@ -17,10 +17,11 @@ angular.module('HarvardApp', [
     'gantt.bounds',
     'gantt.progress',
     'gantt.table',
-    'gantt.tree',
+    // 'gantt.tree',
     'gantt.groups',
     'mgcrea.ngStrap',
-    'ui.sortable'
+    'ui.sortable',
+    'harvard.templates'
 ]).config(['$compileProvider', function($compileProvider) {
     $compileProvider.debugInfoEnabled(true); // Remove debug info (angularJS >= 1.3)
 }]);

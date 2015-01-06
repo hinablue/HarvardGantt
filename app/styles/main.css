@@ -118,6 +118,10 @@ textarea.live-task, textarea.live-row {
     padding: 0 8px;
     margin: 0;
 }
+#task-tooltips {
+    height: 200px;
+    overflow: auto;
+}
 #machineTasks {
 }
 #machineTasks .modal-body {

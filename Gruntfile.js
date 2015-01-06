@@ -27,11 +27,30 @@ module.exports = function (grunt) {
     // Project settings
     yeoman: appConfig,
 
+    html2js: {
+      options: {
+        quoteChar: '\'',
+        indentString: '    ',
+        module: 'harvard.templates',
+        singleModule: true,
+        useStrict: true,
+        fileHeaderString: '\'use strict\';'
+      },
+      core: {
+        src: ['<%= yeoman.app %>/views/{,*/}*.html'],
+        dest: '<%= yeoman.app %>/scripts/views/templates.js'
+      }
+    },
+
     // Watches files for changes and runs tasks based on the changed files
     watch: {
       bower: {
         files: ['bower.json'],
         tasks: ['wiredep']
+      },
+      html: {
+        files: ['<%= yeoman.app %>/views/{,*/}*.html'],
+        tasks: ['html2js']
       },
       js: {
         files: ['<%= yeoman.app %>/scripts/{,*/}*.js'],
@@ -230,27 +249,33 @@ module.exports = function (grunt) {
     // By default, your `index.html`'s <!-- Usemin block --> will take care of
     // minification. These next options are pre-configured if you do not wish
     // to use the Usemin blocks.
-    // cssmin: {
-    //   dist: {
-    //     files: {
-    //       '<%= yeoman.dist %>/styles/main.css': [
-    //         '.tmp/styles/{,*/}*.css'
-    //       ]
-    //     }
-    //   }
-    // },
-    // uglify: {
-    //   dist: {
-    //     files: {
-    //       '<%= yeoman.dist %>/scripts/scripts.js': [
-    //         '<%= yeoman.dist %>/scripts/scripts.js'
-    //       ]
-    //     }
-    //   }
-    // },
-    // concat: {
-    //   dist: {}
-    // },
+    cssmin: {
+      dist: {
+        files: {
+          '<%= yeoman.dist %>/styles/main.css': [
+            '.tmp/styles/{,*/}*.css'
+          ]
+        }
+      }
+    },
+    uglify: {
+      dist: {
+        files: {
+          // '<%= yeoman.dist %>/scripts/scripts.js': [
+          //   '<%= yeoman.dist %>/scripts/scripts.js'
+          // ],
+          '<%= yeoman.dist %>/scripts/templates.js': [
+            '<%= yeoman.dist %>/scripts/templates.js'
+          ],
+          '<%= yeoman.dist %>/scripts/vendor.js': [
+            '<%= yeoman.dist %>/scripts/vendor.js'
+          ],
+          '<%= yeoman.dist %>/scripts/gantt-core.js': [
+            '<%= yeoman.dist %>/scripts/gantt-core.js'
+          ]
+        }
+      }
+    },
 
     imagemin: {
       dist: {
@@ -286,7 +311,7 @@ module.exports = function (grunt) {
         files: [{
           expand: true,
           cwd: '<%= yeoman.dist %>',
-          src: ['*.html', 'views/{,*/}*.html'],
+          src: ['*.html'],
           dest: '<%= yeoman.dist %>'
         }]
       }
@@ -298,9 +323,9 @@ module.exports = function (grunt) {
       dist: {
         files: [{
           expand: true,
-          cwd: '.tmp/concat/scripts',
+          cwd: '<%= yeoman.dist %>/scripts',
           src: ['*.js', '!oldieshim.js'],
-          dest: '.tmp/concat/scripts'
+          dest: '<%= yeoman.dist %>/scripts'
         }]
       }
     },
@@ -324,7 +349,6 @@ module.exports = function (grunt) {
             '*.{ico,png,txt}',
             '.htaccess',
             '*.html',
-            'views/{,*/}*.html',
             'images/{,*/}*.{webp}',
             'fonts/*'
           ]
@@ -388,6 +412,7 @@ module.exports = function (grunt) {
       'wiredep',
       'concurrent:server',
       'autoprefixer',
+      'html2js',
       'connect:livereload',
       'watch'
     ]);
@@ -413,15 +438,16 @@ module.exports = function (grunt) {
     'useminPrepare',
     'concurrent:dist',
     'autoprefixer',
+    'html2js',
     'concat',
     'ngAnnotate',
     'copy:dist',
     'cdnify',
     'cssmin',
-    //'uglify',
-    //'filerev',
+    // 'uglify',
+    // 'filerev',
     'usemin',
-    //'htmlmin'
+    // 'htmlmin'
   ]);
 
   grunt.registerTask('default', [
