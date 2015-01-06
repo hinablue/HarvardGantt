@@ -260,7 +260,19 @@ angular.module('HarvardApp')
 
         return {
         	showMoreInformation: function(taskData) {
-        		return configuration.serverLocation + configuration.getMoreInformationPage.replace('#operationIds#', taskData.id);
+        		var operations = taskData.taskGroupIdsVo;
+        		var operationIds;
+        		$.each(operations, function(index, operation){
+        			if(!operationIds){
+        				operationIds = operation.split('_')[0];
+        			} else {
+        				operationIds += ",";
+        				operationIds += operation.split('_')[0];
+        			}
+        			
+        		});
+        		
+        		return configuration.serverLocation + configuration.getMoreInformationPage.replace('#operationIds#', operationIds);
         	},
             editTaskData: function(taskData) {
 				return genericEditorValidation(taskData);
@@ -287,6 +299,10 @@ angular.module('HarvardApp')
                         if (response.data.messagesEmpty) {
                             return {
                                 state: 'ok',
+                                messages: {
+                                    title: 'Load Gantt Data Success',
+                                    content: response.data.data.messages
+                                },
                                 data: response.data.data
                             };
                         } else {
@@ -316,11 +332,12 @@ angular.module('HarvardApp')
                 return {
                     success: function(response) {
                         if (response.data.messagesEmpty) {
+                        	console.log(response.data.data.messages.join("<br/>"));
                             return {
                                 state: 'ok',
                                 messages: {
                                     title: 'Load Gantt Data Ok!',
-                                    content: response.data.data.messages
+                                    content: response.data.data.messages.join("<br/>")
                                 },
                                 data: response.data.data,
                                 // 如果要鎖定 Gantt 無法操作，請使用 true
@@ -331,7 +348,7 @@ angular.module('HarvardApp')
                                 state: 'err',
                                 messages: {
                                     title: 'Load Gantt Data Error!',
-                                    content: 'Something wrong with server response.'
+                                    content: response.data.data.messages.join("<br/>")
                                 },
                                 data: {},
                                 // 如果要鎖定 Gantt 無法操作，請使用 true
@@ -344,7 +361,7 @@ angular.module('HarvardApp')
                             state: 'err',
                             messages: {
                                 title: 'Load Gantt Data Error!',
-                                content: 'Something wrong with server response.'
+                                content: 'Can not connect to server.'
                             },
                             data: {},
                             // 如果要鎖定 Gantt 無法操作，請使用 true
