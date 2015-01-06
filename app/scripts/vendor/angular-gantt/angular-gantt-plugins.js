@@ -2028,4 +2028,3 @@ angular.module('gantt.tree.templates', []).run(['$templateCache', function($temp
         '</div>\n' +
         '');
 }]);
-

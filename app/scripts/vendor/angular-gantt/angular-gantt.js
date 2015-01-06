@@ -5136,11 +5136,7 @@ angular.module('gantt.templates', []).run(['$templateCache', function($templateC
         '                         ng-repeat="row in gantt.rowsManager.visibleRows track by row.model.id"\n' +
         '                         ng-style="{\'height\': row.model.height}">\n' +
         '                        <div gantt-row-label class="gantt-row-label gantt-row-background"\n' +
-        '                             ng-style="{\'background-color\': row.model.color}">\n' +
-        '                             <div class="gantt-row-label-wrapper">\n' +
-        '                                <div class="gantt-row-name">{{ row.model.name }}</div>\n' +
-        '                            </div>\n' +
-        '                        </div>\n' +
+        '                             ng-style="{\'background-color\': row.model.color}"></div>\n' +
         '                    </div>\n' +
         '                </div>\n' +
         '            </div>\n' +
