@@ -150,17 +150,20 @@
                                                time-frames="options.timeFrames"
                                                date-frames="options.dateFrames"
                                                time-frames-non-working-mode="options.timeFramesNonWorkingMode"
+                                               time-frames-magnet="options.timeFramesMagnet"
                                                api="options.api"
                                                column-magnet="options.columnMagnet"
                                                options="options.options">
-                                            <gantt-labels></gantt-labels>
+                                            <gantt-tree enabled="options.sideMode === 'Tree' || options.sideMode === 'TreeTable'"></gantt-tree>
+                                            <gantt-table enabled="options.sideMode === 'Table' || options.sideMode === 'TreeTable'" columns="options.sideMode === 'TreeTable' ? options.treeTableColumns : options.columns" headers="options.columnsHeaders" formatters="options.columnsFormatters"></gantt-table>
+                                            <gantt-groups enabled="options.groupDisplayMode === 'group' || options.groupDisplayMode === 'overview'" display="options.groupDisplayMode"></gantt-groups>
                                             <gantt-tooltips></gantt-tooltips>
                                             <gantt-bounds></gantt-bounds>
                                             <gantt-progress></gantt-progress>
                                             <gantt-sortable></gantt-sortable>
                                             <gantt-movable enabled="!options.readOnly"></gantt-movable>
                                             <gantt-draw-task
-                                                enabled="options.draw && !options.readOnly"
+                                                enabled="options.canDraw"
                                                 task-factory="options.drawTaskFactory">
                                             </gantt-draw-task>
                                         </div>

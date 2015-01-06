@@ -83,6 +83,18 @@ angular.module('HarvardApp')
             mode: 'custom',
             scale: '3 hours',
             sortMode: undefined,
+            sideMode: 'Table',
+            columns: ['model.name'],
+            // treeTableColumns: ['from', 'to'],
+            columnsHeaders: {'model.name' : 'Name'/*, 'from': 'From', 'to': 'To'*/},
+            columnsFormatters: {
+                'from': function(from) {
+                    return from !== undefined ? from.format('lll') : undefined;
+                },
+                'to': function(to) {
+                    return to !== undefined ? to.format('lll') : undefined;
+                }
+            },
             maxHeight: false,
             width: false,
             autoExpand: 'right',
@@ -95,6 +107,7 @@ angular.module('HarvardApp')
             currentDateValue: moment(),
             draw: false,
             readOnly: false,
+            groupDisplayMode: 'group',
             filterTask: '',
             filterRow: '',
             options: {
@@ -145,6 +158,11 @@ angular.module('HarvardApp')
             },
             timeFramesNonWorkingMode: 'visible',
             columnMagnet: '1 minute',
+            timeFramesMagnet: true,
+            canDraw: function(event) {
+                var isLeftMouseButton = event.button === 0 || event.button === 1;
+                return $scope.options.draw && !$scope.options.readOnly && isLeftMouseButton;
+            },
             drawTaskFactory: function() {
                 var task = angular.copy(TaskEditor.taskTemplate);
                 task.id = utils.randomUuid();
@@ -1702,6 +1720,7 @@ angular.module('HarvardApp')
                     return false;
                 }
             }
+            $scope.$digest();
         };
         var moveTaskEndEvent = function(eventName, task) {
             var i, t, l, _dateline;
