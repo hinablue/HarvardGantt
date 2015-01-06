@@ -103,9 +103,6 @@ textarea.live-task, textarea.live-row {
     padding: 0 8px;
     margin: 0;
 }
-.gantt-side-background {
-    position: relative;
-}
 .gantt-task-info {
     opacity: 1;
 }
