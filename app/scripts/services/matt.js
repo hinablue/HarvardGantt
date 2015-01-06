@@ -261,7 +261,7 @@ angular.module('HarvardApp')
         return {
         	showMoreInformation: function(taskData) {
         		return configuration.serverLocation + configuration.getMoreInformationPage.replace('#operationIds#', taskData.id);
-        	};
+        	},
             editTaskData: function(taskData) {
 				return genericEditorValidation(taskData);
             },
