@@ -1734,7 +1734,7 @@ angular.module('HarvardApp')
             }
             if (multipleTaskSelected.length > 0) {
                 for (i = 0, t = multipleTaskSelected, l = t.length; i < l; i++) {
-                    if ($scope.tasksMap['t'+t[i]].model.id !== task.model.id) {
+                    if ($scope.tasksMap['t'+t[i]] !== undefined && $scope.tasksMap['t'+t[i]].model.id !== task.model.id) {
                         t = $scope.tasksMap['t'+t[i]].model.from.clone() - $scope.tasksMap['t'+t[i]].model.expectedStartTime.clone();
                         $scope.tasksMap['t'+t[i]].model.expectedStartTime = $scope.tasksMap['t'+t[i]].model.from.clone();
                         $scope.tasksMap['t'+t[i]].model.expectedSetupFinishTime.add(t, 'ms');
