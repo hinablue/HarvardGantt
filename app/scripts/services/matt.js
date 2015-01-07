@@ -77,18 +77,18 @@ angular.module('HarvardApp')
 		var formatMessages = function (messages) {
         	var html = '';
         	if (messages && messages.length > 1) { // 第一個固定是title
-	        	html = '<table class="table table-striped table-hover table-condensed">'
+	        	html = '<table class="table table-striped table-hover table-condensed">';
 	        	for (var i in messages) {
 	        		// title
-	        		if (i == 0) { 
-	        			html += '<thead><tr><th>' + messages[i].replace(/\|/g, '</th><th>') + '</th></tr></thead>'
+	        		if (i === 0) {
+	        			html += '<thead><tr><th>' + messages[i].replace(/\|/g, '</th><th>') + '</th></tr></thead>';
 	        		}
 	        		// content
 	        		else {
-	        			html += '<thead><tr><td>' + messages[i].replace(/\|/g, '</td><td>') + '</td></tr></thead>'
+	        			html += '<thead><tr><td>' + messages[i].replace(/\|/g, '</td><td>') + '</td></tr></thead>';
 	        		}
 	        	}
-	        	html += '</table>'
+	        	html += '</table>';
         	}
         	return html;
         };
@@ -288,9 +288,9 @@ angular.module('HarvardApp')
         				operationIds += ",";
         				operationIds += operation.split('_')[0];
         			}
-        			
+
         		});
-        		
+
         		return configuration.serverLocation + configuration.getMoreInformationPage.replace('#operationIds#', operationIds);
         	},
             editTaskData: function(taskData) {
