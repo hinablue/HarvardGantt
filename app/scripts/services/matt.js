@@ -319,7 +319,7 @@ angular.module('HarvardApp')
                             return {
                                 state: 'ok',
                                 messages: {
-                                    title: 'Load Gantt Data Success',
+                                    title: 'Load Gantt Data Ok!',
                                     content: formatMessages(response.data.data.messages)
                                 },
                                 data: response.data.data
@@ -328,8 +328,8 @@ angular.module('HarvardApp')
                             return {
                                 state: 'err',
                                 messages: {
-                                    title: 'Load Gantt Data Error!',
-                                    content: formatMessages(response.data.data.messages)
+                                    title: 'Internal server error, something went wrong: ',
+                                    content: response.data.messages.map(function (msg) {return msg.value;}).join('<br>')
                                 },
                                 data: {}
                             };
@@ -339,8 +339,8 @@ angular.module('HarvardApp')
                         return {
                             state: 'err',
                             messages: {
-                                title: 'Load Gantt Data Error!',
-                                content: 'Can not connect to server.'
+                                title: 'Failed connecting to server!',
+                                content: 'http status: [' + response.status + '] ' + response.statusText
                             },
                             data: {}
                         };
@@ -362,11 +362,12 @@ angular.module('HarvardApp')
                                 readonly: false
                             };
                         } else {
+                            console.log(response);
                             return {
                                 state: 'err',
                                 messages: {
-                                    title: 'Load Gantt Data Error!',
-                                    content: formatMessages(response.data.data.messages)
+                                    title: 'Internal server error, something went wrong: ',
+                                    content: response.data.messages.map(function (msg) {return msg.value;}).join('<br>')
                                 },
                                 data: {},
                                 // 如果要鎖定 Gantt 無法操作，請使用 true
@@ -378,8 +379,8 @@ angular.module('HarvardApp')
                         return {
                             state: 'err',
                             messages: {
-                                title: 'Load Gantt Data Error!',
-                                content: 'Can not connect to server.'
+                                title: 'Failed connecting to server!',
+                                content: 'http status: [' + response.status + '] ' + response.statusText
                             },
                             data: {},
                             // 如果要鎖定 Gantt 無法操作，請使用 true
