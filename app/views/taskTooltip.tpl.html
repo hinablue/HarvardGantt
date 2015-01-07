@@ -1,21 +1,38 @@
-<span ng-if="task.model.taskGroupIdsVo.length && task.model.taskGroupIdsVo.length > 1">
-	<span ng-repeat="item in task.model.taskGroupIdsVo">
-		Po#: {{item.split('_')[1].split('&')[3]}}</br>
-	</span>
-</span>
-<span ng-if="!task.model.taskGroupIdsVo.length || task.model.taskGroupIdsVo.length <= 1">
-	Po#: {{task.model.job.poNo}} Combo: {{task.model.job.comboId}}</br>
-</span>
-Operaction Code: {{task.model.operationCode | trimLeadingZero}}</br>
-Processing Type: {{task.model.processingType}}</br>
-Round-Part: {{task.model.rounds}} - {{task.model.part}}</br>
-Priority: {{task.model.priority}}</br>
-QTY: {{task.model.quantity}}</br>
-Duration: {{((task.model.to - task.model.from) / 1000 / 3600).toFixed(2)}} (hrs)</br>
-<small>
-    {{task.isMilestone() === true && (task.model.from.format('MMM DD, HH:mm')) || (task.model.from.format('MMM DD, HH:mm') + ' - ' + task.model.to.format('MMM DD, HH:mm'))}}</br>
-</small>
-<span class="tooltip-icon" ng-if="task.model.pin"><i class="glyphicon glyphicon-pushpin"></i>&nbsp;Pined</span>
-<span class="tooltip-icon" ng-if="task.model.inProcessing"><i class="glyphicon glyphicon-transfer"></i>&nbsp;Pending</span>
-<span class="tooltip-icon" ng-if="task.model.finished"><i class="glyphicon glyphicon-thumbs-up"></i>&nbsp;Finished</span>
-<span class="tooltip-icon" ng-if="task.model.taskGroupIdsVo.length && task.model.taskGroupIdsVo.length > 1"><i class="glyphicon glyphicon-exclamation-sign"></i>&nbsp;Grouped</span>
+<div class="row">
+	<div class="col-md-3">
+		<span ng-if="task.model.taskGroupIdsVo.length && task.model.taskGroupIdsVo.length > 1">
+			<span ng-repeat="item in task.model.taskGroupIdsVo">
+				Po#: {{item.split('_')[1].split('&')[3]}}</br>
+			</span>
+		</span>
+		<span ng-if="!task.model.taskGroupIdsVo.length || task.model.taskGroupIdsVo.length <= 1">
+			Po#: {{task.model.job.poNo}} Combo: {{task.model.job.comboId}}</br>
+		</span>
+	</div>
+	<div class="col-md-3">
+		Operaction Code: {{task.model.operationCode | trimLeadingZero}}
+	</div>
+	<div class="col-md-3">
+		Processing Type: {{task.model.processingType}}
+	</div>
+	<div class="col-md-3">
+		Round-Part: {{task.model.rounds}} - {{task.model.part}}
+	</div>
+	<div class="col-md-3">
+		Priority: {{task.model.priority}}
+	</div>
+	<div class="col-md-3">
+		QTY: {{task.model.quantity}}
+	</div>
+	<div class="col-md-3">
+		<small>
+    		{{task.isMilestone() === true && (task.model.from.format('MMM DD, HH:mm')) || (task.model.from.format('MMM DD, HH:mm') + ' - ' + task.model.to.format('MMM DD, HH:mm'))}} ({{((task.model.to - task.model.from) / 1000 / 3600).toFixed(2)}} hrs)
+    	</small>
+	</div>
+	<div class="col-md-3">
+		<span class="tooltip-icon" ng-if="task.model.pin"><i class="glyphicon glyphicon-pushpin"></i>&nbsp;Pined</span>
+		<span class="tooltip-icon" ng-if="task.model.inProcessing"><i class="glyphicon glyphicon-transfer"></i>&nbsp;Pending</span>
+		<span class="tooltip-icon" ng-if="task.model.finished"><i class="glyphicon glyphicon-thumbs-up"></i>&nbsp;Finished</span>
+		<span class="tooltip-icon" ng-if="task.model.taskGroupIdsVo.length && task.model.taskGroupIdsVo.length > 1"><i class="glyphicon glyphicon-exclamation-sign"></i>&nbsp;Grouped</span>
+	</div>
+</div>

@@ -119,8 +119,8 @@ textarea.live-task, textarea.live-row {
     margin: 0;
 }
 #task-tooltips {
-    height: 200px;
-    overflow: auto;
+    /*height: 200px;*/
+    /*overflow: auto;*/
 }
 #machineTasks {
 }
