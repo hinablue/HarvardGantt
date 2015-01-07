@@ -374,7 +374,6 @@ angular.module('HarvardApp')
                             directiveScope.renderHtml = function(text) {
                                 text = text.replace(/\r\n/g, '<br>');
                                 text = text.replace(/\n/g, '<br>');
-                                $log.info(text);
                                 return $sce.trustAsHtml(text);
                             };
                             directiveScope.tasksOnMachine = $modal({
