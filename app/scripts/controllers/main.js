@@ -385,11 +385,11 @@ angular.module('HarvardApp')
                                 show: false
                             });
                             element.bind('dblclick', function() {
-                                for (i = 0, t = directiveScope.row.tasks, l = t.length; i < l; i++) {
-                                    if (t[i].model.weight === 0) {
-                                        t[i].model.weight = i + 1;
-                                    }
-                                }
+                                // for (i = 0, t = directiveScope.row.tasks, l = t.length; i < l; i++) {
+                                //     if (t[i].model.weight === 0) {
+                                //         t[i].model.weight = i + 1;
+                                //     }
+                                // }
                                 directiveScope.row.tasks.sort(function(a, b) { return a.model.from - b.model.from; });
                                 directiveScope.tasksOnMachine.$promise.then(directiveScope.tasksOnMachine.show);
                             });
