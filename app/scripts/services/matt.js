@@ -77,7 +77,7 @@ angular.module('HarvardApp')
 		var formatMessages = function (messages) {
         	var html = '';
         	if (messages && messages.length > 1) { // 第一個固定是title
-	        	html = '<table class="table table-bordered table-striped">'
+	        	html = '<table class="table table-striped table-hover table-condensed">'
 	        	for (var i in messages) {
 	        		// title
 	        		if (i == 0) { 
