@@ -1735,16 +1735,16 @@ angular.module('HarvardApp')
             if (multipleTaskSelected.length > 0) {
                 for (i = 0, t = multipleTaskSelected, l = t.length; i < l; i++) {
                     if ($scope.tasksMap['t'+t[i]] !== undefined && $scope.tasksMap['t'+t[i]].model.id !== task.model.id) {
-                        t = $scope.tasksMap['t'+t[i]].model.from.clone() - $scope.tasksMap['t'+t[i]].model.expectedStartTime.clone();
+                        _dateline = $scope.tasksMap['t'+t[i]].model.from.clone() - $scope.tasksMap['t'+t[i]].model.expectedStartTime.clone();
                         $scope.tasksMap['t'+t[i]].model.expectedStartTime = $scope.tasksMap['t'+t[i]].model.from.clone();
-                        $scope.tasksMap['t'+t[i]].model.expectedSetupFinishTime.add(t, 'ms');
+                        $scope.tasksMap['t'+t[i]].model.expectedSetupFinishTime.add(_dateline, 'ms');
                         $scope.tasksMap['t'+t[i]].model.expectedFinishTime = $scope.tasksMap['t'+t[i]].model.to.clone();
                     }
                 }
             }
-            t = task.model.from.clone() - task.model.expectedStartTime.clone();
+            _dateline = task.model.from.clone() - task.model.expectedStartTime.clone();
             task.model.expectedStartTime = task.model.from.clone();
-            task.model.expectedSetupFinishTime.add(t, 'ms');
+            task.model.expectedSetupFinishTime.add(_dateline, 'ms');
             task.model.expectedFinishTime = task.model.to.clone();
 
             multipleTaskSelected = [];
