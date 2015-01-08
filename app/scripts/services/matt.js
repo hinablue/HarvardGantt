@@ -191,6 +191,11 @@ angular.module('HarvardApp')
 				errorMessage.push('[SheetUp] must not be less then [Up]');
 			}
 
+			if(taskData.s2sMins === null || taskData.s2sMins < -1) {
+				dataChecking = false;
+				errorMessage.push('[Start to Start Minutes] must not be empty or less then -1');
+			}
+
 			if (taskData.isParallel === true && taskData.parallelCode === null) {
 				dataChecking = false;
 				errorMessage.push('Some thing is error');
