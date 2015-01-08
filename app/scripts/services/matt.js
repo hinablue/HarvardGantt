@@ -281,16 +281,19 @@ angular.module('HarvardApp')
         	showMoreInformation: function(taskData) {
         		var operations = taskData.taskGroupIdsVo;
         		var operationIds;
-        		$.each(operations, function(index, operation){
-        			if(!operationIds){
-        				operationIds = operation.split('_')[0];
-        			} else {
-        				operationIds += ",";
-        				operationIds += operation.split('_')[0];
-        			}
-
-        		});
-
+        		if(operations && operations.size > 1){
+        			$.each(operations, function(index, operation){
+            			if(!operationIds){
+            				operationIds = operation.split('_')[0];
+            			} else {
+            				operationIds += ",";
+            				operationIds += operation.split('_')[0];
+            			}
+            		});
+        		} else {
+        			operationIds = taskData.id;
+        		}
+        		
         		return configuration.serverLocation + configuration.getMoreInformationPage.replace('#operationIds#', operationIds);
         	},
             editTaskData: function(taskData) {
