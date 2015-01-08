@@ -2,27 +2,27 @@
 	<div class="col-md-3">
 		<span ng-if="task.model.taskGroupIdsVo.length && task.model.taskGroupIdsVo.length > 1">
 			<span ng-repeat="item in task.model.taskGroupIdsVo">
-				Po#: {{item.split('_')[1].split('&')[3]}}</br>
+				<strong>Po#</strong>: {{item.split('_')[1].split('&')[3]}} <strong>Combo#</strong>: {{item.split('_')[1].split('&')[1]}}</br>
 			</span>
 		</span>
 		<span ng-if="!task.model.taskGroupIdsVo.length || task.model.taskGroupIdsVo.length <= 1">
-			Po#: {{task.model.job.poNo}} Combo: {{task.model.job.comboId}}</br>
+			<strong>Po#</strong>: {{task.model.job.poNo}} <strong>Combo</strong>: {{task.model.job.comboId}}</br>
 		</span>
 	</div>
 	<div class="col-md-3">
-		Operaction Code: {{task.model.operationCode | trimLeadingZero}}
+		<strong>Operaction Code</strong>: {{task.model.operationCode | trimLeadingZero}}
 	</div>
 	<div class="col-md-3">
-		Processing Type: {{task.model.processingType}}
+		<strong>Processing Type</strong>: {{task.model.processingType}}
 	</div>
 	<div class="col-md-3">
-		Round-Part: {{task.model.rounds}} - {{task.model.part}}
+		<strong>Round-Part</strong>: {{task.model.rounds}} - {{task.model.part}}
 	</div>
 	<div class="col-md-3">
-		Priority: {{task.model.priority}}
+		<strong>Priority</strong>: {{task.model.priority}}
 	</div>
 	<div class="col-md-3">
-		QTY: {{task.model.quantity}}
+		<strong>QTY</strong>: {{task.model.quantity}}
 	</div>
 	<div class="col-md-3">
 		<small>
