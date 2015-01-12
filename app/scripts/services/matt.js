@@ -170,10 +170,15 @@ angular.module('HarvardApp')
 				errorMessage.push('[Expect Quantity] must be greater then 0');
 			}
 
-			if(taskData.expectedStartTime && taskData.expectedSetupFinishTime && taskData.expectedFinishTime &&
-				!(taskData.expectedStartTime <= taskData.expectedSetupFinishTime && taskData.expectedSetupFinishTime <= taskData.expectedFinishTime)) {
-				dataChecking = false;
-				errorMessage.push('Some conflict in [Expect Time], please check');
+			if(taskData.expectedStartTime && taskData.expectedSetupFinishTime && taskData.expectedFinishTime) {
+				if(!(taskData.expectedStartTime <= taskData.expectedSetupFinishTime && taskData.expectedSetupFinishTime <= taskData.expectedFinishTime)) {
+					dataChecking = false;
+					errorMessage.push('Some conflict in [Expect Time], please check');
+				} else if(today > taskData.expectedFinishTime && taskData.isFinish === '0') {
+					dataChecking = false;
+					errorMessage.push('Task in past time must be Finished');
+				}
+				
 			}
 
 			if(taskData.up === null || taskData.up <= 0) {
