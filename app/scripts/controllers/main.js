@@ -1465,9 +1465,20 @@ angular.module('HarvardApp')
                 var result = mattCallback.success(response);
                 if (result.state === 'ok' && result.data.machines !== undefined && result.data.machines.length > 0) {
                     $scope.readyToGo(angular.copy(result.data));
-                } else {
                     $alert({
                         title: result.messages.title+'<br>',
+                        content: result.messages.content,
+                        placement: 'top',
+                        type: 'info',
+                        duration: $scope.configuration.alertTimeout,
+                        dismissable: true,
+                        html: true,
+                        container: '#gantt-chart-alert',
+                        show: true
+                    });
+                } else {
+                    $alert({
+                        title: 'ERROR! '+result.messages.title+'<br>',
                         content: result.messages.content,
                         placement: 'top',
                         type: 'info',
