@@ -7,11 +7,9 @@
  * # MainCtrl
  * Controller of the HarvardApp
  */
-window.ganttScope = undefined;
-
 angular.module('HarvardApp')
-    .controller('MainCtrl', ['$scope', '$window', '$document', '$compile', '$element', '$http', '$q', '$sce', '$templateCache', '$timeout', '$log', '$modal', '$alert', '$dropdown', 'ganttUtils', 'GanttObjectModel', 'Coloured', 'Harvard', 'Matt', 'TaskEditor', 'ganttMouseOffset', 'ganttDebounce', 'moment',
-    function($scope, $window, $document, $compile, $element, $http, $q, $sce, $templateCache, $timeout, $log, $modal, $alert, $dropdown, utils, ObjectModel, Coloured, Harvard, Matt, TaskEditor, mouseOffset, debounce, moment) {
+    .controller('MainCtrl', ['$scope', '$window', '$document', '$compile', '$element', '$http', '$q', '$sce', '$templateCache', '$timeout', '$log', '$interpolate', '$modal', '$alert', '$dropdown', 'ganttUtils', 'GanttObjectModel', 'Coloured', 'Harvard', 'Matt', 'TaskEditor', 'ganttMouseOffset', 'ganttDebounce', 'moment',
+    function($scope, $window, $document, $compile, $element, $http, $q, $sce, $templateCache, $timeout, $log, $interpolate, $modal, $alert, $dropdown, utils, ObjectModel, Coloured, Harvard, Matt, TaskEditor, mouseOffset, debounce, moment) {
         var objectModel, dataToRemove, saveGanttModal, _movingTask;
         var editTaskModalOptions = TaskEditor.editTaskModalOptions;
         var multipleTaskSelected = [];
@@ -58,6 +56,7 @@ angular.module('HarvardApp')
         fetchTemplate('../app/views/taskContextMenu.tpl.html');
         fetchTemplate('../app/views/taskContent.tpl.html');
         fetchTemplate('../app/views/taskTooltip.tpl.html');
+        fetchTemplate('../app/views/alert.tpl.html');
 
         editTaskModalOptions.scope = $scope;
 
@@ -526,8 +525,6 @@ angular.module('HarvardApp')
                 $scope.jumpToDate($scope.tasksMap[('t'+id)].model.from);
             }
         };
-
-        $window.ganttScope = $scope.$new();
 
         $scope.$watch('options.readOnly', function(newValue, oldValue) {
             if (false === angular.equals(newValue, oldValue)) {
@@ -1340,14 +1337,15 @@ angular.module('HarvardApp')
             }).then(function(response) {
                 saveGanttModal.hide();
                 var result = mattCallback.success(response);
-                var content = result.messages.content.replace(/<focusTask>([^<]*)<\/focusTask>/gim, '<a class="highlight-task" onclick="window.ganttScope.alertJumpToTask(\'$1\');">$1</a>');
+                var content = result.messages.content.replace(/<focusTask>([^<]*)<\/focusTask>/gim, '<a class="highlight-task" ng-click="alertJumpToTask(\'$1\');">$1</a>');
                 if (result.state === 'ok' && result.data.machines !== undefined && result.data.machines.length > 0) {
                     $scope.readyToGo(angular.copy(result.data));
 
                     $alert({
                         scope: $scope,
-                        title: result.messages.title+'<br>',
+                        title: result.messages.title,
                         content: content,
+                        template: '../app/views/alert.tpl.html',
                         placement: 'top',
                         type: 'info',
                         duration: $scope.configuration.alertTimeout,
@@ -1359,8 +1357,9 @@ angular.module('HarvardApp')
                 } else {
                     $alert({
                         scope: $scope,
-                        title: 'ERROR! '+result.messages.title+'<br>',
+                        title: 'ERROR! '+result.messages.title,
                         content: content,
+                        template: '../app/views/alert.tpl.html',
                         placement: 'top',
                         type: 'info',
                         duration: $scope.configuration.alertTimeout,
@@ -1373,11 +1372,12 @@ angular.module('HarvardApp')
             }, function(response) {
                 saveGanttModal.hide();
                 var result = mattCallback.error(response);
-                var content = result.messages.content.replace(/<focusTask>([^<]*)<\/focusTask>/gim, '<a class="highlight-task" onclick="window.ganttScope.alertJumpToTask(\'$1\');">$1</a>');
+                var content = result.messages.content.replace(/<focusTask>([^<]*)<\/focusTask>/gim, '<a class="highlight-task" ng-click="alertJumpToTask(\'$1\')">$1</a>');
                 $alert({
                     scope: $scope,
-                    title: 'ERROR! '+result.messages.title+'<br>',
+                    title: 'ERROR! '+result.messages.title,
                     content: content,
+                    template: '../app/views/alert.tpl.html',
                     placement: 'top',
                     type: 'info',
                     duration: $scope.configuration.alertTimeout,
@@ -1585,13 +1585,14 @@ angular.module('HarvardApp')
                 timeout: $scope.configuration.getGanttDataTimeout * 1000
             }).then(function(response) {
                 var result = mattCallback.success(response);
-                var content = result.messages.content.replace(/<focusTask>([^<]*)<\/focusTask>/gim, '<a class="highlight-task" onclick="window.ganttScope.alertJumpToTask(\'$1\');">$1</a>');
+                var content = result.messages.content.replace(/<focusTask>([^<]*)<\/focusTask>/gim, '<a class="highlight-task" ng-click="alertJumpToTask(\'$1\');">$1</a>');
                 if (result.state === 'ok' && result.data.machines !== undefined && result.data.machines.length > 0) {
                     $scope.readyToGo(angular.copy(result.data));
                     $alert({
                         scope: $scope,
                         title: result.messages.title+'<br>',
                         content: content,
+                        template: '../app/views/alert.tpl.html',
                         placement: 'top',
                         type: 'info',
                         duration: $scope.configuration.alertTimeout,
@@ -1605,6 +1606,7 @@ angular.module('HarvardApp')
                         scope: $scope,
                         title: 'ERROR! '+result.messages.title+'<br>',
                         content: content,
+                        template: '../app/views/alert.tpl.html',
                         placement: 'top',
                         type: 'info',
                         duration: $scope.configuration.alertTimeout,
@@ -1618,11 +1620,12 @@ angular.module('HarvardApp')
                 }
             }, function(response) {
                 var result = mattCallback.error(response);
-                var content = result.messages.content.replace(/<focusTask>([^<]*)<\/focusTask>/gim, '<a class="highlight-task" onclick="window.ganttScope.alertJumpToTask(\'$1\');">$1</a>');
+                var content = result.messages.content.replace(/<focusTask>([^<]*)<\/focusTask>/gim, '<a class="highlight-task" ng-click="alertJumpToTask(\'$1\');">$1</a>');
                 $alert({
                     scope: $scope,
                     title: result.messages.title+'<br>',
                     content: content,
+                    template: '../app/views/alert.tpl.html',
                     placement: 'top',
                     type: 'info',
                     duration: $scope.configuration.alertTimeout,
