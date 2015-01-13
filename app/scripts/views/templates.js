@@ -18,41 +18,36 @@ angular.module('harvard.templates', []).run(['$templateCache', function($templat
         '          <div class="form-group col-md-12">\n' +
         '            <label for="poNo" class="col-md-3 control-label require_field"><font color="red">*&nbsp;</font>PO# </label>\n' +
         '            <div class="form-group col-md-3">\n' +
-        '              <div class="input-group">\n' +
-        '                <input type="text" class="form-control" name="modifyTask_poNo" id="modifyTask_poNo" ng-model="editTask.poNo" value="{{ editTask.poNo }}" required ng-disabled="editTask.modifyType === \'edit\'" bs-dropdown="editTask.poFuzzySearch">\n' +
-        '              </div>\n' +
+        '              <input type="text" class="form-control" name="modifyTask_poNo" id="modifyTask_poNo" ng-model="editTask.poNo" value="{{ editTask.poNo }}" required ng-disabled="editTask.modifyType === \'edit\'" bs-dropdown="editTask.poFuzzySearch | filter:editTask.poNo">\n' +
         '            </div>\n' +
         '            <label for="ComboId" class="col-md-3 control-label require_field"><font color="red">*&nbsp;</font>ComboId </label>\n' +
         '            <div class="form-group col-md-3">\n' +
-        '              <div class="input-group">\n' +
-        '                <input class="form-control" name="modifyTask_comboList" ng-model="editTask.comboId" value="{{ editTask.comboId }}" required ng-disabled="editTask.modifyType === \'edit\'" bs-dropdown="editTask.comboList">\n' +
-        '              </div>\n' +
+        '              <!-- <input class="form-control" name="modifyTask_comboList" ng-model="editTask.comboId" value="{{ editTask.comboId }}" required ng-disabled="editTask.modifyType === \'edit\'" bs-dropdown="editTask.comboList"> -->\n' +
+        '              <button type="button" class="form-control btn btn-default" name="modifyTask_comboList" ng-model="editTask.comboId" ng-options="task.value as task.label for task in editTask.comboList" required ng-disabled="editTask.modifyType === \'edit\'" bs-select></button>\n' +
         '            </div>\n' +
         '          </div>\n' +
         '\n' +
         '          <div class="form-group col-md-12">\n' +
         '            <label for="productId" class="col-md-3 control-label require_field"><font color="red">*&nbsp;</font>Product </label>\n' +
         '            <div class="form-group col-md-3">\n' +
-        '              <input type="text" class="form-control" name="modifyTask_productId" id="modifyTask_productId" ng-model="editTask.productId" value="{{ editTask.productId }}" required ng-disabled="editTask.modifyType === \'edit\'" bs-dropdown="editTask.productList">\n' +
+        '              <!-- <input type="text" class="form-control" name="modifyTask_productId" id="modifyTask_productId" ng-model="editTask.productId" value="{{  editTask.productId }}" required ng-disabled="editTask.modifyType === \'edit\'" bs-dropdown="editTask.productList"> -->\n' +
+        '              <button type="button" class="form-control btn btn-default" name="modifyTask_productId" ng-model="editTask.productId" ng-options="task.value as task.label for task in editTask.productList" ng-disabled="editTask.modifyType === \'edit\'" bs-select></button>\n' +
         '            </div>\n' +
         '            <label for="processId" class="col-md-3 control-label require_field"><font color="red">*&nbsp;</font>Process </label>\n' +
         '            <div class="form-group col-md-3">\n' +
-        '              <input type="text" class="form-control" name="modifyTask_processId" id="modifyTask_processId" ng-model="editTask.processId" value="{{ editTask.processId }}" required ng-disabled="editTask.modifyType === \'edit\'" bs-dropdown="editTask.processList">\n' +
+        '              <!-- <input type="text" class="form-control" name="modifyTask_processId" id="modifyTask_processId" ng-model="editTask.processId" value="{{ editTask.processId }}" required ng-disabled="editTask.modifyType === \'edit\'" bs-dropdown="editTask.processList"> -->\n' +
+        '              <button type="button" class="form-control btn btn-default" name="modifyTask_processId" ng-model="editTask.processId" ng-options="task.value as task.label for task in editTask.processList" ng-disabled="editTask.modifyType === \'edit\'" bs-select></button>\n' +
         '            </div>\n' +
         '          </div>\n' +
         '\n' +
         '          <div class="form-group col-md-12" ng-if="editTask.modifyType === \'create\'">\n' +
         '            <label for="previousOperation" class="col-md-3 control-label">Previous Task </label>\n' +
         '            <div class="form-group col-md-9">\n' +
-        '              <div class="input-group">\n' +
-        '                <button type="button" class="form-control btn btn-default" name="modifyTask_previousTask" ng-model="editTask.previousTaskId" ng-options="task.value as task.label for task in editTask.previousTask" required bs-select></button>\n' +
-        '              </div>\n' +
+        '              <button type="button" class="form-control btn btn-default" name="modifyTask_previousTask" ng-model="editTask.previousTaskId" ng-options="task.value as task.label for task in editTask.previousTask" required bs-select></button>\n' +
         '            </div>\n' +
         '            <label for="nextOperation" class="col-md-3 control-label">Next Task </label>\n' +
         '            <div class="form-group col-md-9">\n' +
-        '              <div class="input-group">\n' +
-        '                <button type="button" class="form-control btn btn-default" name="modifyTask_nextTask" ng-model="editTask.nextTaskId" ng-options="task.value as task.label for task in editTask.nextTask" required bs-select></button>\n' +
-        '              </div>\n' +
+        '              <button type="button" class="form-control btn btn-default" name="modifyTask_nextTask" ng-model="editTask.nextTaskId" ng-options="task.value as task.label for task in editTask.nextTask" required bs-select></button>\n' +
         '            </div>\n' +
         '          </div>\n' +
         '\n' +
@@ -344,25 +339,42 @@ angular.module('harvard.templates', []).run(['$templateCache', function($templat
         '    </li>\n' +
         '</ul>');
     $templateCache.put('../app/views/taskTooltip.tpl.html',
-        '<span ng-if="task.model.taskGroupIdsVo.length && task.model.taskGroupIdsVo.length > 1">\n' +
-        '	<span ng-repeat="item in task.model.taskGroupIdsVo">\n' +
-        '		Po#: {{item.split(\'_\')[1].split(\'&\')[3]}}</br>\n' +
-        '	</span>\n' +
-        '</span>\n' +
-        '<span ng-if="!task.model.taskGroupIdsVo.length || task.model.taskGroupIdsVo.length <= 1">\n' +
-        '	Po#: {{task.model.job.poNo}} Combo: {{task.model.job.comboId}}</br>\n' +
-        '</span>\n' +
-        'Operaction Code: {{task.model.operationCode | trimLeadingZero}}</br>\n' +
-        'Processing Type: {{task.model.processingType}}</br>\n' +
-        'Round-Part: {{task.model.rounds}} - {{task.model.part}}</br>\n' +
-        'Priority: {{task.model.priority}}</br>\n' +
-        'QTY: {{task.model.quantity}}</br>\n' +
-        'Duration: {{((task.model.to - task.model.from) / 1000 / 3600).toFixed(2)}} (hrs)</br>\n' +
-        '<small>\n' +
-        '    {{task.isMilestone() === true && (task.model.from.format(\'MMM DD, HH:mm\')) || (task.model.from.format(\'MMM DD, HH:mm\') + \' - \' + task.model.to.format(\'MMM DD, HH:mm\'))}}</br>\n' +
-        '</small>\n' +
-        '<span class="tooltip-icon" ng-if="task.model.pin"><i class="glyphicon glyphicon-pushpin"></i>&nbsp;Pined</span>\n' +
-        '<span class="tooltip-icon" ng-if="task.model.inProcessing"><i class="glyphicon glyphicon-transfer"></i>&nbsp;Pending</span>\n' +
-        '<span class="tooltip-icon" ng-if="task.model.finished"><i class="glyphicon glyphicon-thumbs-up"></i>&nbsp;Finished</span>\n' +
-        '<span class="tooltip-icon" ng-if="task.model.taskGroupIdsVo.length && task.model.taskGroupIdsVo.length > 1"><i class="glyphicon glyphicon-exclamation-sign"></i>&nbsp;Grouped</span>');
+        '<div class="row">\n' +
+        '	<div class="col-md-3">\n' +
+        '		<span ng-if="task.model.taskGroupIdsVo.length && task.model.taskGroupIdsVo.length > 1">\n' +
+        '			<span ng-repeat="item in task.model.taskGroupIdsVo">\n' +
+        '				<strong>Po#</strong>: {{item.split(\'_\')[1].split(\'&\')[3]}} <strong>Combo#</strong>: {{item.split(\'_\')[1].split(\'&\')[1]}}</br>\n' +
+        '			</span>\n' +
+        '		</span>\n' +
+        '		<span ng-if="!task.model.taskGroupIdsVo.length || task.model.taskGroupIdsVo.length <= 1">\n' +
+        '			<strong>Po#</strong>: {{task.model.job.poNo}} <strong>Combo</strong>: {{task.model.job.comboId}}</br>\n' +
+        '		</span>\n' +
+        '	</div>\n' +
+        '	<div class="col-md-3">\n' +
+        '		<strong>Operaction Code</strong>: {{task.model.operationCode | trimLeadingZero}}\n' +
+        '	</div>\n' +
+        '	<div class="col-md-3">\n' +
+        '		<strong>Processing Type</strong>: {{task.model.processingType}}\n' +
+        '	</div>\n' +
+        '	<div class="col-md-3">\n' +
+        '		<strong>Round-Part</strong>: {{task.model.rounds}} - {{task.model.part}}\n' +
+        '	</div>\n' +
+        '	<div class="col-md-3">\n' +
+        '		<strong>Priority</strong>: {{task.model.priority}}\n' +
+        '	</div>\n' +
+        '	<div class="col-md-3">\n' +
+        '		<strong>QTY</strong>: {{task.model.quantity}}\n' +
+        '	</div>\n' +
+        '	<div class="col-md-3">\n' +
+        '		<small>\n' +
+        '    		{{task.isMilestone() === true && (task.model.from.format(\'MMM DD, HH:mm\')) || (task.model.from.format(\'MMM DD, HH:mm\') + \' - \' + task.model.to.format(\'MMM DD, HH:mm\'))}} ({{((task.model.to - task.model.from) / 1000 / 3600).toFixed(2)}} hrs)\n' +
+        '    	</small>\n' +
+        '	</div>\n' +
+        '	<div class="col-md-3">\n' +
+        '		<span class="tooltip-icon" ng-if="task.model.pin"><i class="glyphicon glyphicon-pushpin"></i>&nbsp;Pined</span>\n' +
+        '		<span class="tooltip-icon" ng-if="task.model.inProcessing"><i class="glyphicon glyphicon-transfer"></i>&nbsp;Pending</span>\n' +
+        '		<span class="tooltip-icon" ng-if="task.model.finished"><i class="glyphicon glyphicon-thumbs-up"></i>&nbsp;Finished</span>\n' +
+        '		<span class="tooltip-icon" ng-if="task.model.taskGroupIdsVo.length && task.model.taskGroupIdsVo.length > 1"><i class="glyphicon glyphicon-exclamation-sign"></i>&nbsp;Grouped</span>\n' +
+        '	</div>\n' +
+        '</div>');
 }]);
