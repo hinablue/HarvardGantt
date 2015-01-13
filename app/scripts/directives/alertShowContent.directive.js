@@ -15,7 +15,6 @@ angular.module('mgcrea.ngStrap')
                 var el;
                 $attrs.$observe('template', function (tpl) {
                     el = $compile('<div>'+tpl+'</div>')($scope);
-                    $log.info(el);
                     $element.html("");
                     $element.append(el);
                 });
