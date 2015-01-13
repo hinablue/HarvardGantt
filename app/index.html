@@ -80,7 +80,14 @@
                                                         <button type="button" class="btn btn-default" ng-model="options.draw" ng-disabled="options.readOnly === true" bs-checkbox>Draw</button>
                                                         <button type="button" class="btn btn-default" ng-model="options.readOnly" bs-checkbox>Read Only</button>
                                                     </div>
-
+                                                    <br>
+                                                    <div class="form-group text-center">
+                                                        <label class="control-label"><i class="fa fa-rocket"></i> Jump</label><br>
+                                                        <a class="btn btn-default" ng-click="jumpToDate()">Today</a>
+                                                        <div class="form-group">
+                                                            <input type="text" class="form-control" ng-model="options.toDate" min-date="{{options.fromDate}}" start-date="{{options.currentDateValue.toString()}}" start-week="1" placeholder="Jump To..." data-autoclose="1" data-date-format="yyyy/MM/dd" model-date-format="yyyy/MM/dd" container="body" bs-datepicker>
+                                                        </div>
+                                                    </div>
                                                     <div class="form-group text-center">
                                                         <label class="control-label"><i class="fa fa-th-large"></i> Pagination</label><br>
                                                         <div class="btn-group">
