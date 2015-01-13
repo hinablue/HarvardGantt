@@ -25,7 +25,7 @@
           </div>
 
           <div class="form-group col-md-12">
-            <label for="productId" class="col-md-3 control-label require_field"><font color="red">*&nbsp;</font>Product </label>
+            <label for="productId" class="col-md-3 control-label require_field"><font color="red">*&nbsp;</font>Job# </label>
             <div class="form-group col-md-3">
               <!-- <input type="text" class="form-control" name="modifyTask_productId" id="modifyTask_productId" ng-model="editTask.productId" value="{{  editTask.productId }}" required ng-disabled="editTask.modifyType === 'edit'" bs-dropdown="editTask.productList"> -->
               <button type="button" class="form-control btn btn-default" name="modifyTask_productId" ng-model="editTask.productId" ng-options="task.value as task.label for task in editTask.productList" ng-disabled="editTask.modifyType === 'edit'" bs-select></button>
