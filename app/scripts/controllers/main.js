@@ -7,6 +7,8 @@
  * # MainCtrl
  * Controller of the HarvardApp
  */
+window.ganttScope = undefined;
+
 angular.module('HarvardApp')
     .controller('MainCtrl', ['$scope', '$window', '$document', '$compile', '$element', '$http', '$q', '$sce', '$templateCache', '$timeout', '$log', '$modal', '$alert', '$dropdown', 'ganttUtils', 'GanttObjectModel', 'Coloured', 'Harvard', 'Matt', 'TaskEditor', 'ganttMouseOffset', 'ganttDebounce', 'moment',
     function($scope, $window, $document, $compile, $element, $http, $q, $sce, $templateCache, $timeout, $log, $modal, $alert, $dropdown, utils, ObjectModel, Coloured, Harvard, Matt, TaskEditor, mouseOffset, debounce, moment) {
@@ -49,6 +51,7 @@ angular.module('HarvardApp')
                 }
             });
         }
+
         $scope.configuration = Matt.configuration();
 
         // Prefetching the template.
@@ -242,7 +245,9 @@ angular.module('HarvardApp')
                                     directiveScope.task.model.highlight = true;
                                 } else {
                                     multipleTaskSelected = [];
-                                    // directiveScope.task.model.highlight = !directiveScope.task.model.highlight;
+                                    if (directiveScope.task.model.highlight) {
+                                         directiveScope.task.model.highlight = false;
+                                    }
                                 }
                                 directiveScope.$digest();
 
@@ -505,13 +510,24 @@ angular.module('HarvardApp')
 
         $scope.$watch('options.toDate', function(newValue, oldValue) {
             if (false === angular.equals(newValue, oldValue)) {
-                $scope.jumpToDate(moment(newValue.getTime(), 'x'));
+                if (newValue instanceof Date) {
+                    $scope.jumpToDate(moment(newValue.getTime(), 'x'));
+                } else {
+                    $scope.jumpToDate(newValue);
+                }
             }
         });
 
         $scope.alertJumpToTask = function(id) {
-            $log.info(id);
+            if (false === (('t'+id) in $scope.tasksMap)) {
+                alert('The \''+id+'\' task does not exists!');
+            } else {
+                $scope.tasksMap[('t'+id)].model.highlight = true;
+                $scope.jumpToDate($scope.tasksMap[('t'+id)].model.from);
+            }
         };
+
+        $window.ganttScope = $scope.$new();
 
         $scope.$watch('options.readOnly', function(newValue, oldValue) {
             if (false === angular.equals(newValue, oldValue)) {
@@ -1324,11 +1340,14 @@ angular.module('HarvardApp')
             }).then(function(response) {
                 saveGanttModal.hide();
                 var result = mattCallback.success(response);
+                var content = result.messages.content.replace(/<focusTask>([^<]*)<\/focusTask>/gim, '<a class="highlight-task" onclick="window.ganttScope.alertJumpToTask(\'$1\');">$1</a>');
                 if (result.state === 'ok' && result.data.machines !== undefined && result.data.machines.length > 0) {
                     $scope.readyToGo(angular.copy(result.data));
+
                     $alert({
+                        scope: $scope,
                         title: result.messages.title+'<br>',
-                        content: result.messages.content,
+                        content: content,
                         placement: 'top',
                         type: 'info',
                         duration: $scope.configuration.alertTimeout,
@@ -1339,8 +1358,9 @@ angular.module('HarvardApp')
                     });
                 } else {
                     $alert({
+                        scope: $scope,
                         title: 'ERROR! '+result.messages.title+'<br>',
-                        content: result.messages.content,
+                        content: content,
                         placement: 'top',
                         type: 'info',
                         duration: $scope.configuration.alertTimeout,
@@ -1353,9 +1373,11 @@ angular.module('HarvardApp')
             }, function(response) {
                 saveGanttModal.hide();
                 var result = mattCallback.error(response);
+                var content = result.messages.content.replace(/<focusTask>([^<]*)<\/focusTask>/gim, '<a class="highlight-task" onclick="window.ganttScope.alertJumpToTask(\'$1\');">$1</a>');
                 $alert({
+                    scope: $scope,
                     title: 'ERROR! '+result.messages.title+'<br>',
-                    content: result.messages.content,
+                    content: content,
                     placement: 'top',
                     type: 'info',
                     duration: $scope.configuration.alertTimeout,
@@ -1563,12 +1585,13 @@ angular.module('HarvardApp')
                 timeout: $scope.configuration.getGanttDataTimeout * 1000
             }).then(function(response) {
                 var result = mattCallback.success(response);
+                var content = result.messages.content.replace(/<focusTask>([^<]*)<\/focusTask>/gim, '<a class="highlight-task" onclick="window.ganttScope.alertJumpToTask(\'$1\');">$1</a>');
                 if (result.state === 'ok' && result.data.machines !== undefined && result.data.machines.length > 0) {
                     $scope.readyToGo(angular.copy(result.data));
                     $alert({
                         scope: $scope,
                         title: result.messages.title+'<br>',
-                        content: result.messages.content,
+                        content: content,
                         placement: 'top',
                         type: 'info',
                         duration: $scope.configuration.alertTimeout,
@@ -1581,7 +1604,7 @@ angular.module('HarvardApp')
                     $alert({
                         scope: $scope,
                         title: 'ERROR! '+result.messages.title+'<br>',
-                        content: result.messages.content,
+                        content: content,
                         placement: 'top',
                         type: 'info',
                         duration: $scope.configuration.alertTimeout,
@@ -1595,10 +1618,11 @@ angular.module('HarvardApp')
                 }
             }, function(response) {
                 var result = mattCallback.error(response);
+                var content = result.messages.content.replace(/<focusTask>([^<]*)<\/focusTask>/gim, '<a class="highlight-task" onclick="window.ganttScope.alertJumpToTask(\'$1\');">$1</a>');
                 $alert({
                     scope: $scope,
                     title: result.messages.title+'<br>',
-                    content: result.messages.content,
+                    content: content,
                     placement: 'top',
                     type: 'info',
                     duration: $scope.configuration.alertTimeout,

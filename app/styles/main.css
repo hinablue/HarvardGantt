@@ -62,7 +62,9 @@ textarea.live-task, textarea.live-row {
     font-size: 0.9em;
     color: #333;
 }
-
+.highlight-task {
+    cursor: pointer;
+}
 .gantt-task-highlight {
     width: 100%;
     -webkit-box-shadow: darkred 0px 0px 3px 1px;
