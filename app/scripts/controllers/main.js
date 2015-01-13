@@ -249,7 +249,7 @@ angular.module('HarvardApp')
                                 logTaskEvent('task-click', directiveScope.task);
                             });
                             element.bind('mouseenter', function() {
-                                element.css('z-index', directiveScope.task.model.priority * 10000);
+                                element.css('z-index', directiveScope.task.model.priority * 100000);
                             });
                             element.bind('mouseleave', function() {
                                 var _dropdown = angular.element(document.getElementById('taskmenu-'+directiveScope.task.model.id));
@@ -489,6 +489,30 @@ angular.module('HarvardApp')
             }
         };
 
+        $scope.jumpToDate = function(date) {
+            var from = $scope.api.gantt.columnsManager.getFirstColumn().date.clone();
+            var lastColumn = moment($scope.api.gantt.columnsManager.getLastColumn().date.format(), 'YYYY-MM-DDTHH:mm:ss');
+            if (date === undefined) {
+                date = $scope.options.currentDateValue;
+            }
+
+            if (date > lastColumn) {
+                $scope.api.gantt.columnsManager.generateColumns(from, date);
+            }
+
+            $scope.api.gantt.scroll.scrollToDate(date);
+        }
+
+        $scope.$watch('options.toDate', function(newValue, oldValue) {
+            if (false === angular.equals(newValue, oldValue)) {
+                $scope.jumpToDate(moment(newValue.getTime(), 'x'));
+            }
+        });
+
+        $scope.alertJumpToTask = function(id) {
+            $log.info(id);
+        };
+
         $scope.$watch('options.readOnly', function(newValue, oldValue) {
             if (false === angular.equals(newValue, oldValue)) {
                 // if (newValue === true) {
@@ -547,54 +571,90 @@ angular.module('HarvardApp')
                 case 'getPoUrl':
                     $scope.editTask.poId = $scope.editTask.poNo;
                 break;
+                // case 'getComboUrl':
+                //     $scope.editTask.comboList = [];
+                //     _clickFunc = function(comboId) {
+                //         return function(comboId) {
+                //             $scope.editTask.comboId = comboId;
+                //         }.bind(this, comboId);
+                //     };
+                //     for (i = 0, k = Object.keys($scope.jobsMap), l = k.length; i < l; ++i) {
+                //         if ($scope.jobsMap[k[i]].poNo === $scope.editTask.poNo) {
+                //             $scope.editTask.comboList.push({
+                //                 text: $scope.jobsMap[k[i]].comboId,
+                //                 click: _clickFunc.call(null, $scope.jobsMap[k[i]].comboId)
+                //             });
+                //             $scope.editTask.job = $scope.jobsMap[k[i]];
+                //             break;
+                //         }
+                //     }
+                // break;
                 case 'getComboUrl':
                     $scope.editTask.comboList = [];
-                    _clickFunc = function(comboId) {
-                        return function(comboId) {
-                            $scope.editTask.comboId = comboId;
-                        }.bind(this, comboId);
-                    };
                     for (i = 0, k = Object.keys($scope.jobsMap), l = k.length; i < l; ++i) {
                         if ($scope.jobsMap[k[i]].poNo === $scope.editTask.poNo) {
                             $scope.editTask.comboList.push({
-                                text: $scope.jobsMap[k[i]].comboId,
-                                click: _clickFunc.call(null, $scope.jobsMap[k[i]].comboId)
+                                label: $scope.jobsMap[k[i]].comboId,
+                                value: $scope.jobsMap[k[i]].comboId
                             });
-                            $scope.editTask.job = $scope.jobsMap[k[i]];
-                            break;
                         }
                     }
                 break;
+                // case 'getProductUrl':
+                //     $scope.editTask.productList = [];
+                //     var _productId = [];
+                //     _clickFunc = function(productId) {
+                //         return function(productId) {
+                //             $scope.editTask.productId = productId;
+                //         }.bind(this, productId);
+                //     };
+                //     for (i = 0, k = Object.keys($scope.processesMap), l = k.length; i < l; ++i) {
+                //         if (_productId.indexOf($scope.processesMap[k[i]].productId) < 0) {
+                //             $scope.editTask.productList.push({
+                //                 text: $scope.processesMap[k[i]].productId,
+                //                 click: _clickFunc.call(null, $scope.processesMap[k[i]].productId)
+                //             });
+                //             _productId.push($scope.processesMap[k[i]].productId);
+                //         }
+                //     }
+                // break;
                 case 'getProductUrl':
                     $scope.editTask.productList = [];
                     var _productId = [];
-                    _clickFunc = function(productId) {
-                        return function(productId) {
-                            $scope.editTask.productId = productId;
-                        }.bind(this, productId);
-                    };
                     for (i = 0, k = Object.keys($scope.processesMap), l = k.length; i < l; ++i) {
                         if (_productId.indexOf($scope.processesMap[k[i]].productId) < 0) {
                             $scope.editTask.productList.push({
-                                text: $scope.processesMap[k[i]].productId,
-                                click: _clickFunc.call(null, $scope.processesMap[k[i]].productId)
+                                label: $scope.processesMap[k[i]].productId,
+                                value: $scope.processesMap[k[i]].productId
                             });
                             _productId.push($scope.processesMap[k[i]].productId);
                         }
                     }
                 break;
+                // case 'getProcessUrl':
+                //     $scope.editTask.processList = [];
+                //     _clickFunc = function(processId) {
+                //         return function(processId) {
+                //             $scope.editTask.processId = processId;
+                //         }.bind(this, processId);
+                //     };
+                //     for (i = 0, k = Object.keys($scope.processesMap), l = k.length; i < l; ++i) {
+                //         if ($scope.processesMap[k[i]].productId === $scope.editTask.productId) {
+                //             $scope.editTask.processList.push({
+                //                 text: $scope.processesMap[k[i]].id,
+                //                 click: _clickFunc.call(null, $scope.processesMap[k[i]].id)
+                //             });
+                //             break;
+                //         }
+                //     }
+                // break;
                 case 'getProcessUrl':
                     $scope.editTask.processList = [];
-                    _clickFunc = function(processId) {
-                        return function(processId) {
-                            $scope.editTask.processId = processId;
-                        }.bind(this, processId);
-                    };
                     for (i = 0, k = Object.keys($scope.processesMap), l = k.length; i < l; ++i) {
                         if ($scope.processesMap[k[i]].productId === $scope.editTask.productId) {
                             $scope.editTask.processList.push({
-                                text: $scope.processesMap[k[i]].id,
-                                click: _clickFunc.call(null, $scope.processesMap[k[i]].id)
+                                label: $scope.processesMap[k[i]].id,
+                                value: $scope.processesMap[k[i]].id
                             });
                             break;
                         }
@@ -630,56 +690,86 @@ angular.module('HarvardApp')
                         case 'getPoUrl':
                             $scope.editTask.poId = response.data.data.id;
                         break;
+                        // case 'getComboUrl':
+                        //     $scope.editTask.comboList = [];
+                        //     for (i = 0, k = Object.keys($scope.jobsMap), l = k.length; i < l; ++i) {
+                        //         if ($scope.jobsMap[k[i]].poNo === $scope.editTask.poNo) {
+                        //             $scope.editTask.job = $scope.jobsMap[k[i]];
+                        //             break;
+                        //         }
+                        //     }
+                        //     _clickFunc = function(comboId) {
+                        //         return function(comboId) {
+                        //             $scope.editTask.comboId = comboId;
+                        //         }.bind(this, comboId);
+                        //     };
+                        //     for (i = 0, k = response.data.data, l = k.length; i < l; ++i) {
+                        //         $scope.editTask.comboList.push({
+                        //             text: k[i].label,
+                        //             click: _clickFunc.call(null, k[i].value)
+                        //         });
+                        //     }
+                        // break;
                         case 'getComboUrl':
                             $scope.editTask.comboList = [];
-                            for (i = 0, k = Object.keys($scope.jobsMap), l = k.length; i < l; ++i) {
-                                if ($scope.jobsMap[k[i]].poNo === $scope.editTask.poNo) {
-                                    $scope.editTask.job = $scope.jobsMap[k[i]];
-                                    break;
-                                }
-                            }
-                            _clickFunc = function(comboId) {
-                                return function(comboId) {
-                                    $scope.editTask.comboId = comboId;
-                                }.bind(this, comboId);
-                            };
                             for (i = 0, k = response.data.data, l = k.length; i < l; ++i) {
                                 $scope.editTask.comboList.push({
-                                    text: k[i].label,
-                                    click: _clickFunc.call(null, k[i].value)
+                                    label: k[i].label,
+                                    value: k[i].value
                                 });
                             }
                         break;
+                        // case 'getProductUrl':
+                        //     $scope.editTask.productList = [];
+                        //     var _productId = [];
+                        //     _clickFunc = function(productId) {
+                        //         return function(productId) {
+                        //             $scope.editTask.productId = productId;
+                        //         }.bind(this, productId);
+                        //     };
+                        //     for (i = 0, k = response.data.data, l = k.length; i < l; ++i) {
+                        //         if (_productId.indexOf(k[i].value.productId) < 0) {
+                        //             $scope.editTask.productList.push({
+                        //                 text: k[i].label,
+                        //                 click: _clickFunc.call(null, k[i].value)
+                        //             });
+                        //             _productId.push(k[i].value);
+                        //         }
+                        //     }
+                        // break;
                         case 'getProductUrl':
                             $scope.editTask.productList = [];
                             var _productId = [];
-                            _clickFunc = function(productId) {
-                                return function(productId) {
-                                    $scope.editTask.productId = productId;
-                                }.bind(this, productId);
-                            };
                             for (i = 0, k = response.data.data, l = k.length; i < l; ++i) {
                                 if (_productId.indexOf(k[i].value.productId) < 0) {
                                     $scope.editTask.productList.push({
-                                        text: k[i].label,
-                                        click: _clickFunc.call(null, k[i].value)
+                                        label: k[i].label,
+                                        value: k[i].value
                                     });
                                     _productId.push(k[i].value);
                                 }
                             }
-
                         break;
+                        // case 'getProcessUrl':
+                        //     $scope.editTask.processList = [];
+                        //     _clickFunc = function(processId) {
+                        //         return function(processId) {
+                        //             $scope.editTask.processId = processId;
+                        //         }.bind(this, processId);
+                        //     };
+                        //     for (i = 0, k = response.data.data, l = k.length; i < l; ++i) {
+                        //         $scope.editTask.processList.push({
+                        //             text: k[i].label,
+                        //             click: _clickFunc.call(null, k[i].value)
+                        //         });
+                        //     }
+                        // break;
                         case 'getProcessUrl':
                             $scope.editTask.processList = [];
-                            _clickFunc = function(processId) {
-                                return function(processId) {
-                                    $scope.editTask.processId = processId;
-                                }.bind(this, processId);
-                            };
                             for (i = 0, k = response.data.data, l = k.length; i < l; ++i) {
                                 $scope.editTask.processList.push({
-                                    text: k[i].label,
-                                    click: _clickFunc.call(null, k[i].value)
+                                    label: k[i].label,
+                                    value: k[i].value
                                 });
                             }
                         break;
@@ -723,28 +813,32 @@ angular.module('HarvardApp')
                 editTaskHandleError(response);
             }
         };
-        // $scope.$watch('editTask.poNo', function(newValue, oldValue) {
-        //     if ($scope.editTask === undefined) {
-        //         return;
-        //     }
-        //     if (newValue === '' || newValue === undefined) {
-        //         $scope.editTask.fuzzyPoNo = '';
-        //         $scope.editTask.poId = '';
-        //         $scope.editTask.comboId = '';
-        //         $scope.editTask.productId = '';
-        //         $scope.editTask.processId = '';
-        //     }
-        //     if (newValue !== undefined && newValue !== '' && !angular.equals(newValue, oldValue)) {
-        //         $timeout(function() {
-        //             $http({
-        //                 method: 'get',
-        //                 responseType: 'json',
-        //                 url: $scope.configuration.serverLocation + $scope.configuration.poFuzzySearch.replace('#poNo#', newValue),
-        //                 data: 'poFuzzySearch'
-        //             }).then(editTaskHandleSuccess, editTaskHandleError);
-        //         }, 300);
-        //     }
-        // });
+        $scope.$watch('editTask.poNo', function(newValue, oldValue) {
+            if ($scope.editTask === undefined) {
+                return;
+            }
+            if (!angular.equals(newValue, oldValue)) {
+                $scope.editTask.comboId = '';
+                $scope.editTask.comboList = [];
+                $scope.editTask.productId = '';
+                $scope.editTask.productList = [];
+                $scope.editTask.processId = '';
+                $scope.editTask.processList = [];
+                $scope.editTask.previousTask = [];
+                $scope.editTask.nextTask = [];
+            }
+
+            // if (newValue !== undefined && newValue !== '' && !angular.equals(newValue, oldValue)) {
+            //     $timeout(function() {
+            //         $http({
+            //             method: 'get',
+            //             responseType: 'json',
+            //             url: $scope.configuration.serverLocation + $scope.configuration.poFuzzySearch.replace('#poNo#', newValue),
+            //             data: 'poFuzzySearch'
+            //         }).then(editTaskHandleSuccess, editTaskHandleError);
+            //     }, 300);
+            // }
+        });
         $scope.$watch('editTask.fuzzyPoNo', function(newValue, oldValue) {
             if ($scope.editTask === undefined) {
                 return;
@@ -779,10 +873,13 @@ angular.module('HarvardApp')
             if ($scope.editTask === undefined) {
                 return;
             }
-            if (newValue === '' || newValue === undefined) {
-                $scope.editTask.productId = '';
-                $scope.editTask.processId = '';
-            }
+            $scope.editTask.productId = '';
+            $scope.editTask.productList = [];
+            $scope.editTask.processId = '';
+            $scope.editTask.processList = [];
+            $scope.editTask.previousTask = [];
+            $scope.editTask.nextTask = [];
+
             if (newValue !== undefined && newValue !== '' && !angular.equals(newValue, oldValue)) {
                 $timeout(function() {
                     $http({
@@ -798,9 +895,11 @@ angular.module('HarvardApp')
             if ($scope.editTask === undefined) {
                 return;
             }
-            if (newValue === '' || newValue === undefined) {
-                $scope.editTask.processId = '';
-            }
+            $scope.editTask.processId = '';
+            $scope.editTask.processList = [];
+            $scope.editTask.previousTask = [];
+            $scope.editTask.nextTask = [];
+
             if (newValue !== undefined && newValue !== '' && !angular.equals(newValue, oldValue)) {
                 var rowIndex = (function($scope) {
                     for (var i = 0, l = $scope.data.length; i < l; i++) {
@@ -827,6 +926,7 @@ angular.module('HarvardApp')
             if ($scope.editTask === undefined) {
                 return;
             }
+
             $scope.editTask.previousTask = [];
             $scope.editTask.nextTask = [];
 
@@ -1466,6 +1566,7 @@ angular.module('HarvardApp')
                 if (result.state === 'ok' && result.data.machines !== undefined && result.data.machines.length > 0) {
                     $scope.readyToGo(angular.copy(result.data));
                     $alert({
+                        scope: $scope,
                         title: result.messages.title+'<br>',
                         content: result.messages.content,
                         placement: 'top',
@@ -1478,6 +1579,7 @@ angular.module('HarvardApp')
                     });
                 } else {
                     $alert({
+                        scope: $scope,
                         title: 'ERROR! '+result.messages.title+'<br>',
                         content: result.messages.content,
                         placement: 'top',
@@ -1494,6 +1596,7 @@ angular.module('HarvardApp')
             }, function(response) {
                 var result = mattCallback.error(response);
                 $alert({
+                    scope: $scope,
                     title: result.messages.title+'<br>',
                     content: result.messages.content,
                     placement: 'top',
@@ -1676,7 +1779,6 @@ angular.module('HarvardApp')
                     }
                 break;
             }
-            evt.stopPropagation();
         };
         var moveTaskBeginEvent = function(eventName, task) {
             var i, t, l;
@@ -1810,6 +1912,14 @@ angular.module('HarvardApp')
                     }
                     task.$element.css('z-index', task.model.priority);
                 };
+                task.contextMenuOnShow = function(task) {
+                    task.model.enabled = false;
+                    return false;
+                };
+                task.contextMenuOnClose = function(task) {
+                    task.model.enabled = movableEnableCondition;
+                    return false;
+                };
                 if (task.model.delete === true) {
                     objectModel.api.gantt.rowsManager.rowsMap[task.row.model.id].removeTask(task.model.id, true, false);
                 }
@@ -1843,6 +1953,7 @@ angular.module('HarvardApp')
         var logRowEvent = function(eventName, row) {
             if (eventName === 'rows.on.add' || eventName === 'rows.on.change') {
                 row.createTask = function(row, evt) {
+                    evt.stopPropagation();
                     if ($scope.options.readOnly === false) {
                         var _point = moment();
                         if (evt !== undefined) {
@@ -1878,17 +1989,32 @@ angular.module('HarvardApp')
                             }
                         }
                     }
+
+                    var _dropdown = angular.element(document.getElementById('rowmenu-'+row.model.id));
+                    if (_dropdown[0] !== undefined && _dropdown[0].classList !== undefined && _dropdown[0].classList.contains('open')) {
+                        _dropdown[0].classList.remove('open');
+                    }
                 };
                 row.zoomIn = function(row, evt) {
+                    evt.stopPropagation();
                     var key = $scope.defaultScale.indexOf($scope.options.scale);
                     if (key - 1 >= 0) {
                         $scope.options.scale = $scope.defaultScale[(key - 1)];
                     }
+                    var _dropdown = angular.element(document.getElementById('rowmenu-'+row.model.id));
+                    if (_dropdown[0] !== undefined && _dropdown[0].classList !== undefined && _dropdown[0].classList.contains('open')) {
+                        _dropdown[0].classList.remove('open');
+                    }
                 };
                 row.zoomOut = function(row, evt) {
+                    evt.stopPropagation();
                     var key = $scope.defaultScale.indexOf($scope.options.scale);
                     if (key + 1 < $scope.defaultScale.length) {
                         $scope.options.scale = $scope.defaultScale[(key + 1)];
+                    }
+                    var _dropdown = angular.element(document.getElementById('rowmenu-'+row.model.id));
+                    if (_dropdown[0] !== undefined && _dropdown[0].classList !== undefined && _dropdown[0].classList.contains('open')) {
+                        _dropdown[0].classList.remove('open');
                     }
                 };
             } else if (eventName === 'row-click') {
