@@ -1408,6 +1408,13 @@ angular.module('HarvardApp')
         $scope.readyToGo = function(originalData) {
             var obj, task, i, j, l, m, q, t, p;
 
+            if (originalData.machines === undefined || originalData.machines.length === 0) {
+                if (saveGanttModal !== undefined) {
+                    saveGanttModal.hide();
+                }
+                return false;
+            }
+
             $scope.clear();
 
             $log.info('[Event] Beginning parse JSON data.');
@@ -1653,7 +1660,6 @@ angular.module('HarvardApp')
                         container: '#gantt-chart-alert',
                         show: true
                     });
-
                     $scope.readyToGo(angular.copy(Harvard.getGanttData()));
                 }
             }, function(response) {
@@ -1675,7 +1681,6 @@ angular.module('HarvardApp')
                     container: '#gantt-chart-alert',
                     show: true
                 });
-
                 $scope.readyToGo(angular.copy(Harvard.getGanttData()));
             });
         };
