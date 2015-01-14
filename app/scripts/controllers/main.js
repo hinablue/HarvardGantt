@@ -1649,7 +1649,7 @@ angular.module('HarvardApp')
                 }
                 _ganttAlertBox = $alert({
                     scope: $scope,
-                    title: result.messages.title+'123<br>',
+                    title: result.messages.title+'<br>',
                     content: content,
                     template: '../app/views/alert.tpl.html',
                     placement: 'top',
