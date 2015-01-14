@@ -1412,6 +1412,18 @@ angular.module('HarvardApp')
                 if (saveGanttModal !== undefined) {
                     saveGanttModal.hide();
                 }
+                _ganttAlertBox = $alert({
+                    scope: $scope,
+                    title: 'ERROR!',
+                    content: 'The structure of gantt JSON are wrong, cannot render the GUI.',
+                    placement: 'top',
+                    type: 'info',
+                    duration: $scope.configuration.alertTimeout,
+                    dismissable: true,
+                    html: true,
+                    container: '#gantt-chart-alert',
+                    show: true
+                });
                 return false;
             }
 
