@@ -10,7 +10,7 @@
 angular.module('HarvardApp')
     .controller('MainCtrl', ['$scope', '$window', '$document', '$compile', '$element', '$http', '$q', '$sce', '$templateCache', '$timeout', '$log', '$interpolate', '$modal', '$alert', '$dropdown', 'ganttUtils', 'GanttObjectModel', 'Coloured', 'Harvard', 'Matt', 'TaskEditor', 'ganttMouseOffset', 'ganttDebounce', 'moment',
     function($scope, $window, $document, $compile, $element, $http, $q, $sce, $templateCache, $timeout, $log, $interpolate, $modal, $alert, $dropdown, utils, ObjectModel, Coloured, Harvard, Matt, TaskEditor, mouseOffset, debounce, moment) {
-        var objectModel, dataToRemove, saveGanttModal, _movingTask;
+        var objectModel, dataToRemove, saveGanttModal, _movingTask, _ganttAlertBox;
         var editTaskModalOptions = TaskEditor.editTaskModalOptions;
         var multipleTaskSelected = [];
         var movableEnableCondition = function(task) {
@@ -505,7 +505,7 @@ angular.module('HarvardApp')
             }
 
             $scope.api.gantt.scroll.scrollToDate(date);
-        }
+        };
 
         $scope.$watch('options.toDate', function(newValue, oldValue) {
             if (false === angular.equals(newValue, oldValue)) {
@@ -519,26 +519,26 @@ angular.module('HarvardApp')
 
         $scope.alertJumpToTask = function(id) {
             if (false === (('t'+id) in $scope.tasksMap)) {
-                alert('The \''+id+'\' task does not exists!');
+                $window.alert('The \''+id+'\' task does not exists!');
             } else {
                 $scope.tasksMap[('t'+id)].model.highlight = true;
                 $scope.jumpToDate($scope.tasksMap[('t'+id)].model.from);
             }
         };
 
-        $scope.$watch('options.readOnly', function(newValue, oldValue) {
-            if (false === angular.equals(newValue, oldValue)) {
-                // if (newValue === true) {
-                //     for (var i = 0, k = Object.key($scope.tasksMap), l = k.length; i < l; i++) {
-                //         $scope.tasksMap[k[i]].movable.enabled = false;
-                //     }
-                // } else {
-                //     for (var i = 0, k = Object.key($scope.tasksMap), l = k.length; i < l; i++) {
-                //         $scope.tasksMap[k[i]].movable.enabled = true;
-                //     }
-                // }
-            }
-        });
+        // $scope.$watch('options.readOnly', function(newValue, oldValue) {
+        //     if (false === angular.equals(newValue, oldValue)) {
+        //         if (newValue === true) {
+        //             for (var i = 0, k = Object.key($scope.tasksMap), l = k.length; i < l; i++) {
+        //                 $scope.tasksMap[k[i]].movable.enabled = false;
+        //             }
+        //         } else {
+        //             for (var i = 0, k = Object.key($scope.tasksMap), l = k.length; i < l; i++) {
+        //                 $scope.tasksMap[k[i]].movable.enabled = true;
+        //             }
+        //         }
+        //     }
+        // });
 
         // Task Editor
         var editTaskHandleError = function(response) {
@@ -830,7 +830,7 @@ angular.module('HarvardApp')
             if ($scope.editTask === undefined) {
                 return;
             }
-            if (!angular.equals(newValue, oldValue)) {
+            if (!angular.equals(newValue, oldValue) && $scope.editTask.modifyType === 'create') {
                 $scope.editTask.comboId = '';
                 $scope.editTask.comboList = [];
                 $scope.editTask.productId = '';
@@ -856,7 +856,7 @@ angular.module('HarvardApp')
             if ($scope.editTask === undefined) {
                 return;
             }
-            if (newValue !== undefined && newValue !== '' && !angular.equals(newValue, oldValue)) {
+            if (newValue !== undefined && newValue !== '' && !angular.equals(newValue, oldValue) && $scope.editTask.modifyType === 'create') {
                 $timeout(function() {
                     $http({
                         method: 'get',
@@ -871,7 +871,7 @@ angular.module('HarvardApp')
             if ($scope.editTask === undefined) {
                 return;
             }
-            if (newValue !== undefined && newValue !== '' && !angular.equals(newValue, oldValue)) {
+            if (newValue !== undefined && newValue !== '' && !angular.equals(newValue, oldValue) && $scope.editTask.modifyType === 'create') {
                 $timeout(function() {
                     $http({
                         method: 'get',
@@ -886,14 +886,16 @@ angular.module('HarvardApp')
             if ($scope.editTask === undefined) {
                 return;
             }
-            $scope.editTask.productId = '';
-            $scope.editTask.productList = [];
-            $scope.editTask.processId = '';
-            $scope.editTask.processList = [];
-            $scope.editTask.previousTask = [];
-            $scope.editTask.nextTask = [];
+            if ($scope.editTask.modifyType === 'create') {
+                $scope.editTask.productId = '';
+                $scope.editTask.productList = [];
+                $scope.editTask.processId = '';
+                $scope.editTask.processList = [];
+                $scope.editTask.previousTask = [];
+                $scope.editTask.nextTask = [];
+            }
 
-            if (newValue !== undefined && newValue !== '' && !angular.equals(newValue, oldValue)) {
+            if (newValue !== undefined && newValue !== '' && !angular.equals(newValue, oldValue) && $scope.editTask.modifyType === 'create') {
                 $timeout(function() {
                     $http({
                         method: 'get',
@@ -908,12 +910,14 @@ angular.module('HarvardApp')
             if ($scope.editTask === undefined) {
                 return;
             }
-            $scope.editTask.processId = '';
-            $scope.editTask.processList = [];
-            $scope.editTask.previousTask = [];
-            $scope.editTask.nextTask = [];
+            if ($scope.editTask.modifyType === 'create') {
+                $scope.editTask.processId = '';
+                $scope.editTask.processList = [];
+                $scope.editTask.previousTask = [];
+                $scope.editTask.nextTask = [];
+            }
 
-            if (newValue !== undefined && newValue !== '' && !angular.equals(newValue, oldValue)) {
+            if (newValue !== undefined && newValue !== '' && !angular.equals(newValue, oldValue) && $scope.editTask.modifyType === 'create') {
                 var rowIndex = (function($scope) {
                     for (var i = 0, l = $scope.data.length; i < l; i++) {
                         if ($scope.data[i].id === $scope.editTask.runOnMachineId) {
@@ -940,8 +944,10 @@ angular.module('HarvardApp')
                 return;
             }
 
-            $scope.editTask.previousTask = [];
-            $scope.editTask.nextTask = [];
+            if ($scope.editTask.modifyType === 'create') {
+                $scope.editTask.previousTask = [];
+                $scope.editTask.nextTask = [];
+            }
 
             if (newValue === '' || newValue === undefined) {
                 return;
@@ -1206,6 +1212,7 @@ angular.module('HarvardApp')
                         objectModel.api.gantt.rowsManager.rows[rowIndex].addTask(task);
                     }
 
+
                     $alert({
                         title: 'Success!<br>',
                         content: 'The task save success.',
@@ -1317,7 +1324,7 @@ angular.module('HarvardApp')
                 keyboard: false,
                 template: '../app/views/processing.tpl.html',
                 placement: 'center',
-                show: true
+                show: false
             });
             saveGanttModal.$promise.then(saveGanttModal.show);
 
@@ -1341,7 +1348,10 @@ angular.module('HarvardApp')
                 if (result.state === 'ok' && result.data.machines !== undefined && result.data.machines.length > 0) {
                     $scope.readyToGo(angular.copy(result.data));
 
-                    $alert({
+                    if (_ganttAlertBox !== undefined) {
+                        _ganttAlertBox.hide();
+                    }
+                    _ganttAlertBox = $alert({
                         scope: $scope,
                         title: result.messages.title,
                         content: content,
@@ -1355,7 +1365,10 @@ angular.module('HarvardApp')
                         show: true
                     });
                 } else {
-                    $alert({
+                    if (_ganttAlertBox !== undefined) {
+                        _ganttAlertBox.hide();
+                    }
+                    _ganttAlertBox = $alert({
                         scope: $scope,
                         title: 'ERROR! '+result.messages.title,
                         content: content,
@@ -1373,7 +1386,10 @@ angular.module('HarvardApp')
                 saveGanttModal.hide();
                 var result = mattCallback.error(response);
                 var content = result.messages.content.replace(/<focusTask>([^<]*)<\/focusTask>/gim, '<a class="highlight-task" ng-click="alertJumpToTask(\'$1\')">$1</a>');
-                $alert({
+                if (_ganttAlertBox !== undefined) {
+                    _ganttAlertBox.hide();
+                }
+                _ganttAlertBox = $alert({
                     scope: $scope,
                     title: 'ERROR! '+result.messages.title,
                     content: content,
@@ -1588,7 +1604,10 @@ angular.module('HarvardApp')
                 var content = result.messages.content.replace(/<focusTask>([^<]*)<\/focusTask>/gim, '<a class="highlight-task" ng-click="alertJumpToTask(\'$1\');">$1</a>');
                 if (result.state === 'ok' && result.data.machines !== undefined && result.data.machines.length > 0) {
                     $scope.readyToGo(angular.copy(result.data));
-                    $alert({
+                    if (_ganttAlertBox !== undefined) {
+                        _ganttAlertBox.hide();
+                    }
+                    _ganttAlertBox = $alert({
                         scope: $scope,
                         title: result.messages.title+'<br>',
                         content: content,
@@ -1602,7 +1621,10 @@ angular.module('HarvardApp')
                         show: true
                     });
                 } else {
-                    $alert({
+                    if (_ganttAlertBox !== undefined) {
+                        _ganttAlertBox.hide();
+                    }
+                    _ganttAlertBox = $alert({
                         scope: $scope,
                         title: 'ERROR! '+result.messages.title+'<br>',
                         content: content,
@@ -1620,10 +1642,14 @@ angular.module('HarvardApp')
                 }
             }, function(response) {
                 var result = mattCallback.error(response);
+                result.messages.content += '<focusTask>1234</focusTask>';
                 var content = result.messages.content.replace(/<focusTask>([^<]*)<\/focusTask>/gim, '<a class="highlight-task" ng-click="alertJumpToTask(\'$1\');">$1</a>');
-                $alert({
+                if (_ganttAlertBox !== undefined) {
+                    _ganttAlertBox.hide();
+                }
+                _ganttAlertBox = $alert({
                     scope: $scope,
-                    title: result.messages.title+'<br>',
+                    title: result.messages.title+'123<br>',
                     content: content,
                     template: '../app/views/alert.tpl.html',
                     placement: 'top',

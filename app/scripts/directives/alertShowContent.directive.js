@@ -8,12 +8,12 @@
  * Directive of the mgcrea.ngStrap
  */
 angular.module('mgcrea.ngStrap')
-    .directive('showContent', ['$document', '$compile', '$sce', '$log', function ($document, $compile, $sce, $log) {
+    .directive('showContent', ['$compile', function ($compile) {
         return {
             scope: true,
             link: function ($scope, $element, $attrs) {
                 var el;
-                $attrs.$observe('template', function (tpl) {
+                $attrs.$observe('showContent', function (tpl) {
                     el = $compile('<div>'+tpl+'</div>')($scope);
                     $element.html("");
                     $element.append(el);
