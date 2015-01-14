@@ -1642,7 +1642,6 @@ angular.module('HarvardApp')
                 }
             }, function(response) {
                 var result = mattCallback.error(response);
-                result.messages.content += '<focusTask>1234</focusTask>';
                 var content = result.messages.content.replace(/<focusTask>([^<]*)<\/focusTask>/gim, '<a class="highlight-task" ng-click="alertJumpToTask(\'$1\');">$1</a>');
                 if (_ganttAlertBox !== undefined) {
                     _ganttAlertBox.hide();
