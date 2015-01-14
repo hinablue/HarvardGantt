@@ -1584,6 +1584,10 @@ angular.module('HarvardApp')
 
             dataToRemove = undefined;
 
+            if (saveGanttModal !== undefined) {
+                saveGanttModal.hide();
+            }
+
             $scope.timespans = Harvard.getGanttTimespans();
             $scope.options.filterRow = '-Page ' + '00001';
         };
@@ -1591,6 +1595,18 @@ angular.module('HarvardApp')
         // Reload data action
         $scope.load = function() {
             var mattCallback = Matt.getGanttData();
+
+            saveGanttModal = $modal({
+                scope: $scope,
+                title: 'Processing',
+                content: 'Prepare your gantt data, please wait one moment...',
+                backdrop: false,
+                keyboard: false,
+                template: '../app/views/processing.tpl.html',
+                placement: 'center',
+                show: false
+            });
+            saveGanttModal.$promise.then(saveGanttModal.show);
 
             $log.info('[Event] Loading data.');
             $http({
