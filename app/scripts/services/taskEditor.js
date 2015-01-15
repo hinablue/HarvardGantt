@@ -64,7 +64,7 @@ angular.module('HarvardApp')
                 rounds: 1,
                 taskGroup: '',
                 machineShiftLabel: '',
-                new: true,
+                new: false,
                 highlight: false,
                 movable: {
                     enabled: false,

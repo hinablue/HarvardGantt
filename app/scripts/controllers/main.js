@@ -886,7 +886,7 @@ angular.module('HarvardApp')
             if ($scope.editTask === undefined) {
                 return;
             }
-            if ($scope.editTask.modifyType === 'create') {
+            if (!angular.equals(newValue, oldValue) && $scope.editTask.modifyType === 'create') {
                 $scope.editTask.productId = '';
                 $scope.editTask.productList = [];
                 $scope.editTask.processId = '';
@@ -910,7 +910,7 @@ angular.module('HarvardApp')
             if ($scope.editTask === undefined) {
                 return;
             }
-            if ($scope.editTask.modifyType === 'create') {
+            if (!angular.equals(newValue, oldValue) && $scope.editTask.modifyType === 'create') {
                 $scope.editTask.processId = '';
                 $scope.editTask.processList = [];
                 $scope.editTask.previousTask = [];
@@ -940,18 +940,13 @@ angular.module('HarvardApp')
             }
         });
         $scope.$watch('editTask.processId', function(newValue, oldValue) {
-            if ($scope.editTask === undefined) {
+            if ($scope.editTask === undefined || $scope.editTask.modifyType === 'edit' || newValue === '' || newValue === undefined) {
                 return;
             }
 
-            if ($scope.editTask.modifyType === 'create') {
-                $scope.editTask.previousTask = [];
-                $scope.editTask.nextTask = [];
-            }
+            $scope.editTask.previousTask = [];
+            $scope.editTask.nextTask = [];
 
-            if (newValue === '' || newValue === undefined) {
-                return;
-            }
             var _task = [], _tasks = [];
             var prevProcesses = function(process) {
                 var result = process.operations;
@@ -994,7 +989,7 @@ angular.module('HarvardApp')
             }
         });
         $scope.$watch('editTask.previousTaskId', function(newValue, oldValue) {
-            if ($scope.editTask === undefined || newValue === '' || newValue === undefined) {
+            if ($scope.editTask === undefined || newValue === '' || newValue === undefined || $scope.editTask.modifyType === 'edit') {
                 return;
             }
             $scope.editTask.nextTask = [];
@@ -1026,7 +1021,7 @@ angular.module('HarvardApp')
             }
         });
         $scope.$watchGroup(['editTask.previousTaskId', 'editTask.nextTaskId'], function(newValue, oldValue) {
-            if ($scope.editTask.modifyType !== 'edit' && !angular.equals(newValue, oldValue) && newValue[0] !== 0 && newValue[1] !== 0) {
+            if ($scope.editTask.modifyType === 'create' && !angular.equals(newValue, oldValue) && newValue[0] !== 0 && newValue[1] !== 0) {
                 newValue.sort(function(a, b) { return parseInt(a, 10) - parseInt(b, 10); });
                 $scope.editTask.priority = Math.floor(Math.random() * (parseInt(newValue[1], 10) - parseInt(newValue[0], 10))) + parseInt(newValue[0], 10);
                 if ($scope.editTask.priority === parseInt(newValue[0], 10)) {
@@ -1096,7 +1091,7 @@ angular.module('HarvardApp')
                     task.operationCode = $scope.editTask.operationCode;
                     task.processingType = $scope.editTask.processingType;
                     task.quantity = $scope.editTask.quantity;
-                    task.new = true;
+                    task.new = $scope.tasksMap[('t' + $scope.editTask.id)] !== undefined ? $scope.tasksMap[('t' + $scope.editTask.id)].model.new : true;
                     task.delete = false;
                     task.finished = $scope.editTask.isFinish === '1' ? true : false;
                     task.pin = $scope.editTask.isPin === '1' ? true : false;
@@ -1761,6 +1756,7 @@ angular.module('HarvardApp')
                             id: task.model.id,
                             rowId: task.row.model.id,
                             poNo: task.model.job.poNo,
+                            poId: task.model.job.poNo,
                             fuzzyPoNo: task.model.job.poNo,
                             processId: task.model.process.id,
                             productId: task.model.process.productId,
@@ -1803,6 +1799,55 @@ angular.module('HarvardApp')
                             check: false,
                             weight: task.model.weight
                         };
+
+                        /* Initial edit task lists */
+                        $scope.editTask.poFuzzySearch = [];
+                        $scope.editTask.productList = [];
+                        $scope.editTask.comboList = [];
+                        $scope.editTask.processList = [];
+                        var i, k, l, _poNo = [], _productId = [];
+                        _clickFunc = function(poNo) {
+                            return function(poNo) {
+                                $scope.editTask.poNo = poNo;
+                                $scope.editTask.fuzzyPoNo = poNo;
+                            }.bind(this, poNo);
+                        };
+                        for (i = 0, k = Object.keys($scope.jobsMap), l = k.length; i < l; i++) {
+                            if (_poNo.indexOf($scope.jobsMap[k[i]].poNo) < 0) {
+                                $scope.editTask.poFuzzySearch.push({
+                                    text: $scope.jobsMap[k[i]].poNo,
+                                    click: _clickFunc.call(null, $scope.jobsMap[k[i]].poNo)
+                                });
+                                _poNo.push($scope.jobsMap[k[i]].poNo);
+                            }
+                        }
+                        for (i = 0, k = Object.keys($scope.jobsMap), l = k.length; i < l; ++i) {
+                            if ($scope.jobsMap[k[i]].poNo === $scope.editTask.poNo) {
+                                $scope.editTask.comboList.push({
+                                    label: $scope.jobsMap[k[i]].comboId,
+                                    value: $scope.jobsMap[k[i]].comboId
+                                });
+                            }
+                        }
+                        for (i = 0, k = Object.keys($scope.processesMap), l = k.length; i < l; ++i) {
+                            if (_productId.indexOf($scope.processesMap[k[i]].productId) < 0) {
+                                $scope.editTask.productList.push({
+                                    label: $scope.processesMap[k[i]].productId,
+                                    value: $scope.processesMap[k[i]].productId
+                                });
+                                _productId.push($scope.processesMap[k[i]].productId);
+                            }
+                        }
+                        for (i = 0, k = Object.keys($scope.processesMap), l = k.length; i < l; ++i) {
+                            if ($scope.processesMap[k[i]].productId === $scope.editTask.productId) {
+                                $scope.editTask.processList.push({
+                                    label: $scope.processesMap[k[i]].id,
+                                    value: $scope.processesMap[k[i]].id
+                                });
+                                break;
+                            }
+                        }
+
                         $scope.editTask.modal = $modal(editTaskModalOptions);
                     }
                 break;
