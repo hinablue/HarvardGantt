@@ -333,7 +333,7 @@ angular.module('HarvardApp')
                             return {
                                 state: 'ok',
                                 messages: {
-                                    title: (response.data.data.readOnly ? '<i class="fa fa-lock fa-lg"></i> ' : '') + 'Load Gantt Data Ok!',
+                                    title: (response.data.data.readOnly ? '<i class="fa fa-lock fa-lg"></i> ' : '') + 'Load Gantt Data Success!',
                                     content: formatMessages(response.data.data.messages)
                                 },
                                 data: response.data.data,
@@ -373,7 +373,7 @@ angular.module('HarvardApp')
                             return {
                                 state: 'ok',
                                 messages: {
-                                    title: (response.data.data.readOnly ? '<i class="fa fa-lock fa-lg"></i> ' : '') + 'Load Gantt Data Ok!',
+                                    title: (response.data.data.readOnly ? '<i class="fa fa-lock fa-lg"></i> ' : '') + 'Recalculate/Save Data Success!',
                                     content: formatMessages(response.data.data.messages)
                                 },
                                 data: response.data.data,
