@@ -178,7 +178,7 @@ angular.module('HarvardApp')
 					dataChecking = false;
 					errorMessage.push('Task in past time must be Finished');
 				}
-				
+
 			}
 
 			if(taskData.up === null || taskData.up <= 0) {
@@ -303,7 +303,7 @@ angular.module('HarvardApp')
         		} else {
         			operationIds = taskData.id;
         		}
-        		
+
         		return configuration.serverLocation + configuration.getMoreInformationPage.replace('#operationIds#', operationIds);
         	},
             editTaskData: function(taskData) {
@@ -328,6 +328,7 @@ angular.module('HarvardApp')
             getGanttData: function() {
                 return {
                     success: function(response) {
+                        console.log(response);
                         if (response.data.messagesEmpty) {
                             return {
                                 state: 'ok',
@@ -335,7 +336,9 @@ angular.module('HarvardApp')
                                     title: 'Load Gantt Data Ok!',
                                     content: formatMessages(response.data.data.messages)
                                 },
-                                data: response.data.data
+                                data: response.data.data,
+                                // 如果要鎖定 Gantt 無法操作，請使用 true
+                                readonly: response.data.data.readOnly
                             };
                         } else {
                             return {
@@ -344,7 +347,9 @@ angular.module('HarvardApp')
                                     title: 'Internal server error, something went wrong: ',
                                     content: response.data.messages.map(function (msg) {return msg.value;}).join('<br>')
                                 },
-                                data: {}
+                                data: {},
+                                // 如果要鎖定 Gantt 無法操作，請使用 true
+                                readonly: response.data.data.readOnly
                             };
                         }
                     },
@@ -355,7 +360,8 @@ angular.module('HarvardApp')
                                 title: 'Failed connecting to server!',
                                 content: 'http status: [' + response.status + '] ' + response.statusText
                             },
-                            data: {}
+                            data: {},
+                            readonly: false
                         };
                     }
                 };
@@ -372,10 +378,9 @@ angular.module('HarvardApp')
                                 },
                                 data: response.data.data,
                                 // 如果要鎖定 Gantt 無法操作，請使用 true
-                                readonly: false
+                                readonly: response.data.data.readOnly
                             };
                         } else {
-                            console.log(response);
                             return {
                                 state: 'err',
                                 messages: {
@@ -384,7 +389,7 @@ angular.module('HarvardApp')
                                 },
                                 data: {},
                                 // 如果要鎖定 Gantt 無法操作，請使用 true
-                                readonly: false
+                                readonly: response.data.data.readOnly
                             };
                         }
                     },
