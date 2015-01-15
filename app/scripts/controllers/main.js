@@ -373,6 +373,9 @@ angular.module('HarvardApp')
                             directiveScope.autoExpand = {
                                 width: (directiveScope.row.model.title.length * 10 + 33) + 'em'
                             };
+                            directiveScope.readOnly = function() {
+                                return $scope.options.readOnly;
+                            }
                             directiveScope.taskColoured = function(bgColor, textColor) {
                                 return {
                                     background: bgColor,
@@ -398,12 +401,13 @@ angular.module('HarvardApp')
                                 placement: 'center',
                                 show: false
                             });
-                            element.bind('dblclick', function() {
+                            element.bind('dblclick', function(evt) {
                                 // for (i = 0, t = directiveScope.row.tasks, l = t.length; i < l; i++) {
                                 //     if (t[i].model.weight === 0) {
                                 //         t[i].model.weight = i + 1;
                                 //     }
                                 // }
+                                evt.stopPropagation();
                                 directiveScope.row.tasks.sort(function(a, b) { return a.model.from - b.model.from; });
                                 directiveScope.tasksOnMachine.$promise.then(directiveScope.tasksOnMachine.show);
                             });
@@ -1350,6 +1354,11 @@ angular.module('HarvardApp')
                 saveGanttModal.hide();
                 var result = mattCallback.success(response);
                 var content = result.messages.content.replace(/<focusTask>([^<]*)<\/focusTask>/gim, '<a class="highlight-task" ng-click="alertJumpToTask(\'$1\');">$1</a>');
+
+                if (result.readonly !== undefined && (result.readonly === true || result.readonly === 'true')) {
+                    $scope.options.readOnly = true;
+                }
+
                 if (result.state === 'ok' && result.data.machines !== undefined && result.data.machines.length > 0) {
                     $scope.readyToGo(angular.copy(result.data));
 
@@ -1391,6 +1400,11 @@ angular.module('HarvardApp')
                 saveGanttModal.hide();
                 var result = mattCallback.error(response);
                 var content = result.messages.content.replace(/<focusTask>([^<]*)<\/focusTask>/gim, '<a class="highlight-task" ng-click="alertJumpToTask(\'$1\')">$1</a>');
+
+                if (result.readonly !== undefined && (result.readonly === true || result.readonly === 'true')) {
+                    $scope.options.readOnly = true;
+                }
+
                 if (_ganttAlertBox !== undefined) {
                     _ganttAlertBox.hide();
                 }
@@ -1642,6 +1656,11 @@ angular.module('HarvardApp')
             }).then(function(response) {
                 var result = mattCallback.success(response);
                 var content = result.messages.content.replace(/<focusTask>([^<]*)<\/focusTask>/gim, '<a class="highlight-task" ng-click="alertJumpToTask(\'$1\');">$1</a>');
+
+                if (result.readonly !== undefined && (result.readonly === true || result.readonly === 'true')) {
+                    $scope.options.readOnly = true;
+                }
+
                 if (result.state === 'ok' && result.data.machines !== undefined && result.data.machines.length > 0) {
                     $scope.readyToGo(angular.copy(result.data));
                     if (_ganttAlertBox !== undefined) {
@@ -1682,6 +1701,11 @@ angular.module('HarvardApp')
             }, function(response) {
                 var result = mattCallback.error(response);
                 var content = result.messages.content.replace(/<focusTask>([^<]*)<\/focusTask>/gim, '<a class="highlight-task" ng-click="alertJumpToTask(\'$1\');">$1</a>');
+
+                if (result.readonly !== undefined && (result.readonly === true || result.readonly === 'true')) {
+                    $scope.options.readOnly = true;
+                }
+
                 if (_ganttAlertBox !== undefined) {
                     _ganttAlertBox.hide();
                 }
