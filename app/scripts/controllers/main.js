@@ -14,11 +14,21 @@ angular.module('HarvardApp')
         var editTaskModalOptions = TaskEditor.editTaskModalOptions;
         var multipleTaskSelected = [];
         var movableEnableCondition = function(task) {
-            if (task === undefined || task instanceof MouseEvent) {
-                return !$scope.options.readOnly;
+            if ($scope.options.readOnly === true) {
+                return false;
             } else {
-                if (task.inProcessing === true || task.finished === true || $scope.options.readOnly === true) {
-                    return false;
+                if (task === undefined || task instanceof MouseEvent) {
+                    return !$scope.options.readOnly;
+                } else {
+                    if (task.model !== undefined) {
+                        if (task.model.finished === true || task.model.inProcessing === true) {
+                            return false;
+                        }
+                    } else {
+                        if (task.finished === true || task.inProcessing === true) {
+                            return false;
+                        }
+                    }
                 }
             }
         };
@@ -1502,7 +1512,7 @@ angular.module('HarvardApp')
                             highlight: false,
                             loaded: moment(),
                             movable: {
-                                enabled: movableEnableCondition,
+                                enabled: movableEnableCondition(t[j]),
                                 allowMoving: allowMovingCondition,
                                 allowResizing: false,
                                 allowRowSwitching: true,
@@ -2047,7 +2057,7 @@ angular.module('HarvardApp')
                     return false;
                 };
                 task.contextMenuOnClose = function(task) {
-                    task.model.enabled = movableEnableCondition;
+                    task.model.enabled = movableEnableCondition(task);
                     return false;
                 };
                 if (task.model.delete === true) {
