@@ -31,11 +31,12 @@ angular.module('HarvardApp')
                     }
                 }
             }
+            return true;
         };
         var allowMovingCondition = function() {
             return !$scope.options.readOnly;
         };
-        var allowRowSwitchingCondition= function(sourceRow, targetRow, task) {
+        var allowRowSwitchingCondition = function(sourceRow, targetRow, task) {
             if ($scope.options.readOnly === true) {
                 return false;
             } else {
@@ -67,6 +68,7 @@ angular.module('HarvardApp')
         fetchTemplate('../app/views/taskContent.tpl.html');
         fetchTemplate('../app/views/taskTooltip.tpl.html');
         fetchTemplate('../app/views/alert.tpl.html');
+        $scope.tooltipsTmpl = '../app/views/taskTooltip.tpl.html';
 
         editTaskModalOptions.scope = $scope;
 
@@ -180,7 +182,7 @@ angular.module('HarvardApp')
                 task.id = utils.randomUuid();
                 task.oid = task.id;
                 task.movable = {
-                    enabled: movableEnableCondition,
+                    enabled: true,
                     allowMoving: allowMovingCondition,
                     allowResizing: false,
                     allowRowSwitching: true,
@@ -247,6 +249,7 @@ angular.module('HarvardApp')
                             element.append($compile(ifElement)(highlightScope));
 
                             element.bind('click', function(evt) {
+                                evt.stopPropagation();
                                 if (evt.shiftKey === true) {
                                     if (multipleTaskSelected.indexOf(directiveScope.task.model.id) < 0) {
                                         multipleTaskSelected.push(directiveScope.task.model.id);
@@ -269,6 +272,7 @@ angular.module('HarvardApp')
                                 var _dropdown = angular.element(document.getElementById('taskmenu-'+directiveScope.task.model.id));
                                 if (_dropdown[0] !== undefined && _dropdown[0].classList !== undefined && _dropdown[0].classList.contains('open')) {
                                     _dropdown[0].classList.remove('open');
+                                    directiveScope.task.contextMenuOnClose(directiveScope.task);
                                 }
                                 element.css('z-index', directiveScope.task.model.priority);
                             });
@@ -284,7 +288,8 @@ angular.module('HarvardApp')
                             //     $scope.$digest();
                             // });
                         } else if (directiveName === 'ganttRow') {
-                            element.bind('click', function() {
+                            element.bind('click', function(evt) {
+                                evt.stopPropagation();
                                 logRowEvent('row-click', directiveScope.row);
                             });
                             // element.bind('mousedown touchstart', function(event) {
@@ -1771,6 +1776,7 @@ angular.module('HarvardApp')
             var _dropdown = angular.element(document.getElementById('taskmenu-'+task.model.id));
             if (_dropdown[0] !== undefined && _dropdown[0].classList !== undefined && _dropdown[0].classList.contains('open')) {
                 _dropdown[0].classList.remove('open');
+                task.contextMenuOnClose(task);
             }
             task.$element.css('z-index', task.model.priority);
 
@@ -2073,15 +2079,16 @@ angular.module('HarvardApp')
                     });
                     if (_dropdown[0] !== undefined && _dropdown[0].classList !== undefined && _dropdown[0].classList.contains('open')) {
                         _dropdown[0].classList.remove('open');
+                        task.contextMenuOnClose(task);
                     }
                     task.$element.css('z-index', task.model.priority);
                 };
                 task.contextMenuOnShow = function(task) {
-                    task.model.enabled = false;
+                    task.model.movable.enabled = false;
                     return false;
                 };
                 task.contextMenuOnClose = function(task) {
-                    task.model.enabled = movableEnableCondition(task);
+                    task.model.movable.enabled = movableEnableCondition(task);
                     return false;
                 };
                 if (task.model.delete === true) {
@@ -2097,7 +2104,6 @@ angular.module('HarvardApp')
                 $log.info(task);
 
                 $scope.task = task;
-                $scope.tooltipsTmpl = '../app/views/taskTooltip.tpl.html';
                 $scope.$digest();
 
                 // if ($scope.groupTask === false && ('j'+task.model.job.id) in $scope.jobTasksMap) {

@@ -5078,7 +5078,7 @@ angular.module('gantt.templates', []).run(['$templateCache', function($templateC
         '        <div class="gantt-task-foreground">\n' +
         '            <div ng-if="task.truncatedRight" class="gantt-task-truncated-right"><span>&gt;</span></div>\n' +
         '            <div ng-if="task.truncatedLeft" class="gantt-task-truncated-left"><span>&lt;</span></div>\n' +
-        '            <div context-menu="task.contextMenuOnShow(task)" context-menu context-menu-close="task.contextMenuOnClose(task)" class="gantt-context-menu" data-target="taskmenu-{{task.model.id}}"></div>\n' +
+        '            <div context-menu="task.contextMenuOnShow(task)" context-menu-close="task.contextMenuOnClose(task)" class="gantt-context-menu" data-target="taskmenu-{{task.model.id}}"></div>\n' +
         '            <div class="dropdown position-fixed" id="taskmenu-{{task.model.id}}" ng-include="task.model.taskContextMenu"></div>\n' +
         '        </div>\n' +
         '    </script>\n' +
