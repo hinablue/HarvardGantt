@@ -1,5 +1,11 @@
 'use strict';
 angular.module('harvard.templates', []).run(['$templateCache', function($templateCache) {
+    $templateCache.put('../app/views/alert.tpl.html',
+        '<div class="alert" ng-class="[type ? \'alert-\' + type : null]">\n' +
+        '  <button type="button" class="close" ng-if="dismissable" ng-click="$hide()">&times;</button>\n' +
+        '  <strong ng-bind="title"></strong>\n' +
+        '  <div show-content="{{content}}"></div>\n' +
+        '</div>');
     $templateCache.put('../app/views/editor.tpl.html',
         '<div class="modal" tabindex="-1" role="dialog">\n' +
         '  <div class="modal-dialog" style="width: 70%;">\n' +
@@ -28,7 +34,7 @@ angular.module('harvard.templates', []).run(['$templateCache', function($templat
         '          </div>\n' +
         '\n' +
         '          <div class="form-group col-md-12">\n' +
-        '            <label for="productId" class="col-md-3 control-label require_field"><font color="red">*&nbsp;</font>Product </label>\n' +
+        '            <label for="productId" class="col-md-3 control-label require_field"><font color="red">*&nbsp;</font>Job# </label>\n' +
         '            <div class="form-group col-md-3">\n' +
         '              <!-- <input type="text" class="form-control" name="modifyTask_productId" id="modifyTask_productId" ng-model="editTask.productId" value="{{  editTask.productId }}" required ng-disabled="editTask.modifyType === \'edit\'" bs-dropdown="editTask.productList"> -->\n' +
         '              <button type="button" class="form-control btn btn-default" name="modifyTask_productId" ng-model="editTask.productId" ng-options="task.value as task.label for task in editTask.productList" ng-disabled="editTask.modifyType === \'edit\'" bs-select></button>\n' +
@@ -251,8 +257,8 @@ angular.module('harvard.templates', []).run(['$templateCache', function($templat
         '      	<div class="machine" ng-style="autoExpand" ng-model="row.tasks">\n' +
         '      		<div class="tasks" ng-repeat="task in row.tasks track by $index">\n' +
         '      			<div class="task" ng-style="taskColoured(task.model.color, task.model.textColor)">\n' +
-        '	      			<span class="column pin"><a class="btn {{ task.model.pin === true && \'btn-warning\' || \'btn-default\' }} pin" ng-model="task.model.pin" bs-checkbox><i class="fa {{ task.model.pin === true && \'fa-check\' || \'fa-close\' }}"></i></a></span>\n' +
-        '              <span class="column weight"><input type="number" class="form-control" ng-model="task.model.weight" value="{{task.model.weight}}" ng-blur="reSortingTasks()"></span>\n' +
+        '	      			<span class="column pin"><a class="btn {{ task.model.pin === true && \'btn-warning\' || \'btn-default\' }} pin" ng-model="task.model.pin" ng-disabled="readOnly()" bs-checkbox><i class="fa {{ task.model.pin === true && \'fa-check\' || \'fa-close\' }}"></i></a></span>\n' +
+        '              <span class="column weight"><input type="number" class="form-control" value="{{task.model.weight}}" style="width:90%;" ng-model="task.model.weight" ng-disabled="readOnly()" ng-blur="reSortingTasks()"></span>\n' +
         '	      			<span class="column data" ng-repeat="data in task.model.tooltip track by $index">\n' +
         '                <span ng-bind-html="renderHtml(data)"></span>\n' +
         '              </span>\n' +
