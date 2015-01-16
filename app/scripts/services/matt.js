@@ -333,7 +333,7 @@ angular.module('HarvardApp')
                             return {
                                 state: 'ok',
                                 messages: {
-                                    title: 'Load Gantt Data Ok!',
+                                    title: (response.data.data.readOnly ? '<i class="fa fa-lock fa-lg"></i> ' : '') + 'Load Gantt Data Success!',
                                     content: formatMessages(response.data.data.messages)
                                 },
                                 data: response.data.data,
@@ -344,7 +344,7 @@ angular.module('HarvardApp')
                             return {
                                 state: 'err',
                                 messages: {
-                                    title: 'Internal server error, something went wrong: ',
+                                    title: (response.data.data.readOnly ? '<i class="fa fa-lock fa-lg"></i> ' : '') + 'Internal server error, something went wrong: ',
                                     content: response.data.messages.map(function (msg) {return msg.value;}).join('<br>')
                                 },
                                 data: {},
@@ -373,7 +373,7 @@ angular.module('HarvardApp')
                             return {
                                 state: 'ok',
                                 messages: {
-                                    title: 'Load Gantt Data Ok!',
+                                    title: (response.data.data.readOnly ? '<i class="fa fa-lock fa-lg"></i> ' : '') + 'Recalculate/Save Data Success!',
                                     content: formatMessages(response.data.data.messages)
                                 },
                                 data: response.data.data,
@@ -384,7 +384,7 @@ angular.module('HarvardApp')
                             return {
                                 state: 'err',
                                 messages: {
-                                    title: 'Internal server error, something went wrong: ',
+                                    title: (response.data.data.readOnly ? '<i class="fa fa-lock fa-lg"></i> ' : '') + 'Internal server error, something went wrong: ',
                                     content: response.data.messages.map(function (msg) {return msg.value;}).join('<br>')
                                 },
                                 data: {},

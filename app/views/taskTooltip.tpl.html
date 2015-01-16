@@ -16,13 +16,18 @@
 		<strong>Processing Type</strong>: {{task.model.processingType}}
 	</div>
 	<div class="col-md-3">
-		<strong>Round-Part</strong>: {{task.model.rounds}} - {{task.model.part}}
+		<strong>Rounds-Part</strong>: {{task.model.rounds}} - {{task.model.part}}
 	</div>
 	<div class="col-md-3">
 		<strong>Priority</strong>: {{task.model.priority}}
 	</div>
 	<div class="col-md-3">
-		<strong>QTY</strong>: {{task.model.quantity}}
+		<span ng-if="task.model.finished == false">
+			<strong>QTY</strong>: {{task.model.quantity}}
+		</span>
+		<span ng-if="task.model.finished == true">
+			<strong>QTY</strong>: {{task.model.actualQuantity}}
+		</span>
 	</div>
 	<div class="col-md-3">
 		<small>
