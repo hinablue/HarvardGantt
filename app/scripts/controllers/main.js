@@ -400,7 +400,7 @@ angular.module('HarvardApp')
                             };
                             directiveScope.tasksOnMachine = $modal({
                                 scope: directiveScope,
-                                title: 'Machine',
+                                title: directiveScope.row.model.settingsMachine.name + ' ['+directiveScope.row.model.settingsMachine.code+']',
                                 template: '../app/views/machine.tpl.html',
                                 backdrop: false,
                                 placement: 'center',
