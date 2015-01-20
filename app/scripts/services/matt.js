@@ -344,7 +344,7 @@ angular.module('HarvardApp')
                             return {
                                 state: 'err',
                                 messages: {
-                                    title: (response.data.data.readOnly ? '<i class="fa fa-lock fa-lg"></i> ' : '') + 'Internal server error, something went wrong: ',
+                                    title: (response.data.data.readOnly ? '<i class="fa fa-lock fa-lg"></i> ' : '') + 'Loading data break by: ',
                                     content: response.data.messages.map(function (msg) {return msg.value;}).join('<br>')
                                 },
                                 data: {},
@@ -384,7 +384,7 @@ angular.module('HarvardApp')
                             return {
                                 state: 'err',
                                 messages: {
-                                    title: (response.data.data.readOnly ? '<i class="fa fa-lock fa-lg"></i> ' : '') + 'Internal server error, something went wrong: ',
+                                    title: (response.data.data.readOnly ? '<i class="fa fa-lock fa-lg"></i> ' : '') + 'Recalculate/Save break by: ',
                                     content: response.data.messages.map(function (msg) {return msg.value;}).join('<br>')
                                 },
                                 data: {},
