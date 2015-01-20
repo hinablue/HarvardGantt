@@ -10,7 +10,7 @@
 angular.module('HarvardApp')
     .controller('MainCtrl', ['$scope', '$window', '$document', '$compile', '$element', '$http', '$q', '$sce', '$templateCache', '$timeout', '$log', '$interpolate', '$modal', '$alert', '$dropdown', 'ganttUtils', 'GanttObjectModel', 'Coloured', 'Harvard', 'Matt', 'TaskEditor', 'ganttMouseOffset', 'ganttDebounce', 'moment',
     function($scope, $window, $document, $compile, $element, $http, $q, $sce, $templateCache, $timeout, $log, $interpolate, $modal, $alert, $dropdown, utils, ObjectModel, Coloured, Harvard, Matt, TaskEditor, mouseOffset, debounce, moment) {
-        var objectModel, dataToRemove, saveGanttModal, _movingTask, _ganttAlertBox;
+        var objectModel, dataToRemove, saveGanttModal, _movingTask, _ganttAlertBox, _visibleRows;
         var editTaskModalOptions = TaskEditor.editTaskModalOptions;
         var multipleTaskSelected = [];
         var movableEnableCondition = function(task) {
@@ -128,13 +128,17 @@ angular.module('HarvardApp')
                 sideWidth: 200
             },
             filterRowComparator: function(actual, expected) {
-                if ($scope.departmentMenuDefault !== 'Select' && $scope.subDepartmentMenuDefault !== 'Select' && true === new RegExp($scope.departmentMenuDefault, 'i').test(actual.name) && actual.subDept === expected) {
-                    return true;
-                } else if (expected === '' || true === new RegExp(expected, 'i').test(actual.name) || true === new RegExp(expected, 'i').test(actual.subDept)) {
-                    return true;
+                if ($scope.departmentMenuDefault !== 'Select' && $scope.subDepartmentMenuDefault !== 'Select') {
+                    if (actual.code === $scope.departmentMenuDefault + '_' + $scope.subDepartmentMenuDefault) {
+                        return true;
+                    }
                 } else {
-                    return false;
+                    var _code = actual.code.split('_'), _page = parseInt(expected.replace('page-', ''), 10);
+                    if (_code[0] === expected || _code[1] === expected || _page === actual.page) {
+                        return true;
+                    }
                 }
+                return false;
             },
             timeFrames: {
                 // 'day': {
@@ -479,7 +483,7 @@ angular.module('HarvardApp')
                         }
                     }
                 } else {
-                    $scope.options.filterRow = '-Page 00001';
+                    $scope.options.filterRow = 'page-1';
                 }
             }
         });
@@ -493,26 +497,24 @@ angular.module('HarvardApp')
             page = parseInt(page, 10);
             direction = parseInt(direction, 10);
 
+            $scope.departmentMenuDefault = 'Select';
+
             if (page === 0) {
                 if (direction === 1) {
                     if ($scope.currentPage < $scope.pagination.length) {
                         $scope.currentPage++;
-
-                        $scope.options.filterRow = '-Page ' + ('00000' + $scope.currentPage.toString()).substr(-5);
                     }
                 } else {
                     if ($scope.currentPage > 1) {
                         $scope.currentPage--;
-
-                        $scope.options.filterRow = '-Page ' + ('00000' + $scope.currentPage.toString()).substr(-5);
                     }
                 }
             } else {
                 if ($scope.currentPage !== page) {
                     $scope.currentPage = page;
-                    $scope.options.filterRow = '-Page ' + ('00000' + $scope.currentPage.toString()).substr(-5);
                 }
             }
+            $scope.options.filterRow = 'page-' + $scope.currentPage.toString();
         };
 
         $scope.jumpToDate = function(date) {
@@ -1617,7 +1619,7 @@ angular.module('HarvardApp')
                     p++;
                     $scope.pagination.push(p);
                 }
-                $scope.machinesMap[q[i]].dept.name += '-Page ' + ('00000' + p.toString()).substr(-5);
+                $scope.machinesMap[q[i]].dept['page'] = p;
             }
 
             // Connect the processesMap
@@ -1638,7 +1640,7 @@ angular.module('HarvardApp')
             }
 
             $scope.timespans = Harvard.getGanttTimespans();
-            $scope.options.filterRow = '-Page ' + '00001';
+            $scope.options.filterRow = 'page-1';
         };
 
         // Reload data action
