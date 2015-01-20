@@ -133,7 +133,8 @@ angular.module('HarvardApp')
                         return true;
                     }
                 } else {
-                    var _code = actual.code.split('_'), _page = parseInt(expected.replace('page-', ''), 10);
+                    var _code = actual.code.split('_'),
+                        _page = parseInt(expected.replace('page-', ''), 10);
                     if (_code[0] === expected || _code[1] === expected || _page === actual.page) {
                         return true;
                     }
