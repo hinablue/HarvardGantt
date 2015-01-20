@@ -564,10 +564,11 @@ angular.module('HarvardApp')
 
         // Task Editor
         var editTaskHandleError = function(response) {
+        	console.log(response);
             var errorMessages = 'Something error from server.';
             if (response.data !== null) {
                 if (response.data.messagesEmpty !== true) {
-                    errorMessages = response.data.messages.join('<br>');
+                    errorMessages = response.data.messages.map(function (msg) {return msg.value;}).join('<br>');
                 }
             }
 

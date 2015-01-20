@@ -22,7 +22,7 @@ angular.module('HarvardApp')
             // 儲存或是運算 Gantt 的 Server response Timeout，單位秒
             saveGanttDataTimeout: 15 * 60,
             // 訊息顯示時間，單位秒
-            alertTimeout: 600,
+            alertTimeout: 0,
             // 計算長度，單位週
             calculateWeeks: 12,
             // 計算演算法版本, 對應server端的tw.com.softleader.harvard.aps.enums.SolveStrategy
