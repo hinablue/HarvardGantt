@@ -128,10 +128,13 @@ angular.module('HarvardApp')
                 sideWidth: 200
             },
             filterRowComparator: function(actual, expected) {
-                if (expected === '' || true === new RegExp(expected, 'i').test(actual.name) || true === new RegExp(expected, 'i').test(actual.subDept)) {
+                if ($scope.departmentMenuDefault !== 'Select' && $scope.subDepartmentMenuDefault !== 'Select' && true === new RegExp($scope.departmentMenuDefault, 'i').test(actual.name) && actual.subDept === expected) {
                     return true;
+                } else if (expected === '' || true === new RegExp(expected, 'i').test(actual.name) || true === new RegExp(expected, 'i').test(actual.subDept)) {
+                    return true;
+                } else {
+                    return false;
                 }
-                return false;
             },
             timeFrames: {
                 // 'day': {
@@ -849,7 +852,7 @@ angular.module('HarvardApp')
             if ($scope.editTask === undefined) {
                 return;
             }
-            if (!angular.equals(newValue, oldValue) && $scope.editTask.modifyType === 'create') {
+            if ($scope.editTask.modifyType === 'create') {
                 $scope.editTask.comboId = '';
                 $scope.editTask.comboList = [];
                 $scope.editTask.productId = '';
@@ -859,6 +862,8 @@ angular.module('HarvardApp')
                 $scope.editTask.previousTask = [];
                 $scope.editTask.nextTask = [];
             }
+
+            $scope.editTask.fuzzyPoNo = newValue;
 
             // if (newValue !== undefined && newValue !== '' && !angular.equals(newValue, oldValue)) {
             //     $timeout(function() {
@@ -875,7 +880,7 @@ angular.module('HarvardApp')
             if ($scope.editTask === undefined) {
                 return;
             }
-            if (newValue !== undefined && newValue !== '' && !angular.equals(newValue, oldValue) && $scope.editTask.modifyType === 'create') {
+            if (newValue !== undefined && newValue !== '' && $scope.editTask.modifyType === 'create') {
                 $timeout(function() {
                     $http({
                         method: 'get',
@@ -890,7 +895,7 @@ angular.module('HarvardApp')
             if ($scope.editTask === undefined) {
                 return;
             }
-            if (newValue !== undefined && newValue !== '' && !angular.equals(newValue, oldValue) && $scope.editTask.modifyType === 'create') {
+            if (newValue !== undefined && newValue !== '' && $scope.editTask.modifyType === 'create') {
                 $timeout(function() {
                     $http({
                         method: 'get',
