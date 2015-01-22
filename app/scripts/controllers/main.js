@@ -568,24 +568,28 @@ angular.module('HarvardApp')
         // Task Editor
         var editTaskHandleError = function(response) {
         	console.log(response);
-            var errorMessages = 'Something error from server.';
+            // alert ONLY if server gives messages
+            var errorMessages; // = 'Something error from server.';
             if (response.data !== null) {
                 if (response.data.messagesEmpty !== true) {
                     errorMessages = response.data.messages.map(function (msg) {return msg.value;}).join('<br>');
                 }
             }
 
-            $alert({
-                title: 'Error!<br>',
-                content: errorMessages,
-                placement: 'top',
-                type: 'info',
-                duration: $scope.configuration.alertTimeout,
-                dismissable: true,
-                html: true,
-                container: '#gantt-editor-alert',
-                show: true
-            });
+            if (!!errorMessages) {
+                $alert({
+                    title: 'Error!<br>',
+                    content: errorMessages,
+                    placement: 'top',
+                    type: 'info',
+                    duration: $scope.configuration.alertTimeout,
+                    dismissable: true,
+                    html: true,
+                    container: '#gantt-editor-alert',
+                    show: true
+                });
+            }
+            
             var i, k, l, _clickFunc;
             switch(response.config.data) {
                 case 'poFuzzySearch':
@@ -704,7 +708,7 @@ angular.module('HarvardApp')
         var editTaskHandleSuccess = function(response) {
             var responseType = response.headers('Content-Type').replace(/;(.*)$/gi, '');
             if (responseType === 'application/json' && response.data !== null) {
-                if (response.data.messagesEmpty === true) {
+                if (response.data.messagesEmpty === true && response.data.data !== null) {
                     var i, k, l, _clickFunc;
                     switch(response.config.data) {
                         case 'poFuzzySearch':
