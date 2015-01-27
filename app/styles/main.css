@@ -74,6 +74,10 @@ textarea.live-task, textarea.live-row {
     box-shadow: darkred 0px 0px 3px 1px;
 }
 
+.text-red {
+    color: #ff6699;
+}
+
 .modal {
     z-index: 9000;
     background-color: rgba(0, 0, 0, 0.8);
