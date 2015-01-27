@@ -1359,7 +1359,7 @@ angular.module('HarvardApp')
                 method: 'post',
                 responseType: 'json',
                 url: $scope.configuration.serverLocation + $scope.configuration.confirmGanttUrl,
-                timeout: $scope.configuration.getGanttDataTimeout * 1000,
+                timeout: $scope.configuration.saveGanttDataTimeout * 1000,
                 data: machines,
                 params: {
                     calculate: true,
