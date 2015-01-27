@@ -386,7 +386,14 @@ angular.module('HarvardApp')
                             directiveScope.autoExpand = {
                                 width: (directiveScope.row.model.title.length * 10 + 33) + 'em'
                             };
-                            directiveScope.readOnly = function() {
+                            directiveScope.readOnly = function(model) {
+                                if ($scope.options.readOnly === false) {
+                                    if (model !== undefined) {
+                                        if (model.inPorcessing === true || model.finished === true) {
+                                            return true;
+                                        }
+                                    }
+                                }
                                 return $scope.options.readOnly;
                             }
                             directiveScope.taskColoured = function(bgColor, textColor) {
@@ -589,7 +596,7 @@ angular.module('HarvardApp')
                     show: true
                 });
             }
-            
+
             var i, k, l, _clickFunc;
             switch(response.config.data) {
                 case 'poFuzzySearch':
@@ -1366,6 +1373,7 @@ angular.module('HarvardApp')
                     calculateFrom: moment.utc($scope.api.gantt.columnsManager.getFirstColumn().date.format(), 'YYYY-MM-DDTHH:mm:ss').format('YYYY-MM-DDTHH:mm:ss'),
                     calculateWeeks: $scope.configuration.calculateWeeks,
                     solveStrategy: $scope.configuration.solveStrategy,
+                    currentTime: moment.utc($scope.options.currentDateValue).format('YYYY-MM-DDTHH:mm:ss'),
                     save: type === 'save' ? true : false
                 }
             }).then(function(response) {
@@ -1375,6 +1383,9 @@ angular.module('HarvardApp')
 
                 if (result.readonly !== undefined && (result.readonly === true || result.readonly === 'true')) {
                     $scope.options.readOnly = true;
+                }
+                if (result.currentTime !== undefined && result.currentTime !== '') {
+                    $scope.options.currentDateValue = moment(result.currentTime).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
                 }
 
                 if (result.state === 'ok' && result.data.machines !== undefined && result.data.machines.length > 0) {
@@ -1422,6 +1433,9 @@ angular.module('HarvardApp')
                 if (result.readonly !== undefined && (result.readonly === true || result.readonly === 'true')) {
                     $scope.options.readOnly = true;
                 }
+                if (result.currentTime !== undefined && result.currentTime !== '') {
+                    $scope.options.currentDateValue = moment(result.currentTime).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+                }
 
                 if (_ganttAlertBox !== undefined) {
                     _ganttAlertBox.hide();
@@ -1465,6 +1479,13 @@ angular.module('HarvardApp')
             }
 
             $scope.clear();
+
+            if (originalData.readOnly !== undefined && (originalData.readOnly === true || originalData.readOnly === 'true')) {
+                $scope.options.readOnly = true;
+            }
+            if (originalData.currentTime !== undefined && originalData.currentTime !== '') {
+                $scope.options.currentDateValue = moment(originalData.currentTime, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
+            }
 
             $log.info('[Event] Beginning parse JSON data.');
 
