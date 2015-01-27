@@ -20,7 +20,7 @@ angular.module('HarvardApp')
             // 讀取 Gantt  的 Server response Timeout，單位秒
             getGanttDataTimeout: 15 * 60,
             // 儲存或是運算 Gantt 的 Server response Timeout，單位秒
-            saveGanttDataTimeout: 15 * 60,
+            saveGanttDataTimeout: 60 * 60,
             // 訊息顯示時間，單位秒
             alertTimeout: 0,
             // 計算長度，單位週
