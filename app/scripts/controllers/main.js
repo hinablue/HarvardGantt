@@ -1385,7 +1385,7 @@ angular.module('HarvardApp')
                     $scope.options.readOnly = true;
                 }
                 if (result.currentTime !== undefined && result.currentTime !== '') {
-                    $scope.options.currentDateValue = moment(result.currentTime).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+                    $scope.options.currentDateValue = moment(result.currentTime, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
                 }
 
                 if (result.state === 'ok' && result.data.machines !== undefined && result.data.machines.length > 0) {
@@ -1434,7 +1434,7 @@ angular.module('HarvardApp')
                     $scope.options.readOnly = true;
                 }
                 if (result.currentTime !== undefined && result.currentTime !== '') {
-                    $scope.options.currentDateValue = moment(result.currentTime).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+                    $scope.options.currentDateValue = moment(result.currentTime, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
                 }
 
                 if (_ganttAlertBox !== undefined) {
