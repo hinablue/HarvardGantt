@@ -389,7 +389,7 @@ angular.module('HarvardApp')
                             directiveScope.readOnly = function(model) {
                                 if ($scope.options.readOnly === false) {
                                     if (model !== undefined) {
-                                        if (model.inPorcessing === true || model.finished === true) {
+                                        if (model.inProcessing === true || model.finished === true) {
                                             return true;
                                         }
                                     }
