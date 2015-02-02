@@ -530,8 +530,8 @@ angular.module('HarvardApp')
             var lastColumn = moment($scope.api.gantt.columnsManager.getLastColumn().date.format(), 'YYYY-MM-DDTHH:mm:ss');
             if (date === undefined) {
                 date = $scope.options.currentDateValue;
+                date = objectModel.api.gantt.getDateByPosition(Math.ceil(objectModel.api.gantt.getPositionByDate(date) + ($scope.api.gantt.scroll.getWidth() / 2)));
             }
-
             if (date > lastColumn) {
                 $scope.api.gantt.columnsManager.generateColumns(from, date);
             }
