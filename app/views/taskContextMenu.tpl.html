@@ -1,6 +1,9 @@
 <ul class="dropdown-menu" role="menu">
     <li>
-        <a class="pointer" role="menuitem" tabindex="1" ng-click="task.switchPin(task, $event)">{{ task.model.pin === true && 'Pined' || 'Pin' }}</a>
+        <a class="pointer" role="menuitem" tabindex="0" ng-click="task.switchPin(task, $event)">{{ task.model.pin === true && 'Pined' || 'Pin' }}</a>
+    </li>
+    <li>
+        <a class="pointer" role="menuitem" tabindex="1" ng-click="task.switchCut(task, $event)">{{ task.model.cut === true && 'Cuted' || 'Cut' }}</a>
     </li>
     <li>
         <a class="pointer" role="menuitem" tabindex="2" ng-click="task.editTask(task, $event)">Edit</a>
@@ -19,6 +22,6 @@
     </li>
     <li><div class="divider"></div></li>
     <li>
-        <a class="pointer" role="menuitem" tabindex="6" ng-click="task.deleteTask(task, $event)">Delete</a>
+        <a class="pointer" role="menuitem" tabindex="7" ng-click="task.deleteTask(task, $event)">Delete</a>
     </li>
 </ul>

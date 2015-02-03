@@ -10,7 +10,7 @@
 angular.module('HarvardApp')
     .controller('MainCtrl', ['$scope', '$window', '$document', '$compile', '$element', '$http', '$q', '$sce', '$templateCache', '$timeout', '$log', '$interpolate', '$modal', '$alert', '$dropdown', 'ganttUtils', 'GanttObjectModel', 'Coloured', 'Harvard', 'Matt', 'TaskEditor', 'ganttMouseOffset', 'ganttDebounce', 'moment',
     function($scope, $window, $document, $compile, $element, $http, $q, $sce, $templateCache, $timeout, $log, $interpolate, $modal, $alert, $dropdown, utils, ObjectModel, Coloured, Harvard, Matt, TaskEditor, mouseOffset, debounce, moment) {
-        var objectModel, dataToRemove, saveGanttModal, _movingTask, _ganttAlertBox, _visibleRows;
+        var objectModel, dataToRemove, saveGanttModal, _movingTask, _ganttAlertBox, _visibleRows, _jumpTrigger = false;
         var editTaskModalOptions = TaskEditor.editTaskModalOptions;
         var multipleTaskSelected = [];
         var movableEnableCondition = function(task) {
@@ -100,7 +100,8 @@ angular.module('HarvardApp')
             sideMode: 'Table',
             columns: ['model.name'],
             // treeTableColumns: ['from', 'to'],
-            columnsHeaders: {'model.name' : 'Name'/*, 'from': 'From', 'to': 'To'*/},
+            columnsHeaders: {'model.name' : 'Name'},
+            columnsClasses: {'model.name' : 'gantt-column-name'},
             columnsFormatters: {
                 'from': function(from) {
                     return from !== undefined ? from.format('lll') : undefined;
@@ -109,6 +110,11 @@ angular.module('HarvardApp')
                     return to !== undefined ? to.format('lll') : undefined;
                 }
             },
+            // treeHeaderContent: '<i class="fa fa-align-justify"></i> {{getHeader()}}',
+            // columnsHeaderContents: {
+            //     'model.name': '<i class="fa fa-align-justify"></i> {{getHeader()}}'
+            // },
+            zoom: 1,
             maxHeight: false,
             width: false,
             autoExpand: 'right',
@@ -124,19 +130,22 @@ angular.module('HarvardApp')
             groupDisplayMode: 'group',
             filterTask: '',
             filterRow: '',
+            jumpToDate: moment(),
             options: {
                 sideWidth: 200
             },
             filterRowComparator: function(actual, expected) {
-                if ($scope.departmentMenuDefault !== 'Select' && $scope.subDepartmentMenuDefault !== 'Select') {
-                    if (actual.code === $scope.departmentMenuDefault + '_' + $scope.subDepartmentMenuDefault) {
-                        return true;
-                    }
-                } else {
-                    var _code = actual.code.split('_'),
-                        _page = parseInt(expected.replace('page-', ''), 10);
-                    if (_code[0] === expected || _code[1] === expected || _page === actual.page) {
-                        return true;
+                if (actual !== undefined && expected !== undefined) {
+                    if ($scope.departmentMenuDefault !== 'Select' && $scope.subDepartmentMenuDefault !== 'Select') {
+                        if (actual.code === $scope.departmentMenuDefault + '_' + $scope.subDepartmentMenuDefault) {
+                            return true;
+                        }
+                    } else {
+                        var _code = actual.code.split('_'),
+                            _page = parseInt(expected.replace('page-', ''), 10);
+                        if (_code[0] === expected || _code[1] === expected || _page === actual.page) {
+                            return true;
+                        }
                     }
                 }
                 return false;
@@ -530,16 +539,18 @@ angular.module('HarvardApp')
             var lastColumn = moment($scope.api.gantt.columnsManager.getLastColumn().date.format(), 'YYYY-MM-DDTHH:mm:ss');
             if (date === undefined) {
                 date = $scope.options.currentDateValue;
-                date = objectModel.api.gantt.getDateByPosition(Math.ceil(objectModel.api.gantt.getPositionByDate(date) + ($scope.api.gantt.scroll.getWidth() / 2)));
             }
-            if (date > lastColumn) {
-                $scope.api.gantt.columnsManager.generateColumns(from, date);
+            var position = Math.ceil(objectModel.api.gantt.getPositionByDate(date) + $scope.api.gantt.scroll.getWidth() * 0.8);
+            if (objectModel.api.gantt.getDateByPosition(position) > lastColumn) {
+                _jumpTrigger = true;
+                $scope.api.gantt.columnsManager.generateColumns(from, objectModel.api.gantt.getDateByPosition(position));
+            } else {
+                _jumpTrigger = false;
+                $scope.api.gantt.scroll.scrollTo(position);
             }
-
-            $scope.api.gantt.scroll.scrollToDate(date);
         };
 
-        $scope.$watch('options.toDate', function(newValue, oldValue) {
+        $scope.$watch('options.jumpToDate', function(newValue, oldValue) {
             if (false === angular.equals(newValue, oldValue)) {
                 if (newValue instanceof Date) {
                     $scope.jumpToDate(moment(newValue.getTime(), 'x'));
@@ -1538,6 +1549,7 @@ angular.module('HarvardApp')
                             processingType: t[j].processingType,
                             factoryOperation: t[j].factoryOperation,
                             pin: t[j].pin,
+                            cut: t[j].cut,
                             capacity: t[j].capacity,
                             s2sMins: t[j].s2sMins,
                             up: t[j].up,
@@ -1815,6 +1827,11 @@ angular.module('HarvardApp')
             task.$element.css('z-index', task.model.priority);
 
             switch(type) {
+                case 'cut':
+                    if ($scope.options.readOnly === false) {
+                        task.model.cut = !task.model.cut;
+                    }
+                break;
                 case 'pin':
                     if ($scope.options.readOnly === false) {
                         task.model.pin = !task.model.pin;
@@ -1851,6 +1868,7 @@ angular.module('HarvardApp')
                             face: task.model.face,
                             part: task.model.part,
                             up: task.model.up,
+                            cut: task.model.cut,
                             sheetUp: task.model.sheetUp,
                             s2sMins: task.model.s2sMins,
                             timeclockEmployeeId: task.model.timeclockEmployeeId,
@@ -2080,6 +2098,9 @@ angular.module('HarvardApp')
                         task.model.tooltip.push('N');
                     }
                 }
+                task.switchCut = function(task, evt) {
+                    taskContextMenuEvent('cut', task, evt);
+                };
                 task.switchPin = function(task, evt) {
                     taskContextMenuEvent('pin', task, evt);
                 };
@@ -2239,7 +2260,9 @@ angular.module('HarvardApp')
         // Event handler
         var logScrollEvent = function(left, date, direction) {
             // Clean up the date range
-            $scope.options.fromDate = undefined;
+            // $scope.options.fromDate = undefined;
+            _jumpTrigger = false;
+            $log.info(left, date, direction);
 
             // if (date !== undefined) {
             //     $log.info('[Event] api.on.scroll: ' + left + ', ' + (date === undefined ? 'undefined' : date.format()));
@@ -2255,7 +2278,7 @@ angular.module('HarvardApp')
             } else {
                 viewScaleUnit = $scope.options.scale;
             }
-            from = moment($scope.api.gantt.columnsManager.getLastColumn().date.format(), 'YYYY-MM-DDTHH:mm:ss');
+            from = moment(columns[columns.length - 1].date, 'YYYY-MM-DDTHH:mm:ss');
 
             if ($scope.api.gantt.width + $scope.api.gantt.scroll.getBordersWidth() < $element[0].offsetWidth) {
                 if (['minute', 'minutes', 'hour', 'hours'].indexOf(viewScaleUnit) > -1) {
@@ -2267,11 +2290,22 @@ angular.module('HarvardApp')
                 }
                 $scope.api.gantt.columnsManager.generateColumns(from, to);
             }
-            // $scope.options.fromDate = moment($scope.api.gantt.columnsManager.getFirstColumn().date.format('YYYY/MM/DD')+'T00:00:00', 'YYYY-MM-DDTHH:mm:ss');
-            if (parseInt($scope.api.gantt.columnsManager.getFirstColumn().date.format('H'), 10) !== 0) {
-                from = moment($scope.api.gantt.columnsManager.getFirstColumn().date.format('YYYY-MM-DDT00:00:00'), 'YYYY-MM-DDTHH:mm:ss');
-                to = $scope.api.gantt.columnsManager.to.clone();
+            if (parseInt(columns[0].date.format('H'), 10) !== 0) {
+                from = moment(columns[0].date.format('YYYY-MM-DDT00:00:00'), 'YYYY-MM-DDTHH:mm:ss');
+                to = columns[columns.length - 1].date.clone();
                 $scope.api.gantt.columnsManager.generateColumns(from, to);
+                $scope.options.fromDate = from;
+            }
+
+            if (_jumpTrigger === true) {
+                var position = Math.ceil(objectModel.api.gantt.getPositionByDate(columns[columns.length - 1].date));
+                if ($scope.api.gantt.scroll.getScrollWidth() > position) {
+                    $scope.api.gantt.scroll.scrollTo(position);
+                } else {
+                    $timeout(function() {
+                        $scope.api.gantt.scroll.scrollTo(position);
+                    }, 500);
+                }
             }
         };
 
