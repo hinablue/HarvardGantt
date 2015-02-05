@@ -540,7 +540,7 @@ angular.module('HarvardApp')
             if (date === undefined) {
                 date = $scope.options.currentDateValue;
             }
-            var position = Math.ceil(objectModel.api.gantt.getPositionByDate(date) + $scope.api.gantt.scroll.getWidth() * $scope.configuration.jumpOffsetPercentage);
+            var position = Math.ceil(objectModel.api.gantt.getPositionByDate(date) + $scope.api.gantt.scroll.getWidth() * $scope.configuration.scrollToOffset);
             if (objectModel.api.gantt.getDateByPosition(position) > lastColumn) {
                 _jumpTrigger = true;
                 $scope.api.gantt.columnsManager.generateColumns(from, objectModel.api.gantt.getDateByPosition(position));
