@@ -1247,9 +1247,13 @@ angular.module('HarvardApp')
                     if ($scope.tasksMap['t' + $scope.editTask.id] === undefined) {
                         task.taskGroupIdsVo = [];
                         task.taskGroup = '';
+                        task.gangLinkCode = '';
+                        task.gangLinkSide = '';
                     } else {
                         task.taskGroupIdsVo = $scope.tasksMap['t' + $scope.editTask.id].model.taskGroupIdsVo;
                         task.taskGroup = $scope.tasksMap['t' + $scope.editTask.id].model.taskGroup;
+                        task.gangLinkCode = $scope.tasksMap['t' + $scope.editTask.id].model.gangLinkCode;
+                        task.gangLinkSide = $scope.tasksMap['t' + $scope.editTask.id].model.gangLinkSide;
                     }
 
                     $scope.editTask.check = true;
@@ -1590,7 +1594,9 @@ angular.module('HarvardApp')
                             taskContextMenu: '../app/views/taskContextMenu.tpl.html',
                             taskInfoContent: '../app/views/taskTooltip.tpl.html',
                             taskGroupIdsVo: t[j].taskGroupIdsVo,
-                            weight: t[j].weight || 0
+                            weight: t[j].weight || 0,
+                            gangLinkCode: t[j].gangLinkCode,
+                            gangLinkSide: t[j].gangLinkSide
                         };
 
                         // Prepare processesMap
