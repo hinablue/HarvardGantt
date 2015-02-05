@@ -21,6 +21,8 @@ angular.module('HarvardApp')
             getGanttDataTimeout: 15 * 60,
             // 儲存或是運算 Gantt 的 Server response Timeout，單位秒
             saveGanttDataTimeout: 60 * 60,
+            // jump date的偏移量, 0.5 是正中央, >0.5稍微往左偏, <0.5稍微往右偏
+            jumpOffsetPercentage: 0.8,
             // 訊息顯示時間，單位秒
             alertTimeout: 0,
             // 計算長度，單位週
