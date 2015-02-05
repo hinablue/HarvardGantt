@@ -132,6 +132,7 @@ angular.module('HarvardApp')
             filterRow: '',
             jumpToDate: moment(),
             options: {
+                taskContent: $templateCache.get('../app/views/taskContent.tpl.html'),
                 sideWidth: 200
             },
             filterRowComparator: function(actual, expected) {
