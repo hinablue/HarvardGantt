@@ -396,6 +396,12 @@ angular.module('HarvardApp')
                             directiveScope.autoExpand = {
                                 width: (directiveScope.row.model.title.length * 10 + 33) + 'em'
                             };
+                            directiveScope.showTaskUI2 = function(model) {
+                                if (model.delete === true || model.finished === true) {
+                                    return false;
+                                }
+                                return true;
+                            };
                             directiveScope.readOnly = function(model) {
                                 if ($scope.options.readOnly === false) {
                                     if (model !== undefined) {
@@ -2268,12 +2274,10 @@ angular.module('HarvardApp')
         var logScrollEvent = function(left, date, direction) {
             // Clean up the date range
             // $scope.options.fromDate = undefined;
-            _jumpTrigger = false;
-            $log.info(left, date, direction);
-
             // if (date !== undefined) {
             //     $log.info('[Event] api.on.scroll: ' + left + ', ' + (date === undefined ? 'undefined' : date.format()));
             // }
+            _jumpTrigger = false;
         };
 
         // Event handler

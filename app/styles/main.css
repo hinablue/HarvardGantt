@@ -168,6 +168,24 @@ textarea.live-task, textarea.live-row {
     border-bottom: 1px solid #efefef;
     display: table;
 }
+#machineTasks.inner-scroller {
+    overflow: hidden;
+}
+
+#machineTasks.inner-scroller .modal-dialog {
+    position: absolute;
+    left: 5%;
+    right: 5%;
+    top: 0;
+    bottom: 0;
+}
+#machineTasks.inner-scroller .modal-content {
+    height: 100%;
+}
+#machineTasks.inner-scroller .modal-body {
+    height: calc(100% - 120px);
+}
+
 .dropdown-menu {
     z-index: 9900;
 }

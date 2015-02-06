@@ -1,4 +1,4 @@
-<div class="modal" id="machineTasks" tabindex="-1" role="dialog">
+<div class="modal inner-scroller" id="machineTasks" tabindex="-1" role="dialog">
   <div class="modal-dialog" style="width: 90%;">
     <div class="modal-content">
       <div class="modal-header" ng-show="title">
@@ -19,7 +19,7 @@
 	  		</div>
 	  	</div>
       	<div class="machine" ng-style="autoExpand" ng-model="row.tasks">
-      		<div class="tasks" ng-repeat="task in row.tasks track by $index">
+      		<div class="tasks" ng-repeat="task in row.tasks track by $index" ng-if="showTaskUI2(task.model)">
       			<div class="task" ng-style="taskColoured(task.model.color, task.model.textColor)">
 	      			<span class="column pin"><a class="btn {{ task.model.pin === true && 'btn-warning' || 'btn-default' }} pin" ng-model="task.model.pin" ng-disabled="readOnly(task.model)" bs-checkbox><i class="fa {{ task.model.pin === true && 'fa-check' || 'fa-close' }}"></i></a></span>
               <span class="column weight"><input type="number" class="form-control" value="{{task.model.weight}}" style="width:90%;" ng-model="task.model.weight" ng-disabled="readOnly(task.model)" ng-blur="reSortingTasks()"></span>
