@@ -1256,11 +1256,13 @@ angular.module('HarvardApp')
                         task.taskGroup = '';
                         task.gangLinkCode = '';
                         task.gangLinkSide = '';
+                        task.cut = false;
                     } else {
                         task.taskGroupIdsVo = $scope.tasksMap['t' + $scope.editTask.id].model.taskGroupIdsVo;
                         task.taskGroup = $scope.tasksMap['t' + $scope.editTask.id].model.taskGroup;
                         task.gangLinkCode = $scope.tasksMap['t' + $scope.editTask.id].model.gangLinkCode;
                         task.gangLinkSide = $scope.tasksMap['t' + $scope.editTask.id].model.gangLinkSide;
+                        task.cut = $scope.tasksMap['t' + $scope.editTask.id].model.cut;
                     }
 
                     $scope.editTask.check = true;
@@ -1365,7 +1367,8 @@ angular.module('HarvardApp')
                             taskGroupIdsVo: _taskModel.taskGroupIdsVo,
                             machineShiftLabel: _taskModel.machineShiftLabel,
                             new: _taskModel.new,
-                            weight: _taskModel.weight
+                            weight: _taskModel.weight,
+                            cut: _taskModel.cut
                         });
                     }
                     machines.push(machine);
