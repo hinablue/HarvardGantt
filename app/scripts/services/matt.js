@@ -74,6 +74,7 @@ angular.module('HarvardApp')
             // calculateWeeks, default: 12, 要計算幾周
             // return tw.com.softleader.harvard.aps.service.result.ApsMessage
             confirmGanttUrl: '/company/scheduler/gantt/calculate/',
+            tooltipSeparator: '|',
         };
 
 		var formatMessages = function (messages) {
