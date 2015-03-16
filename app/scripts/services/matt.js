@@ -220,8 +220,13 @@ angular.module('HarvardApp')
 					errorMessage.push('When [Pending] is Yes, [Actual Start] can\'t be after now');
 				}
 			}
-			if (taskData.isFinish === '1' || taskData.isFinish === '1') {
-				if(!taskData.actualStartTime || !taskData.actualSetupFinishTime || !taskData.actualFinishTime) {
+			if (taskData.isFinish === '1') {
+				if (taskData.actualQuantity || taskData.actualQuantity <= 0) {
+					dataChecking = false;
+					errorMessage.push('When [Finish] is Yes, [Actual Quantity] must be greater then 0');
+				}
+				
+				if (!taskData.actualStartTime || !taskData.actualSetupFinishTime || !taskData.actualFinishTime) {
 					if (!taskData.actualStartTime) {
 						dataChecking = false;
 						errorMessage.push('When [Finish] is Yes, [Actual Start] must not be empty');
@@ -235,20 +240,20 @@ angular.module('HarvardApp')
 						errorMessage.push('When [Finish] is Yes, [Actual Production Finish] must not be empty');
 					}
 				} else {
-					if(today < taskData.actualStartTime) {
+					if (today < taskData.actualStartTime) {
 						dataChecking = false;
 						errorMessage.push('When [Finish] is Yes, [Actual Start] can\'t be after now');
 					}
-					if(today < taskData.actualSetupFinishTime) {
+					if (today < taskData.actualSetupFinishTime) {
 						dataChecking = false;
 						errorMessage.push('When [Finish] is Yes, [Actual Setup Finish] can\'t be after now');
 					}
-					if(today < taskData.actualFinishTime) {
+					if (today < taskData.actualFinishTime) {
 						dataChecking = false;
 						errorMessage.push('When [Finish] is Yes, [Actual Production Finish] can\'t be after now');
 					}
 
-					if(!(taskData.actualStartTime <= taskData.actualSetupFinishTime && taskData.actualSetupFinishTime <= taskData.actualFinishTime)) {
+					if (!(taskData.actualStartTime <= taskData.actualSetupFinishTime && taskData.actualSetupFinishTime <= taskData.actualFinishTime)) {
 						dataChecking = false;
 						errorMessage.push('Some conflict in [Actual Time], please check');
 					}
