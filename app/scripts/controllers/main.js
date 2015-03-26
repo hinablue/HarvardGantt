@@ -419,10 +419,10 @@ angular.module('HarvardApp')
                                 };
                             };
                             directiveScope.reSortingTasks = function() {
-                                $timeout(function() {
-                                    directiveScope.row.tasks.sort(function(a, b) { return a.model.from - b.model.from; });
-                                    directiveScope.$digest();
-                                }, 100);
+                                // $timeout(function() {
+                                //     directiveScope.row.tasks.sort(function(a, b) { return a.model.from - b.model.from; });
+                                //     directiveScope.$digest();
+                                // }, 100);
                             };
                             directiveScope.renderHtml = function(text) {
                                 text = text.replace(/\r\n/g, '<br>');
@@ -1166,6 +1166,8 @@ angular.module('HarvardApp')
                     task.priority = $scope.editTask.priority;
                     task.rounds = $scope.editTask.rounds;
                     task.up = $scope.editTask.up;
+                    task.lock = false;
+                    task.lockColor = $scope.configuration.lockColor;
                     task.sheetUp = $scope.editTask.sheetUp;
                     task.part = $scope.editTask.part;
                     task.s2sMins = $scope.editTask.s2sMins;
@@ -1347,6 +1349,7 @@ angular.module('HarvardApp')
                             up: _taskModel.up,
                             sheetUp: _taskModel.sheetUp,
                             face: _taskModel.face,
+                            lock: _taskModel.lock,
                             pendingMinutes: _taskModel.pendingMinutes,
                             expectedStartTime: _taskModel.expectedStartTime.utc().format('YYYY-MM-DDTHH:mm:ss'),
                             expectedSetupFinishTime: _taskModel.expectedSetupFinishTime.utc().format('YYYY-MM-DDTHH:mm:ss'),
@@ -1588,6 +1591,8 @@ angular.module('HarvardApp')
                             taskGroup: t[j].taskGroup,
                             machineShiftLabel: t[j].machineShiftLabel,
                             new: t[j].new,
+                            lock: t[j].lock || false,
+                            lockColor: $scope.configuration.lockColor,
                             highlight: false,
                             loaded: moment(),
                             movable: {
@@ -1846,6 +1851,20 @@ angular.module('HarvardApp')
                 case 'cut':
                     if ($scope.options.readOnly === false) {
                         task.model.cut = !task.model.cut;
+                    }
+                break;
+                case 'lock':
+                    if ($scope.options.readOnly === false) {
+                        task.model.lock = !task.model.lock;
+
+                        if (task.model.lock === true) {
+                            task.model.lockColor = task.model.color;
+                            task.model.color = $scope.configuration.lockColor;
+                            task.model.textColor = Coloured.isDarkColoured($scope.configuration.lockColor) ? '#ffffff' : '#000000';
+                        } else {
+                            task.model.color = task.model.lockColor;
+                            task.model.textColor = Coloured.isDarkColoured(task.model.color) ? '#ffffff' : '#000000';
+                        }
                     }
                 break;
                 case 'pin':
@@ -2109,6 +2128,9 @@ angular.module('HarvardApp')
                     task.model.color = '#AA8833';
                     task.model.textColor = Coloured.isDarkColoured('#AA8833') ? '#ffffff' : '#000000';
                 }
+                if (typeof task.model.tooltip === 'string') {
+                    task.model.tooltip = [];
+                }
                 if (task.model.tooltip.length < task.row.model.title.length) {
                     for (i = task.model.tooltip.length, k = task.row.model.title, l = k.length; i < l; i++) {
                         task.model.tooltip.push('N');
@@ -2116,6 +2138,9 @@ angular.module('HarvardApp')
                 }
                 task.switchCut = function(task, evt) {
                     taskContextMenuEvent('cut', task, evt);
+                };
+                task.switchLock = function(task, evt) {
+                    taskContextMenuEvent('lock', task, evt);
                 };
                 task.switchPin = function(task, evt) {
                     taskContextMenuEvent('pin', task, evt);

@@ -8,12 +8,12 @@
  * Service in the HarvardApp.
  */
 angular.module('HarvardApp')
-    .service('Matt', ['$http', '$timeout', '$log', '$location', 'moment', function Matt($http, $timeout, $log, $location, moment) {
+    .service('Matt', ['$http', '$timeout', '$log', '$location', '$sce', 'moment', function Matt($http, $timeout, $log, $location, $sce, moment) {
         var configuration = {
             // 奇怪$location.path()沒有用, 所以先用absUrl(), 7是’http://‘的長度
-            serverLocation: '/' + $location.absUrl().substr(7).split('/')[1],
+            serverLocation: '',
             jsLocationPrefix: '/',
-            viewsFolder: '/resources/Gantt-v2/views',
+            viewsFolder: '/views',
             // 讀取 Gantt 資料 URL
             getGanttUrl: '/company/scheduler/gantt/machines',
             // 儲存或是運算 Gantt URL
@@ -75,6 +75,7 @@ angular.module('HarvardApp')
             // return tw.com.softleader.harvard.aps.service.result.ApsMessage
             confirmGanttUrl: '/company/scheduler/gantt/calculate/',
             tooltipSeparator: '|',
+            lockColor: '#3366ff'
         };
 
 		var formatMessages = function (messages) {
@@ -225,7 +226,7 @@ angular.module('HarvardApp')
 					dataChecking = false;
 					errorMessage.push('When [Finish] is Yes, [Actual Quantity] must be greater then 0');
 				}
-				
+
 				if (!taskData.actualStartTime || !taskData.actualSetupFinishTime || !taskData.actualFinishTime) {
 					if (!taskData.actualStartTime) {
 						dataChecking = false;

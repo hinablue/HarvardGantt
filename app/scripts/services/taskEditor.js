@@ -66,6 +66,8 @@ angular.module('HarvardApp')
                 taskGroup: '',
                 machineShiftLabel: '',
                 new: false,
+                lock: false,
+                lockColor: '',
                 highlight: false,
                 movable: {
                     enabled: false,
@@ -106,6 +108,8 @@ angular.module('HarvardApp')
                 cut: false,
                 sheetUp: 1,
                 part: 0,
+                lock: false,
+                lockColor: '',
                 expectedMoldId: null,
                 s2sMins: -1,
                 timeclockEmployeeId: 0,

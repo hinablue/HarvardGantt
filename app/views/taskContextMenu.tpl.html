@@ -6,6 +6,9 @@
         <a class="pointer" role="menuitem" tabindex="1" ng-click="task.switchCut(task, $event)">{{ task.model.cut === true && 'Cuted' || 'Cut' }}</a>
     </li>
     <li>
+        <a class="pointer" role="menuitem" tabindex="1" ng-click="task.switchLock(task, $event)">{{ task.model.lock === true && 'Locked' || 'Lock' }}</a>
+    </li>
+    <li>
         <a class="pointer" role="menuitem" tabindex="2" ng-click="task.editTask(task, $event)">Edit</a>
     </li>
     <li>
