@@ -1548,7 +1548,7 @@ angular.module('HarvardApp')
                         task = {
                             id: t[j].id,
                             oid: t[j].oid,
-                            color: t[j].color,
+                            color: t[j].lock === true ? $scope.configuration.lockColor : t[j].color,
                             name: t[j].operationCode,
                             from: moment(t[j].expectedStartTime, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
                             to: moment(t[j].expectedFinishTime, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
