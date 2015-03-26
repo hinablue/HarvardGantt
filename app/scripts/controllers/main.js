@@ -1609,7 +1609,7 @@ angular.module('HarvardApp')
                             taskContextMenu: '../app/views/taskContextMenu.tpl.html',
                             taskInfoContent: '../app/views/taskTooltip.tpl.html',
                             taskGroupIdsVo: t[j].taskGroupIdsVo,
-                            weight: t[j].weight || 0,
+                            weight: t[j].weight || 999,
                             gangLinkCode: t[j].gangLinkCode,
                             gangLinkSide: t[j].gangLinkSide
                         };
