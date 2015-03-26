@@ -11,9 +11,9 @@ angular.module('HarvardApp')
     .service('Matt', ['$http', '$timeout', '$log', '$location', '$sce', 'moment', function Matt($http, $timeout, $log, $location, $sce, moment) {
         var configuration = {
             // 奇怪$location.path()沒有用, 所以先用absUrl(), 7是’http://‘的長度
-            serverLocation: '',
+            serverLocation: '/' + $location.absUrl().substr(7).split('/')[1],
             jsLocationPrefix: '/',
-            viewsFolder: '/views',
+            viewsFolder: '/resources/Gantt-v2/views',
             // 讀取 Gantt 資料 URL
             getGanttUrl: '/company/scheduler/gantt/machines',
             // 儲存或是運算 Gantt URL
@@ -28,7 +28,7 @@ angular.module('HarvardApp')
             // 計算長度，單位週
             calculateWeeks: 12,
             // 計算演算法版本, 對應server端的tw.com.softleader.harvard.aps.enums.SolveStrategy
-            solveStrategy: 'V2',
+            solveStrategy: 'V2_5',
             // 以字串(term)模糊查詢符合的PoNo
             // url: GET /company/sales/pos/like/{term}
             // return: list of labelValueModel, label: poNo, value: poNo
@@ -75,7 +75,7 @@ angular.module('HarvardApp')
             // return tw.com.softleader.harvard.aps.service.result.ApsMessage
             confirmGanttUrl: '/company/scheduler/gantt/calculate/',
             tooltipSeparator: '|',
-            lockColor: '#3366ff'
+            lockColor: '#d1d1d1'
         };
 
 		var formatMessages = function (messages) {
@@ -222,7 +222,10 @@ angular.module('HarvardApp')
 				}
 			}
 			if (taskData.isFinish === '1') {
-				if (taskData.actualQuantity || taskData.actualQuantity <= 0) {
+				if(taskData.actualQuantity === null) {
+					dataChecking = false;
+					errorMessage.push('When [Finish] is Yes, [Actual Quantity] must not be empty');
+				} else if(taskData.actualQuantity <= 0) {
 					dataChecking = false;
 					errorMessage.push('When [Finish] is Yes, [Actual Quantity] must be greater then 0');
 				}
