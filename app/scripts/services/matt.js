@@ -75,7 +75,7 @@ angular.module('HarvardApp')
             // return tw.com.softleader.harvard.aps.service.result.ApsMessage
             confirmGanttUrl: '/company/scheduler/gantt/calculate/',
             tooltipSeparator: '|',
-            lockColor: '#ff3333'
+            lockColor: '#d1d1d1'
         };
 
 		var formatMessages = function (messages) {
@@ -222,7 +222,10 @@ angular.module('HarvardApp')
 				}
 			}
 			if (taskData.isFinish === '1') {
-				if (taskData.actualQuantity || taskData.actualQuantity <= 0) {
+				if(taskData.actualQuantity === null) {
+					dataChecking = false;
+					errorMessage.push('When [Finish] is Yes, [Actual Quantity] must not be empty');
+				} else if(taskData.actualQuantity <= 0) {
 					dataChecking = false;
 					errorMessage.push('When [Finish] is Yes, [Actual Quantity] must be greater then 0');
 				}
