@@ -28,6 +28,7 @@ angular.module('HarvardApp')
             // 計算長度，單位週
             calculateWeeks: 12,
             // 計算演算法版本, 對應server端的tw.com.softleader.harvard.aps.enums.SolveStrategy
+            // 如果Server有指定優先使用Server指定的回傳, 否則抓此設定的值作為預設值
             solveStrategy: 'V2_5',
             // 以字串(term)模糊查詢符合的PoNo
             // url: GET /company/sales/pos/like/{term}

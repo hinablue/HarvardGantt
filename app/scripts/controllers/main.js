@@ -127,6 +127,7 @@ angular.module('HarvardApp')
             currentDateValue: moment(),
             draw: false,
             readOnly: false,
+            solveStrategy: $scope.configuration.solveStrategy,
             groupDisplayMode: 'group',
             filterTask: '',
             filterRow: '',
@@ -1405,7 +1406,7 @@ angular.module('HarvardApp')
                     calculate: true,
                     calculateFrom: moment.utc($scope.api.gantt.columnsManager.getFirstColumn().date.format(), 'YYYY-MM-DDTHH:mm:ss').format('YYYY-MM-DDTHH:mm:ss'),
                     calculateWeeks: $scope.configuration.calculateWeeks,
-                    solveStrategy: $scope.configuration.solveStrategy,
+                    solveStrategy: $scope.options.solveStrategy,
                     currentTime: moment.utc($scope.options.currentDateValue).format('YYYY-MM-DDTHH:mm:ss'),
                     save: type === 'save' ? true : false
                 }
@@ -1519,6 +1520,10 @@ angular.module('HarvardApp')
             if (originalData.currentTime !== undefined && originalData.currentTime !== '') {
                 $scope.options.currentDateValue = moment(originalData.currentTime, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
             }
+            if (originalData.solveStrategy !== undefined && originalData.solveStrategy !== '') {
+                $scope.options.solveStrategy = originalData.solveStrategy;
+            }
+            console.log($scope.options.solveStrategy);
 
             $log.info('[Event] Beginning parse JSON data.');
 
