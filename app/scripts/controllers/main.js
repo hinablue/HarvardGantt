@@ -1166,7 +1166,7 @@ angular.module('HarvardApp')
                     task.priority = $scope.editTask.priority;
                     task.rounds = $scope.editTask.rounds;
                     task.up = $scope.editTask.up;
-                    task.lock = false;
+                    task.lock = $scope.editTask.lock === '1' ? true : false;
                     task.lockColor = $scope.configuration.lockColor;
                     task.sheetUp = $scope.editTask.sheetUp;
                     task.part = $scope.editTask.part;
@@ -1180,6 +1180,11 @@ angular.module('HarvardApp')
                     task.actualFinishTime = $scope.editTask.actualFinishTime;
                     task.actualQuantity = $scope.editTask.actualQuantity;
                     task.weight = $scope.editTask.weight;
+
+                    if (task.lock === true) {
+                      task.lockColor = task.color;
+                      task.color = $scope.configuration.lockColor;
+                    }
 
                     task.job = undefined;
                     for (i = 0, k = Object.keys($scope.jobsMap), l = k.length; i < l; i++) {
@@ -1904,6 +1909,7 @@ angular.module('HarvardApp')
                             part: task.model.part,
                             up: task.model.up,
                             cut: task.model.cut,
+                            lock: task.model.lock ? '1' : '0',
                             sheetUp: task.model.sheetUp,
                             s2sMins: task.model.s2sMins,
                             timeclockEmployeeId: task.model.timeclockEmployeeId,

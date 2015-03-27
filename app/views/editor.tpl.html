@@ -114,11 +114,22 @@
           </div>
 
           <div class="form-group col-md-12">
+            <label for="lock" class="col-md-2 control-label" title="Lock"><span class="glyphicon glyphicon-lock"></span>&nbsp;Lock</label>
+            <div class="form-group col-md-2">
+              <select class="form-control" name="modifyTask_lock" id="lock" ng-model="editTask.lock" required>
+                <option value="0" ng-selected="editTask.lock === '0'">N</option>
+                <option value="1" ng-selected="editTask.lock === '1'">Y</option>
+              </select>
+            </div>
             <label for="up" class="col-md-2 control-label"><font color="red">*&nbsp;</font>Up </label>
-            <div class="form-group col-md-10">
+            <div class="form-group col-md-3">
               <div class="input-group">
                 <span class="input-group-addon">PDT</span>
                 <input type="number" class="form-control" id="up" name="modifyTask_up" ng-model="editTask.up" value="{{ editTask.up }}" placeholder="Up" ng-required="editTask.processingType === 'GANG'">
+              </div>
+            </div>
+            <div class="form-group col-md-3">
+              <div class="input-group">
                 <span class="input-group-addon">SHT</span>
                 <input type="number" class="form-control" id="sheetUp" name="modifyTask_sheetUp" ng-model="editTask.sheetUp" value="{{ editTask.sheetUp }}"  placeholder="Sheet Up">
               </div>
