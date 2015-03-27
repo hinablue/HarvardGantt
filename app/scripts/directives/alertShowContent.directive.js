@@ -19,6 +19,6 @@ angular.module('mgcrea.ngStrap')
                     $element.append(el);
                 });
             }
-        }
+        };
     }]
 );

@@ -10,7 +10,7 @@
 angular.module('HarvardApp')
     .controller('MainCtrl', ['$scope', '$window', '$document', '$compile', '$element', '$http', '$q', '$sce', '$templateCache', '$timeout', '$log', '$interpolate', '$modal', '$alert', '$dropdown', 'ganttUtils', 'GanttObjectModel', 'Coloured', 'Harvard', 'Matt', 'TaskEditor', 'ganttMouseOffset', 'ganttDebounce', 'moment',
     function($scope, $window, $document, $compile, $element, $http, $q, $sce, $templateCache, $timeout, $log, $interpolate, $modal, $alert, $dropdown, utils, ObjectModel, Coloured, Harvard, Matt, TaskEditor, mouseOffset, debounce, moment) {
-        var objectModel, dataToRemove, saveGanttModal, _movingTask, _ganttAlertBox, _visibleRows, _jumpTrigger = false;
+        var objectModel, dataToRemove, saveGanttModal, _movingTask, _ganttAlertBox, _visibleRows, _jumpTrigger = false, _initialColumns = false;
         var editTaskModalOptions = TaskEditor.editTaskModalOptions;
         var multipleTaskSelected = [];
         var movableEnableCondition = function(task) {
@@ -317,13 +317,13 @@ angular.module('HarvardApp')
                             //     $scope.$digest();
                             // });
                         } else if (directiveName === 'ganttRowLabel') {
-                            var i, l, t;
+                            // var i, l, t;
 
                             // directiveScope.multipleTasks = [];
                             // directiveScope.multipleTasksToggle = function(id) {
                             //     var _multipleTasks = [];
                             //     if (directiveScope.multipleTasks.indexOf(id) >= 0) {
-                            //         for(var i = 0, mt = directiveScope.multipleTasks, l = mt.length; i < l; i += 1) {
+                            //         for (var i = 0, mt = directiveScope.multipleTasks, l = mt.length; i < l; i += 1) {
                             //             if (mt[i] === id) {
                             //                 continue;
                             //             }
@@ -412,7 +412,7 @@ angular.module('HarvardApp')
                                     }
                                 }
                                 return $scope.options.readOnly;
-                            }
+                            };
                             directiveScope.taskColoured = function(bgColor, textColor) {
                                 return {
                                     background: bgColor,
@@ -503,7 +503,7 @@ angular.module('HarvardApp')
                     $scope.options.filterRow = newValue;
 
                     if (Object.keys($scope.departmentsMap[newValue.replace(/ /gi, '-')].sub).length > 0) {
-                        for(var x in $scope.departmentsMap[newValue.replace(/ /gi, '-')].sub) {
+                        for (var x in $scope.departmentsMap[newValue.replace(/ /gi, '-')].sub) {
                             $scope.subDepartmentMenu.push($scope.departmentsMap[newValue.replace(/ /gi, '-')].sub[x].name);
                         }
                     }
@@ -1523,11 +1523,11 @@ angular.module('HarvardApp')
             if (originalData.solveStrategy !== undefined && originalData.solveStrategy !== '') {
                 $scope.options.solveStrategy = originalData.solveStrategy;
             }
-            console.log($scope.options.solveStrategy);
 
+            $log.info('[INFO]', $scope.options.solveStrategy);
             $log.info('[Event] Beginning parse JSON data.');
 
-            for(i = 0, m = originalData.machines, l = m.length; i < l; i++) {
+            for (i = 0, m = originalData.machines, l = m.length; i < l; i++) {
                 // if (m[i].operationQueue.length === 0) continue;
 
                 // Prepare row machine data
@@ -1546,7 +1546,7 @@ angular.module('HarvardApp')
                 };
 
                 if (m[i].operationQueue.length > 0) {
-                    for(j = 0, t = m[i].operationQueue, q = t.length; j < q; j++) {
+                    for (j = 0, t = m[i].operationQueue, q = t.length; j < q; j++) {
                         /**
                          * Task Modify Hint.
                          * 這裡是初始化 Gantt 所有 Tasks 資料的物件。
@@ -1558,7 +1558,7 @@ angular.module('HarvardApp')
                         task = {
                             id: t[j].id,
                             oid: t[j].oid,
-                            color: t[j].lock === true ? $scope.configuration.lockColor : t[j].color,
+                            color: (t[j].lock && t[j].lock === true) ? $scope.configuration.lockColor : t[j].color,
                             name: t[j].operationCode,
                             from: moment(t[j].expectedStartTime, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
                             to: moment(t[j].expectedFinishTime, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
@@ -1570,7 +1570,7 @@ angular.module('HarvardApp')
                             previousOperation: t[j].previousOperation,
                             nextOperations: t[j].nextOperations,
                             runOnMachineId: t[j].runOnMachineId,
-                            actualRunOnMachineId: t[j].actualRunOnMachineId,
+                            actualRunOnMachineId: t[j].actualRunOnMachineId || 0,
                             quantity: t[j].quantity,
                             actualQuantity: t[j].actualQuantity,
                             processingType: t[j].processingType,
@@ -1594,7 +1594,7 @@ angular.module('HarvardApp')
                             delete: t[j].delete,
                             parallelCode: t[j].parallelCode,
                             expectedMoldId: t[j].expectedMoldId,
-                            tooltip: t[j].tooltip?t[j].tooltip.split($scope.configuration.tooltipSeparator):'unknown',
+                            tooltip: t[j].tooltip ? t[j].tooltip.split($scope.configuration.tooltipSeparator) : [],
                             timeclockEmployeeId: t[j].timeclockEmployeeId,
                             rounds: t[j].rounds,
                             part: t[j].part,
@@ -1677,24 +1677,23 @@ angular.module('HarvardApp')
                         order: obj.dept.sortBy
                     };
                 }
-
                 $scope.data.push(obj);
             }
             // Pagination the machines
             q = Object.keys($scope.machinesMap).sort(function(a, b) { return $scope.machinesMap[a].id - $scope.machinesMap[b].id; });
             p = 1;
-            for(i = 0, l = q.length; i < l; i++) {
+            for (i = 0, l = q.length; i < l; i++) {
                 if (i > 0 && i % $scope.paginationPrePage === 0) {
                     p++;
                     $scope.pagination.push(p);
                 }
-                $scope.machinesMap[q[i]].dept['page'] = p;
+                $scope.machinesMap[q[i]].dept.page = p;
             }
 
             // Connect the processesMap
-            for(p in $scope.processesMap) {
+            for (p in $scope.processesMap) {
                 if ($scope.processesMap[p].previousProcesses.length > 0) {
-                    for(i = 0, m = $scope.processesMap[p].previousProcesses, l = m.length; i < l; i++) {
+                    for (i = 0, m = $scope.processesMap[p].previousProcesses, l = m.length; i < l; i++) {
                         if ('p'+m[i] in $scope.processesMap) {
                             $scope.processesMap['p'+m[i]].nextProcesses.push($scope.processesMap[p].id);
                         }
@@ -1849,7 +1848,7 @@ angular.module('HarvardApp')
         };
         var taskContextMenuEvent = function(type, task, evt) {
             evt.stopPropagation();
-            var key;
+            var key, _clickFunc;
             var _dropdown = angular.element(document.getElementById('taskmenu-'+task.model.id));
             if (_dropdown[0] !== undefined && _dropdown[0].classList !== undefined && _dropdown[0].classList.contains('open')) {
                 _dropdown[0].classList.remove('open');
@@ -2008,14 +2007,14 @@ angular.module('HarvardApp')
                         $scope.editTask.modal = $modal(editTaskModalOptions);
 
                         $scope.editTask.poFuzzySearch = [];
-                        var _poNo = [];
-                        var _clickFunc = function(poNo) {
+                        _poNo = [];
+                        _clickFunc = function(poNo) {
                             return function(poNo) {
                                 $scope.editTask.poNo = poNo;
                                 $scope.editTask.fuzzyPoNo = poNo;
                             }.bind(this, poNo);
                         };
-                        for (var i = 0, k = Object.keys($scope.jobsMap), l = k.length; i < l; i++) {
+                        for (i = 0, k = Object.keys($scope.jobsMap), l = k.length; i < l; i++) {
                             if (_poNo.indexOf($scope.jobsMap[k[i]].poNo) < 0) {
                                 $scope.editTask.poFuzzySearch.push({
                                     text: $scope.jobsMap[k[i]].poNo,
@@ -2139,7 +2138,7 @@ angular.module('HarvardApp')
                     task.model.color = '#AA8833';
                     task.model.textColor = Coloured.isDarkColoured('#AA8833') ? '#ffffff' : '#000000';
                 }
-                if (typeof task.model.tooltip === 'string') {
+                if (typeof task.model.tooltip !== 'object') {
                     task.model.tooltip = [];
                 }
                 if (task.model.tooltip.length < task.row.model.title.length) {
@@ -2330,21 +2329,22 @@ angular.module('HarvardApp')
             }
             from = moment(columns[columns.length - 1].date, 'YYYY-MM-DDTHH:mm:ss');
 
-            if ($scope.api.gantt.width + $scope.api.gantt.scroll.getBordersWidth() < $element[0].offsetWidth) {
-                if (['minute', 'minutes', 'hour', 'hours'].indexOf(viewScaleUnit) > -1) {
-                    to = from.clone().add(1, 'h');
-                } else if (['day', 'week', 'weeks'].indexOf(viewScaleUnit) > -1) {
-                    to = from.clone().add(1, 'M');
-                } else if (['month', 'months', 'quarter', 'year'].indexOf(viewScaleUnit) > -1) {
-                    to = from.clone().add(1, 'Q');
-                }
-                $scope.api.gantt.columnsManager.generateColumns(from, to);
-            }
             if (parseInt(columns[0].date.format('H'), 10) !== 0) {
                 from = moment(columns[0].date.format('YYYY-MM-DDT00:00:00'), 'YYYY-MM-DDTHH:mm:ss');
                 to = columns[columns.length - 1].date.clone();
                 $scope.api.gantt.columnsManager.generateColumns(from, to);
                 $scope.options.fromDate = from;
+            }
+
+            if ($scope.api.gantt.width + $scope.api.gantt.scroll.getBordersWidth() < $element[0].offsetWidth) {
+                if (['minute', 'minutes', 'hour', 'hours'].indexOf(viewScaleUnit) > -1) {
+                    to = from.clone().add(3, 'd');
+                } else if (['day', 'week', 'weeks'].indexOf(viewScaleUnit) > -1) {
+                    to = from.clone().add(1, 'M');
+                } else if (['month', 'months', 'quarter', 'year'].indexOf(viewScaleUnit) > -1) {
+                    to = from.clone().add(1, 'Q');
+                }
+                $scope.options.toDate = to;
             }
 
             if (_jumpTrigger === true) {
