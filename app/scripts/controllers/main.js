@@ -1034,11 +1034,11 @@ angular.module('HarvardApp')
                 for (var i = 0, k = _tasks, l = k.length; i < l; i++) {
                     if (('t'+k[i]) in $scope.tasksMap && _task.indexOf(k[i]) < 0) {
                         $scope.editTask.previousTask.push({
-                            label: $scope.tasksMap[('t'+k[i])].model.name + ' ('+$scope.tasksMap[('t'+k[i])].model.priority+')',
+                            label: $scope.tasksMap[('t'+k[i])].model.name + ' ('+$scope.tasksMap[('t'+k[i])].model.priority+')-'+$scope.tasksMap[('t'+k[i])].model.factoryOperation.code,
                             value: k[i]
                         });
                         $scope.editTask.nextTask.push({
-                            label: $scope.tasksMap[('t'+k[i])].model.name + ' ('+$scope.tasksMap[('t'+k[i])].model.priority+')',
+                            label: $scope.tasksMap[('t'+k[i])].model.name + ' ('+$scope.tasksMap[('t'+k[i])].model.priority+')-'+$scope.tasksMap[('t'+k[i])].model.factoryOperation.code,
                             value: k[i]
                         });
                         _task.push(k[i]);
@@ -1078,15 +1078,16 @@ angular.module('HarvardApp')
                 }
             }
         });
-        $scope.$watchGroup(['editTask.previousTaskId', 'editTask.nextTaskId'], function(newValue, oldValue) {
-            if ($scope.editTask.modifyType === 'create' && !angular.equals(newValue, oldValue) && newValue[0] !== 0 && newValue[1] !== 0) {
-                newValue.sort(function(a, b) { return parseInt(a, 10) - parseInt(b, 10); });
-                $scope.editTask.priority = Math.floor(Math.random() * (parseInt(newValue[1], 10) - parseInt(newValue[0], 10))) + parseInt(newValue[0], 10);
-                if ($scope.editTask.priority === parseInt(newValue[0], 10)) {
-                    $scope.editTask.priority += 1;
-                }
-            }
-        });
+        // Remove auto calculate priority.
+        // $scope.$watchGroup(['editTask.previousTaskId', 'editTask.nextTaskId'], function(newValue, oldValue) {
+        //     if ($scope.editTask.modifyType === 'create' && !angular.equals(newValue, oldValue) && newValue[0] !== 0 && newValue[1] !== 0) {
+        //         newValue.sort(function(a, b) { return parseInt(a, 10) - parseInt(b, 10); });
+        //         $scope.editTask.priority = Math.floor(Math.random() * (parseInt(newValue[1], 10) - parseInt(newValue[0], 10))) + parseInt(newValue[0], 10);
+        //         if ($scope.editTask.priority === parseInt(newValue[0], 10)) {
+        //             $scope.editTask.priority += 1;
+        //         }
+        //     }
+        // });
         $scope.closeTaskEditor = function() {
             $scope.options.draw = false;
             if (Object.keys($scope.editTask).length > 0) {
@@ -1619,7 +1620,7 @@ angular.module('HarvardApp')
                             taskContextMenu: '../app/views/taskContextMenu.tpl.html',
                             taskInfoContent: '../app/views/taskTooltip.tpl.html',
                             taskGroupIdsVo: t[j].taskGroupIdsVo,
-                            weight: t[j].weight || 999,
+                            weight: t[j].weight >= 0 ? t[j].weight : 999,
                             gangLinkCode: t[j].gangLinkCode,
                             gangLinkSide: t[j].gangLinkSide
                         };
