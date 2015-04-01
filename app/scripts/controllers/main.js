@@ -1069,7 +1069,7 @@ angular.module('HarvardApp')
                     if (('t'+k[i]) in $scope.tasksMap && ('t'+newValue) in $scope.tasksMap ) {
                         if ($scope.tasksMap[('t'+k[i])].model.from > $scope.tasksMap[('t'+newValue)].model.from && k[i] !== newValue && _task.indexOf(k[i]) < 0) {
                             $scope.editTask.nextTask.push({
-                                label: $scope.tasksMap[('t'+k[i])].model.name + ' ('+$scope.tasksMap[('t'+k[i])].model.priority+')',
+                                label: $scope.tasksMap[('t'+k[i])].model.name + ' ('+$scope.tasksMap[('t'+k[i])].model.priority+')-'+$scope.tasksMap[('t'+k[i])].model.factoryOperation.code,
                                 value: k[i]
                             });
                             _task.push(k[i]);
