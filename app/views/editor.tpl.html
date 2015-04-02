@@ -92,7 +92,7 @@
           <div class="form-group col-md-12">
             <label for="pin" class="col-md-2 control-label" title="Pin"><span class="glyphicon glyphicon-pushpin"></span>&nbsp;Pin</label>
             <div class="form-group col-md-2">
-              <select class="form-control" name="modifyTask_isPin" id="pin" ng-model="editTask.isPin" required>
+              <select class="form-control" name="modifyTask_isPin" id="pin" ng-model="editTask.isPin" required ng-disabled="editTask.weight !== 0 && editTask.weight !== 999">
                 <option value="0" ng-selected="editTask.isPin === '0'">N</option>
                 <option value="1" ng-selected="editTask.isPin === '1'">Y</option>
               </select>
@@ -116,7 +116,7 @@
           <div class="form-group col-md-12">
             <label for="lock" class="col-md-2 control-label" title="Lock"><span class="glyphicon glyphicon-lock"></span>&nbsp;Lock</label>
             <div class="form-group col-md-2">
-              <select class="form-control" name="modifyTask_lock" id="lock" ng-model="editTask.lock" required>
+              <select class="form-control" name="modifyTask_lock" id="lock" ng-model="editTask.lock" required ng-disabled="editTask.weight !== 0 && editTask.weight !== 999">
                 <option value="0" ng-selected="editTask.lock === '0'">N</option>
                 <option value="1" ng-selected="editTask.lock === '1'">Y</option>
               </select>

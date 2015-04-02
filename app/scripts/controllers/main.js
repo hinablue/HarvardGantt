@@ -1630,7 +1630,7 @@ angular.module('HarvardApp')
                             taskContextMenu: '../app/views/taskContextMenu.tpl.html',
                             taskInfoContent: '../app/views/taskTooltip.tpl.html',
                             taskGroupIdsVo: t[j].taskGroupIdsVo,
-                            weight: t[j].weight > 0 || t[j].weight < 0 || t[j].weight === 0 || t[j].weight === '0' ? t[j].weight : 999,
+                            weight: t[j].weight >= 0 || t[j].weight === '0' ? t[j].weight : 999,
                             gangLinkCode: t[j].gangLinkCode,
                             gangLinkSide: t[j].gangLinkSide
                         };
@@ -1878,6 +1878,7 @@ angular.module('HarvardApp')
                         task.model.lock = !task.model.lock;
 
                         if (task.model.lock === true) {
+                            task.model.pin = false;
                             task.model.lockColor = task.model.color;
                             task.model.color = $scope.configuration.lockColor;
                             task.model.textColor = Coloured.isDarkColoured($scope.configuration.lockColor) ? '#ffffff' : '#000000';
@@ -1890,6 +1891,13 @@ angular.module('HarvardApp')
                 case 'pin':
                     if ($scope.options.readOnly === false) {
                         task.model.pin = !task.model.pin;
+                        if (task.model.pin === true) {
+                            if (task.model.lock === true) {
+                                task.model.lock = false;
+                                task.model.color = task.model.lockColor;
+                                task.model.textColor = Coloured.isDarkColoured(task.model.color) ? '#ffffff' : '#000000';
+                            }
+                        }
                     }
                 break;
                 case 'edit':
