@@ -151,6 +151,14 @@ angular.module('HarvardApp')
 				dataChecking = false;
 				errorMessage.push('Pin can\'t use on finished task');
 			}
+			if(taskData.isPin === '1' && taskData.isLock === '1') {
+				dataChecking = false;
+				errorMessage.push('Pin can\'t use on locked task');
+			}
+			if(taskData.weight != 0 && taskData.weight != 999 && (taskData.isPin === '1' || taskData.isLock === '1')) {
+				dataChecking = false;
+				errorMessage.push('Pin and Lock can\'t use on task has weight');
+			}
 			if(taskData.inProcessing === '1' && taskData.isFinish === '1') {
 				dataChecking = false;
 				errorMessage.push('[Pending] & [Finish] can\'t set to Yes in the same time');
