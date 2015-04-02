@@ -110,7 +110,7 @@ angular.module('HarvardApp')
                 cut: false,
                 sheetUp: 1,
                 part: 0,
-                lock: false,
+                lock: '0',
                 lockColor: '',
                 expectedMoldId: null,
                 s2sMins: -1,

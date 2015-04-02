@@ -1078,6 +1078,16 @@ angular.module('HarvardApp')
                 }
             }
         });
+        $scope.$watch('editTask.lock', function(newValue, oldValue) {
+            if (newValue === '1') {
+                $scope.editTask.isPin = '0';
+            }
+        });
+        $scope.$watch('editTask.isPin', function(newValue, oldValue) {
+            if (newValue === '1') {
+                $scope.editTask.lock = '0';
+            }
+        });
         // Remove auto calculate priority.
         // $scope.$watchGroup(['editTask.previousTaskId', 'editTask.nextTaskId'], function(newValue, oldValue) {
         //     if ($scope.editTask.modifyType === 'create' && !angular.equals(newValue, oldValue) && newValue[0] !== 0 && newValue[1] !== 0) {
@@ -2006,6 +2016,7 @@ angular.module('HarvardApp')
                         $scope.editTask.expectedSetupFinishTime = _point.clone().add(1, 'm').format('YYYY/MM/DD HH:mm');
                         $scope.editTask.expectedFinishTime = _point.clone().add(2, 'm').format('YYYY/MM/DD HH:mm');
                         $scope.editTask.modal = $modal(editTaskModalOptions);
+                        $scope.editTask.lock = '0';
 
                         $scope.editTask.poFuzzySearch = [];
                         _poNo = [];
