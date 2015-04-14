@@ -83,10 +83,10 @@ angular.module('HarvardApp')
         $scope.machinesMap = {};
         $scope.taskGroups = {};
 
-        $scope.departmentMenu = ['Select'];
-        $scope.subDepartmentMenu = ['Select'];
-        $scope.departmentMenuDefault = 'Select';
-        $scope.subDepartmentMenuDefault = 'Select';
+        $scope.departmentMenu = [{ name: 'Select', order: 0 }];
+        $scope.subDepartmentMenu = [{ name: 'Select', order: 0 }];
+        $scope.departmentMenuDefault = { name: 'Select', order: 0 };
+        $scope.subDepartmentMenuDefault = { name: 'Select', order: 0 };
         $scope.pagination = [1];
         $scope.paginationPrePage = 15;
         $scope.currentPage = 1;
@@ -138,8 +138,8 @@ angular.module('HarvardApp')
             },
             filterRowComparator: function(actual, expected) {
                 if (actual !== undefined && expected !== undefined) {
-                    if ($scope.departmentMenuDefault !== 'Select' && $scope.subDepartmentMenuDefault !== 'Select') {
-                        if (actual.code === $scope.departmentMenuDefault + '_' + $scope.subDepartmentMenuDefault) {
+                    if ($scope.departmentMenuDefault.name !== 'Select' && $scope.subDepartmentMenuDefault.name !== 'Select') {
+                        if (actual.code === $scope.departmentMenuDefault.name + '_' + $scope.subDepartmentMenuDefault.name) {
                             return true;
                         }
                     } else {
@@ -494,18 +494,24 @@ angular.module('HarvardApp')
             return 40;
         };
         $scope.$watch('departmentMenuDefault', function(newValue, oldValue) {
-            $scope.subDepartmentMenu = ['Select'];
-            $scope.subDepartmentMenuDefault = 'Select';
+            $scope.subDepartmentMenu = [{ name: 'Select', order: 0 }];
+            $scope.subDepartmentMenuDefault = { name: 'Select', order: 0 };
             $scope.currentPage = 1;
 
-            if (false === angular.equals(newValue, oldValue)) {
-                if (newValue !== 'Select') {
-                    $scope.options.filterRow = newValue;
+            if (false === angular.equals(newValue.name, oldValue.name)) {
+                if (newValue.name !== 'Select') {
+                    $scope.options.filterRow = newValue.name;
 
-                    if (Object.keys($scope.departmentsMap[newValue.replace(/ /gi, '-')].sub).length > 0) {
-                        for (var x in $scope.departmentsMap[newValue.replace(/ /gi, '-')].sub) {
-                            $scope.subDepartmentMenu.push($scope.departmentsMap[newValue.replace(/ /gi, '-')].sub[x].name);
+                    if (Object.keys($scope.departmentsMap[newValue.name.replace(/ /gi, '-')].sub).length > 0) {
+                        for (var x in $scope.departmentsMap[newValue.name.replace(/ /gi, '-')].sub) {
+                            $scope.subDepartmentMenu.push({
+                                name: $scope.departmentsMap[newValue.name.replace(/ /gi, '-')].sub[x].name,
+                                order: $scope.departmentsMap[newValue.name.replace(/ /gi, '-')].sub[x].order
+                            });
                         }
+                        $scope.subDepartmentMenu.sort(function(a, b) {
+                            return a.order - b.order;
+                        });
                     }
                 } else {
                     $scope.options.filterRow = 'page-1';
@@ -514,15 +520,15 @@ angular.module('HarvardApp')
         });
         $scope.$watch('subDepartmentMenuDefault', function(newValue, oldValue) {
             $scope.currentPage = 1;
-            if (newValue !== 'Select' && false === angular.equals(newValue, oldValue)) {
-                $scope.options.filterRow = newValue;
+            if (newValue.name !== 'Select' && false === angular.equals(newValue.name, oldValue.name)) {
+                $scope.options.filterRow = newValue.name;
             }
         });
         $scope.paginationFilter = function(page, direction) {
             page = parseInt(page, 10);
             direction = parseInt(direction, 10);
 
-            $scope.departmentMenuDefault = 'Select';
+            $scope.departmentMenuDefault = { name: 'Select', order: 0 };
 
             if (page === 0) {
                 if (direction === 1) {
@@ -1679,7 +1685,7 @@ angular.module('HarvardApp')
                         order: obj.dept.sortBy,
                         sub: {}
                     };
-                    $scope.departmentMenu.push(obj.dept.name);
+                    $scope.departmentMenu.push({ name: obj.dept.name, order: obj.dept.sortBy });
                 }
                 if (obj.dept.subDept !== '' && (obj.dept.subDept.replace(/ /gi, '-') in $scope.departmentsMap[obj.dept.name.replace(/ /gi, '-')].sub) === false) {
                     $scope.departmentsMap[obj.dept.name.replace(/ /gi, '-')].sub[obj.dept.subDept.replace(/ /gi, '-')] = {
@@ -1690,6 +1696,9 @@ angular.module('HarvardApp')
                 }
                 $scope.data.push(obj);
             }
+            $scope.departmentMenu.sort(function(a, b) {
+                return a.order - b.order;
+            });
             // Pagination the machines
             q = Object.keys($scope.machinesMap).sort(function(a, b) { return $scope.machinesMap[a].id - $scope.machinesMap[b].id; });
             p = 1;
@@ -1835,10 +1844,10 @@ angular.module('HarvardApp')
             $scope.departmentsMap = {};
             $scope.jobsMap = {};
             $scope.machinesMap = {};
-            $scope.departmentMenu = ['Select'];
-            $scope.subDepartmentMenu = ['Select'];
-            $scope.departmentMenuDefault = 'Select';
-            $scope.subDepartmentMenuDefault = 'Select';
+            $scope.departmentMenu = [{ name: 'Select', order: 0 }];
+            $scope.subDepartmentMenu = [{ name: 'Select', order: 0 }];
+            $scope.departmentMenuDefault = { name: 'Select', order: 0 };
+            $scope.subDepartmentMenuDefault = { name: 'Select', order: 0 };
             $scope.pagination = [1];
             $scope.paginationPrePage = 15;
             $scope.currentPage = 1;
