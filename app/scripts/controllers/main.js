@@ -496,10 +496,10 @@ angular.module('HarvardApp')
         $scope.$watch('departmentMenuDefault', function(newValue, oldValue) {
             $scope.subDepartmentMenu = [{ name: 'Select', order: 0 }];
             $scope.subDepartmentMenuDefault = { name: 'Select', order: 0 };
-            $scope.currentPage = 1;
 
             if (false === angular.equals(newValue.name, oldValue.name)) {
                 if (newValue.name !== 'Select') {
+                    $scope.currentPage = 1;
                     $scope.options.filterRow = newValue.name;
 
                     if (Object.keys($scope.departmentsMap[newValue.name.replace(/ /gi, '-')].sub).length > 0) {
@@ -519,16 +519,14 @@ angular.module('HarvardApp')
             }
         });
         $scope.$watch('subDepartmentMenuDefault', function(newValue, oldValue) {
-            $scope.currentPage = 1;
             if (newValue.name !== 'Select' && false === angular.equals(newValue.name, oldValue.name)) {
+                $scope.currentPage = 1;
                 $scope.options.filterRow = newValue.name;
             }
         });
         $scope.paginationFilter = function(page, direction) {
             page = parseInt(page, 10);
             direction = parseInt(direction, 10);
-
-            $scope.departmentMenuDefault = { name: 'Select', order: 0 };
 
             if (page === 0) {
                 if (direction === 1) {
@@ -545,6 +543,8 @@ angular.module('HarvardApp')
                     $scope.currentPage = page;
                 }
             }
+
+            $scope.departmentMenuDefault = { name: 'Select', order: 0 };
             $scope.options.filterRow = 'page-' + $scope.currentPage.toString();
         };
 
@@ -1700,7 +1700,7 @@ angular.module('HarvardApp')
                 return a.order - b.order;
             });
             // Pagination the machines
-            q = Object.keys($scope.machinesMap).sort(function(a, b) { return $scope.machinesMap[a].id - $scope.machinesMap[b].id; });
+            q = Object.keys($scope.machinesMap);
             p = 1;
             for (i = 0, l = q.length; i < l; i++) {
                 if (i > 0 && i % $scope.paginationPrePage === 0) {
