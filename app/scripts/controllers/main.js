@@ -1695,6 +1695,10 @@ angular.module('HarvardApp')
                     };
                 }
                 $scope.data.push(obj);
+
+                $timeout(function() {
+                    $scope.$digest();
+                }, 10);
             }
             $scope.departmentMenu.sort(function(a, b) {
                 return a.order - b.order;
