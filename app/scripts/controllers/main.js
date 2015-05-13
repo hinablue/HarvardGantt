@@ -1438,6 +1438,9 @@ angular.module('HarvardApp')
                 if (result.currentTime !== undefined && result.currentTime !== '') {
                     $scope.options.currentDateValue = moment(result.currentTime, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
                 }
+                if (result.calculateWeeks !== undefined && result.calculateWeeks !== '') {
+                	$scope.configuration.calculateWeeks = parseInt(result.calculateWeeks);
+                }
 
                 if (result.state === 'ok' && result.data.machines !== undefined && result.data.machines.length > 0) {
                     $scope.readyToGo(angular.copy(result.data));
@@ -1486,6 +1489,9 @@ angular.module('HarvardApp')
                 }
                 if (result.currentTime !== undefined && result.currentTime !== '') {
                     $scope.options.currentDateValue = moment(result.currentTime, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
+                }
+                if (result.calculateWeeks !== undefined && result.calculateWeeks !== '') {
+                	$scope.configuration.calculateWeeks = parseInt(result.calculateWeeks);
                 }
 
                 if (_ganttAlertBox !== undefined) {
@@ -1536,6 +1542,9 @@ angular.module('HarvardApp')
             }
             if (originalData.currentTime !== undefined && originalData.currentTime !== '') {
                 $scope.options.currentDateValue = moment(originalData.currentTime, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
+            }
+            if (originalData.calculateWeeks !== undefined && originalData.calculateWeeks !== '') {
+            	$scope.configuration.calculateWeeks = parseInt(originalData.calculateWeeks);
             }
             if (originalData.solveStrategy !== undefined && originalData.solveStrategy !== '') {
                 $scope.options.solveStrategy = originalData.solveStrategy;
