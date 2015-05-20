@@ -1510,6 +1510,11 @@ angular.module('HarvardApp')
                     container: '#gantt-chart-alert',
                     show: true
                 });
+
+                Harvard.getGanttDataCalc().then(function(response) {
+                    $log.info('[TEST] Original Calc Data', response);
+                    $scope.readyToGo(response.data);
+                });
             });
         };
 
@@ -1704,10 +1709,6 @@ angular.module('HarvardApp')
                     };
                 }
                 $scope.data.push(obj);
-
-                $timeout(function() {
-                    $scope.$digest();
-                }, 10);
             }
             $scope.departmentMenu.sort(function(a, b) {
                 return a.order - b.order;
@@ -1810,7 +1811,6 @@ angular.module('HarvardApp')
                         container: '#gantt-chart-alert',
                         show: true
                     });
-                    $scope.readyToGo(angular.copy(Harvard.getGanttData()));
                 }
             }, function(response) {
                 var result = mattCallback.error(response);
@@ -1836,7 +1836,11 @@ angular.module('HarvardApp')
                     container: '#gantt-chart-alert',
                     show: true
                 });
-                $scope.readyToGo(angular.copy(Harvard.getGanttData()));
+
+                Harvard.getGanttData().then(function(response) {
+                    $log.info('[TEST] Original Data', response);
+                    $scope.readyToGo(response.data);
+                });
             });
         };
 
