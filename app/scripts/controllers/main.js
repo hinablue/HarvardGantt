@@ -1423,6 +1423,7 @@ angular.module('HarvardApp')
                     calculate: true,
                     calculateFrom: moment.utc($scope.api.gantt.columnsManager.getFirstColumn().date.format(), 'YYYY-MM-DDTHH:mm:ss').format('YYYY-MM-DDTHH:mm:ss'),
                     calculateWeeks: $scope.configuration.calculateWeeks,
+                    lastCalculateTime: moment.utc($scope.options.lastCalculateTime).format('YYYY-MM-DDTHH:mm:ss'),
                     solveStrategy: $scope.options.solveStrategy,
                     currentTime: moment.utc($scope.options.currentDateValue).format('YYYY-MM-DDTHH:mm:ss'),
                     save: type === 'save' ? true : false
@@ -1440,6 +1441,9 @@ angular.module('HarvardApp')
                 }
                 if (result.calculateWeeks !== undefined && result.calculateWeeks !== '') {
                 	$scope.configuration.calculateWeeks = parseInt(result.calculateWeeks);
+                }
+                if (result.lastCalculateTime !== undefined && result.lastCalculateTime !== '') {
+                	$scope.configuration.lastCalculateTime = moment(result.lastCalculateTime, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
                 }
 
                 if (result.state === 'ok' && result.data.machines !== undefined && result.data.machines.length > 0) {
@@ -1492,6 +1496,9 @@ angular.module('HarvardApp')
                 }
                 if (result.calculateWeeks !== undefined && result.calculateWeeks !== '') {
                 	$scope.configuration.calculateWeeks = parseInt(result.calculateWeeks);
+                }
+                if (result.lastCalculateTime !== undefined && result.lastCalculateTime !== '') {
+                	$scope.configuration.lastCalculateTime = moment(result.lastCalculateTime, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
                 }
 
                 if (_ganttAlertBox !== undefined) {
@@ -1550,6 +1557,9 @@ angular.module('HarvardApp')
             }
             if (originalData.calculateWeeks !== undefined && originalData.calculateWeeks !== '') {
             	$scope.configuration.calculateWeeks = parseInt(originalData.calculateWeeks);
+            }
+            if (originalData.lastCalculateTime !== undefined && originalData.lastCalculateTime !== '') {
+                $scope.options.lastCalculateTime = moment(originalData.lastCalculateTime, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
             }
             if (originalData.solveStrategy !== undefined && originalData.solveStrategy !== '') {
                 $scope.options.solveStrategy = originalData.solveStrategy;
