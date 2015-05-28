@@ -1896,7 +1896,7 @@ angular.module('HarvardApp')
             
         	$timeout(function() {
                 deferred.resolve({});
-        	}, 1);
+        	}, 3000);
         	
             return deferred.promise;
         };
