@@ -1447,8 +1447,13 @@ angular.module('HarvardApp')
                 }
 
                 if (result.state === 'ok' && result.data.machines !== undefined && result.data.machines.length > 0) {
-                    $scope.readyToGo(angular.copy(result.data));
-
+                	var promise = $scope.clear();
+                	promise.then(function() {
+                		$log.info('[INFO] Clear and readyToGo.');
+                    	$scope.readyToGo(angular.copy(result.data));
+                    });
+                	
+                	
                     if (_ganttAlertBox !== undefined) {
                         _ganttAlertBox.hide();
                     }
@@ -1547,8 +1552,6 @@ angular.module('HarvardApp')
                 return false;
             }
 
-            $scope.clear();
-
             if (originalData.readOnly !== undefined && (originalData.readOnly === true || originalData.readOnly === 'true')) {
                 $scope.options.readOnly = true;
             }
@@ -1567,7 +1570,6 @@ angular.module('HarvardApp')
 
             $log.info('[INFO]', $scope.options.solveStrategy);
             $log.info('[Event] Beginning parse JSON data.');
-
             for (i = 0, m = originalData.machines, l = m.length; i < l; i++) {
                 // if (m[i].operationQueue.length === 0) continue;
 
@@ -1753,6 +1755,10 @@ angular.module('HarvardApp')
 
             $scope.timespans = Harvard.getGanttTimespans();
             $scope.options.filterRow = 'page-1';
+            
+            $timeout(function() {
+            	$scope.$digest();
+            }, 100);
         };
 
         // Reload data action
@@ -1787,7 +1793,12 @@ angular.module('HarvardApp')
                 }
 
                 if (result.state === 'ok' && result.data.machines !== undefined && result.data.machines.length > 0) {
-                    $scope.readyToGo(angular.copy(result.data));
+                    var promise = $scope.clear();
+                    promise.then(function() {
+                    	$log.info('[INFO] Clear and readyToGo.');
+                    	$scope.readyToGo(angular.copy(result.data));
+                    });
+                    
                     if (_ganttAlertBox !== undefined) {
                         _ganttAlertBox.hide();
                     }
@@ -1865,7 +1876,11 @@ angular.module('HarvardApp')
 
         // Clear data action
         $scope.clear = function() {
-            $scope.data = [];
+        	var deferred = $q.defer();
+        	
+        	$log.info('[CLEAR] Clear.');
+    		
+    		$scope.data = [];
             $scope.tasksMap = {};
             $scope.processesMap = {};
             $scope.departmentsMap = {};
@@ -1878,6 +1893,12 @@ angular.module('HarvardApp')
             $scope.pagination = [1];
             $scope.paginationPrePage = 15;
             $scope.currentPage = 1;
+            
+        	$timeout(function() {
+                deferred.resolve({});
+        	}, 1);
+        	
+            return deferred.promise;
         };
 
         var drawResizeEndEvent = function(eventName, task) {
