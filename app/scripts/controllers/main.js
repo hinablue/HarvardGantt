@@ -1429,7 +1429,7 @@ angular.module('HarvardApp')
                     save: type === 'save' ? true : false
                 }
             }).then(function(response) {
-                saveGanttModal.hide();
+                // saveGanttModal.hide();
                 var result = mattCallback.success(response);
                 var content = result.messages.content.replace(/<focusTask>([^<]*)<\/focusTask>/gim, '<a class="highlight-task" ng-click="alertJumpToTask(\'$1\');">$1</a>');
 
@@ -1749,16 +1749,15 @@ angular.module('HarvardApp')
 
             dataToRemove = undefined;
 
-            if (saveGanttModal !== undefined) {
-                saveGanttModal.hide();
-            }
-
             $scope.timespans = Harvard.getGanttTimespans();
             $scope.options.filterRow = 'page-1';
             
             $timeout(function() {
+            	if (saveGanttModal !== undefined) {
+                    saveGanttModal.hide();
+                }
             	$scope.$digest();
-            }, 100);
+            }, 5000);
         };
 
         // Reload data action
@@ -1896,7 +1895,7 @@ angular.module('HarvardApp')
             
         	$timeout(function() {
                 deferred.resolve({});
-        	}, 3000);
+        	}, 0);
         	
             return deferred.promise;
         };
