@@ -1,4 +1,4 @@
-<div class="modal inner-scroller" id="machineTasks" tabindex="-1" role="dialog">
+<div class="modal inner-scroller" id="machineTasks" tabindex="-1" role="dialog" ng-controller="SoftleaderCtrl">
   <div class="modal-dialog" style="width: 90%;">
     <div class="modal-content">
       <div class="modal-header" ng-show="title">
@@ -21,7 +21,7 @@
       	<div class="machine" ng-style="autoExpand" ng-model="row.tasks">
       		<div class="tasks" ng-repeat="task in row.tasks track by $index" ng-if="showTaskUI2(task.model)">
       			<div class="task" ng-style="taskColoured(task.model.color, task.model.textColor)">
-	      			<span class="column pin"><a class="btn {{ task.model.pin === true && 'btn-warning' || 'btn-default' }} pin" ng-model="task.model.pin" ng-disabled="(readOnly(task.model) || task.model.lock === true || !(task.model.weight === 0 || task.model.weight === 999))" bs-checkbox><i class="fa {{ task.model.pin === true && 'fa-check' || 'fa-close' }}"></i></a></span>
+	      			<span class="column pin"><a class="btn {{ task.model.pin === true && 'btn-warning' || 'btn-default' }} pin" ng-model="task.model.pin" ng-disabled="(readOnly(task.model) || task.model.lock === true || isIndicateWeight(task.model.weight))" bs-checkbox><i class="fa {{ task.model.pin === true && 'fa-check' || 'fa-close' }}"></i></a></span>
               <span class="column weight"><input type="number" class="form-control" value="{{task.model.weight}}" style="width:90%;" ng-model="task.model.weight" ng-disabled="(readOnly(task.model) || task.model.lock === true || task.model.pin === true)"></span>
 	      			<span class="column data" ng-repeat="data in task.model.tooltip track by $index">
                 <span ng-bind-html="renderHtml(data)"></span>

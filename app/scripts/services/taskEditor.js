@@ -85,7 +85,7 @@ angular.module('HarvardApp')
                 taskContextMenu: '/views/taskContextMenu.tpl.html',
                 taskInfoContent: '/views/taskTooltip.tpl.html',
                 taskGroupIdsVo: [],
-                weight: 999,
+                weight: 0,
                 gangLinkCode: null,
                 gangLinkSide: null
             },
@@ -144,7 +144,7 @@ angular.module('HarvardApp')
                 check: false,
                 color: '#AA8833',
                 taskGroupIdsVo: [],
-                weight: 999,
+                weight: 0,
                 gangLinkCode: null,
                 gangLinkSide: null
             },

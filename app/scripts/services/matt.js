@@ -436,6 +436,14 @@ angular.module('HarvardApp')
 );
 
 angular.module('HarvardApp')
+.controller('SoftleaderCtrl', ['$scope', function ($scope) {
+	//weight check
+	$scope.isIndicateWeight = function(weight) {
+		return weight !== null && weight !== 0 && weight !== 9999;
+	}
+}]);
+
+angular.module('HarvardApp')
 .filter('trimLeadingZero', function () {
 	return function (input) {
 		return (input) ? input.replace(/^0+/, '') : input;

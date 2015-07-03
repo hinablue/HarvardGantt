@@ -2456,5 +2456,6 @@ angular.module('HarvardApp')
                 return func(eventName, data);
             };
         };
+        
     }
 ]);
