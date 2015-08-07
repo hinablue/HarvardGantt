@@ -76,9 +76,7 @@ angular.module('HarvardApp')
             // return tw.com.softleader.harvard.aps.service.result.ApsMessage
             confirmGanttUrl: '/company/scheduler/gantt/calculate/',
             tooltipSeparator: '|',
-            lockColor: '#d1d1d1',
-            
-            cutQuantityEmptyMsg: 'Cut quantity must be > 0'
+            lockColor: '#d1d1d1'
         };
 
 		var formatMessages = function (messages) {
@@ -99,9 +97,35 @@ angular.module('HarvardApp')
         	}
         	return html;
         };
+        
+        var cutQuantityValidation = function(taskData) {
+        	var dataChecking = true;
+    		var errorMessage = [];
+        	
+        	if(taskData.cutQuantity === null || taskData.cutQuantity <= 0) {
+        		dataChecking = false;
+        		errorMessage.push('Cut quantity must be > 0');
+        	}
+        	
+        	if(dataChecking) {
+				// 如果檢查通過
+				return {
+					state: 'ok'
+				};
+			} else {
+				// 如果檢查失敗
+				return {
+					state: 'err',
+					messages: {
+						title: 'Data validation failed',
+						content: errorMessage
+					}
+				};
+			}
+        }
+        
 
         var genericEditorValidation = function(taskData) {
-			console.log(taskData);
 			var dataChecking = true;
     		var errorMessage = [];
 			var today = moment();
