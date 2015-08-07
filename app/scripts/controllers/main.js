@@ -1282,12 +1282,14 @@ angular.module('HarvardApp')
                         task.gangLinkCode = '';
                         task.gangLinkSide = '';
                         task.cut = false;
+                        task.cutQuantity = 0;
                     } else {
                         task.taskGroupIdsVo = $scope.tasksMap['t' + $scope.editTask.id].model.taskGroupIdsVo;
                         task.taskGroup = $scope.tasksMap['t' + $scope.editTask.id].model.taskGroup;
                         task.gangLinkCode = $scope.tasksMap['t' + $scope.editTask.id].model.gangLinkCode;
                         task.gangLinkSide = $scope.tasksMap['t' + $scope.editTask.id].model.gangLinkSide;
                         task.cut = $scope.tasksMap['t' + $scope.editTask.id].model.cut;
+                        task.cutQuantity = $scope.tasksMap['t' + $scope.editTask.id].model.cutQuantity;
                     }
 
                     $scope.editTask.check = true;
@@ -1394,7 +1396,9 @@ angular.module('HarvardApp')
                             machineShiftLabel: _taskModel.machineShiftLabel,
                             new: _taskModel.new,
                             weight: _taskModel.weight,
-                            cut: _taskModel.cut
+                            cut: _taskModel.cut,
+                            cutQuantity: _taskModel.cutQuantity
+                            
                         });
                     }
                     machines.push(machine);
@@ -1430,9 +1434,10 @@ angular.module('HarvardApp')
                 }
             }).then(function(response) {
                 // saveGanttModal.hide();
+            	$log.info('[INFO] Success response.');
                 var result = mattCallback.success(response);
                 var content = result.messages.content.replace(/<focusTask>([^<]*)<\/focusTask>/gim, '<a class="highlight-task" ng-click="alertJumpToTask(\'$1\');">$1</a>');
-
+                
                 if (result.readonly !== undefined && (result.readonly === true || result.readonly === 'true')) {
                     $scope.options.readOnly = true;
                 }
@@ -1471,6 +1476,9 @@ angular.module('HarvardApp')
                         show: true
                     });
                 } else {
+                	
+                	saveGanttModal.hide();
+                	
                     if (_ganttAlertBox !== undefined) {
                         _ganttAlertBox.hide();
                     }
@@ -1490,6 +1498,7 @@ angular.module('HarvardApp')
                 }
             }, function(response) {
                 saveGanttModal.hide();
+                $log.info('[INFO] Error response.');
                 var result = mattCallback.error(response);
                 var content = result.messages.content.replace(/<focusTask>([^<]*)<\/focusTask>/gim, '<a class="highlight-task" ng-click="alertJumpToTask(\'$1\')">$1</a>');
 
@@ -1664,7 +1673,8 @@ angular.module('HarvardApp')
                             taskGroupIdsVo: t[j].taskGroupIdsVo,
                             weight: t[j].weight >= 0 || t[j].weight === '0' ? t[j].weight : 999,
                             gangLinkCode: t[j].gangLinkCode,
-                            gangLinkSide: t[j].gangLinkSide
+                            gangLinkSide: t[j].gangLinkSide,
+                            cutQuantity: t[j].cutQuantity,
                         };
 
                         // Prepare processesMap

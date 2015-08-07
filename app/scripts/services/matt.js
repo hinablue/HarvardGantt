@@ -76,7 +76,9 @@ angular.module('HarvardApp')
             // return tw.com.softleader.harvard.aps.service.result.ApsMessage
             confirmGanttUrl: '/company/scheduler/gantt/calculate/',
             tooltipSeparator: '|',
-            lockColor: '#d1d1d1'
+            lockColor: '#d1d1d1',
+            
+            cutQuantityEmptyMsg: 'Cut quantity must be > 0'
         };
 
 		var formatMessages = function (messages) {

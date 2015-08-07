@@ -146,7 +146,8 @@ angular.module('HarvardApp')
                 taskGroupIdsVo: [],
                 weight: 0,
                 gangLinkCode: null,
-                gangLinkSide: null
+                gangLinkSide: null,
+                cutQuantity: 0
             },
             editTaskModalOptions: {
                 scope: null,
