@@ -8,9 +8,9 @@
         <div class="form-group col-md-6">
           <label for="s2sMins" class="col-md-6 control-label"><font color="red">*&nbsp;</font>Cut Enable</label>
           <div class="form-group col-md-6">
-            <select class="form-control" name="taskCutStatus" id="taskCutStatus" ng-model="taskCutStatus" required>
-              <option value="0" ng-selected="taskCutStatus === false">N</option>
-              <option value="1" ng-selected="taskCutStatus === true">Y</option>
+            <select class="form-control" name="taskCutStatus" id="taskCutStatus" ng-model="taskCutStatus" ng-init="taskCutStatus = '1'" required>
+              <option value="0">N</option>
+              <option value="1">Y</option>
             </select>
           </div>
         </div>

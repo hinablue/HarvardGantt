@@ -1945,7 +1945,7 @@ angular.module('HarvardApp')
                         }
                         $scope.cutModal = $modal({
                             scope: $scope,
-                            title: 'Task Cut Modal',
+                            title: 'Cut: ' + $scope.cutModalTask.model.name + ' Round:' + $scope.cutModalTask.model.rounds,
                             template: '../app/views/cutModal.tpl.html',
                             backdrop: false,
                             show: true
