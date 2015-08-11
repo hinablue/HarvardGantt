@@ -82,6 +82,7 @@ angular.module('HarvardApp')
         $scope.jobTasksMap = {};
         $scope.machinesMap = {};
         $scope.taskGroups = {};
+        $scope.data = [];
 
         $scope.departmentMenu = [{ name: 'Select', order: 0 }];
         $scope.subDepartmentMenu = [{ name: 'Select', order: 0 }];
@@ -1156,7 +1157,7 @@ angular.module('HarvardApp')
                 })($scope);
 
                 if (result.state === 'ok') {
-                    task = angular.copy(TaskEditor.taskTemplate);
+                    var task = angular.copy(TaskEditor.taskTemplate);
                     task.id = $scope.editTask.id;
                     task.color = $scope.editTask.color;
                     task.oid = $scope.editTask.id;
@@ -1398,7 +1399,7 @@ angular.module('HarvardApp')
                             weight: _taskModel.weight,
                             cut: _taskModel.cut,
                             cutQuantity: _taskModel.cutQuantity
-                            
+
                         });
                     }
                     machines.push(machine);
@@ -1437,7 +1438,7 @@ angular.module('HarvardApp')
             	$log.info('[INFO] Success response.');
                 var result = mattCallback.success(response);
                 var content = result.messages.content.replace(/<focusTask>([^<]*)<\/focusTask>/gim, '<a class="highlight-task" ng-click="alertJumpToTask(\'$1\');">$1</a>');
-                
+
                 if (result.readonly !== undefined && (result.readonly === true || result.readonly === 'true')) {
                     $scope.options.readOnly = true;
                 }
@@ -1457,8 +1458,8 @@ angular.module('HarvardApp')
                 		$log.info('[INFO] Clear and readyToGo.');
                     	$scope.readyToGo(angular.copy(result.data));
                     });
-                	
-                	
+
+
                     if (_ganttAlertBox !== undefined) {
                         _ganttAlertBox.hide();
                     }
@@ -1476,9 +1477,9 @@ angular.module('HarvardApp')
                         show: true
                     });
                 } else {
-                	
+
                 	saveGanttModal.hide();
-                	
+
                     if (_ganttAlertBox !== undefined) {
                         _ganttAlertBox.hide();
                     }
@@ -1761,7 +1762,7 @@ angular.module('HarvardApp')
 
             $scope.timespans = Harvard.getGanttTimespans();
             $scope.options.filterRow = 'page-1';
-            
+
             $timeout(function() {
             	if (saveGanttModal !== undefined) {
                     saveGanttModal.hide();
@@ -1807,7 +1808,7 @@ angular.module('HarvardApp')
                     	$log.info('[INFO] Clear and readyToGo.');
                     	$scope.readyToGo(angular.copy(result.data));
                     });
-                    
+
                     if (_ganttAlertBox !== undefined) {
                         _ganttAlertBox.hide();
                     }
@@ -1886,9 +1887,9 @@ angular.module('HarvardApp')
         // Clear data action
         $scope.clear = function() {
         	var deferred = $q.defer();
-        	
+
         	$log.info('[CLEAR] Clear.');
-    		
+
     		$scope.data = [];
             $scope.tasksMap = {};
             $scope.processesMap = {};
@@ -1902,11 +1903,11 @@ angular.module('HarvardApp')
             $scope.pagination = [1];
             $scope.paginationPrePage = 15;
             $scope.currentPage = 1;
-            
+
         	$timeout(function() {
                 deferred.resolve({});
         	}, 0);
-        	
+
             return deferred.promise;
         };
 
@@ -1932,11 +1933,23 @@ angular.module('HarvardApp')
                 task.contextMenuOnClose(task);
             }
             task.$element.css('z-index', task.model.priority);
-
             switch(type) {
                 case 'cut':
                     if ($scope.options.readOnly === false) {
-                        task.model.cut = !task.model.cut;
+                        $scope.cutModalTask = task;
+                        $scope.taskCutQuantity = angular.copy(task.model.cutQuantity);
+                        $scope.taskCutStatus = angular.copy(task.model.cut);
+                        if ($scope.cutModal !== undefined) {
+                            $scope.cutModal.hide();
+                            $scope.cutModal = undefined;
+                        }
+                        $scope.cutModal = $modal({
+                            scope: $scope,
+                            title: 'Task Cut Modal',
+                            template: '../app/views/cutModal.tpl.html',
+                            backdrop: false,
+                            show: true
+                        });
                     }
                 break;
                 case 'lock':
@@ -2466,6 +2479,6 @@ angular.module('HarvardApp')
                 return func(eventName, data);
             };
         };
-        
+
     }
 ]);
