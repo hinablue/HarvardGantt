@@ -1943,15 +1943,20 @@ angular.module('HarvardApp')
                             $scope.cutModal.hide();
                             $scope.cutModal = undefined;
                         }
+                        var modalTitle ='Cut: ' + $scope.cutModalTask.model.name + 
+                        				' Round:' + $scope.cutModalTask.model.rounds + 
+                        				' Part:' + $scope.cutModalTask.model.part +
+                        				($scope.cutModalTask.model.new?' (Invent)':'');
+                        
                         $scope.cutModal = $modal({
                             scope: $scope,
-                            title: 'Cut: ' + $scope.cutModalTask.model.name + ' Round:' + $scope.cutModalTask.model.rounds,
+                            title: modalTitle,
                             template: '../app/views/cutModal.tpl.html',
                             backdrop: false,
                             show: true
                         });
                     }
-                break;
+                break;  
                 case 'lock':
                     if ($scope.options.readOnly === false) {
                         task.model.lock = !task.model.lock;
