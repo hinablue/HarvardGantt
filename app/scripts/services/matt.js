@@ -90,7 +90,13 @@ angular.module('HarvardApp')
                     }
                     // content
                     else {
-                        html += '<thead><tr><td>' + messages[i].replace(/\|/g, '</td><td>') + '</td></tr></thead>';
+                    	if (messages[i].indexOf('fa fa-times-circle fa-2x') >= 0) {
+                    		html += '<thead><tr class="alert alert-danger"><td>' + messages[i].replace(/\|/g, '</td><td>') + '</td></tr></thead>';
+                    	} else if (messages[i].indexOf('fa fa-exclamation-triangle') >= 0) {
+                    		html += '<thead><tr class="alert alert-warning"><td>' + messages[i].replace(/\|/g, '</td><td>') + '</td></tr></thead>';
+                    	} else {
+                    		html += '<thead><tr><td>' + messages[i].replace(/\|/g, '</td><td>') + '</td></tr></thead>';
+                    	}
                     }
                 }
                 html += '</table>';
