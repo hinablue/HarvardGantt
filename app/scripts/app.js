@@ -21,5 +21,5 @@ angular.module('HarvardApp', [
     'mgcrea.ngStrap',
     'harvard.templates'
 ]).config(['$compileProvider', function($compileProvider) {
-    $compileProvider.debugInfoEnabled(true); // Remove debug info (angularJS >= 1.3)
+    $compileProvider.debugInfoEnabled(false); // Remove debug info (angularJS >= 1.3)
 }]);

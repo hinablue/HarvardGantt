@@ -25,7 +25,7 @@ angular.module('HarvardApp')
             getGanttData: function() {
                 return $http({
                     method: 'get',
-                    url: '/scripts/data/plan.json'
+                    url: '/scripts/data/2015-09-18.json'
                 });
             },
             getGanttDataCalc: function() {
