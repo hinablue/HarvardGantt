@@ -440,26 +440,26 @@ angular.module('HarvardApp')
                         }
                     }
                 break;
-                case 'delete':
-                    if (scope.options.readOnly === false) {
-                        if (angular.element(window).confirm('Are you sure to delete this task?') === true) {
-                            task.model.delete = true;
-                            task.row.removeTask(task.model.id, true, false);
-                        }
-                    }
-                break;
-                case 'zoomIn':
-                    key = scope.defaultScale.indexOf(scope.options.scale);
-                    if (key - 1 >= 0) {
-                        scope.options.scale = scope.defaultScale[(key - 1)];
-                    }
-                break;
-                case 'zoomOut':
-                    key = scope.defaultScale.indexOf(scope.options.scale);
-                    if (key + 1 < scope.defaultScale.length) {
-                        scope.options.scale = scope.defaultScale[(key + 1)];
-                    }
-                break;
+                // case 'delete':
+                //     if (scope.options.readOnly === false) {
+                //         if (angular.element(window).confirm('Are you sure to delete this task?') === true) {
+                //             task.model.delete = true;
+                //             task.row.removeTask(task.model.id, true, false);
+                //         }
+                //     }
+                // break;
+                // case 'zoomIn':
+                //     key = scope.defaultScale.indexOf(scope.options.scale);
+                //     if (key - 1 >= 0) {
+                //         scope.options.scale = scope.defaultScale[(key - 1)];
+                //     }
+                // break;
+                // case 'zoomOut':
+                //     key = scope.defaultScale.indexOf(scope.options.scale);
+                //     if (key + 1 < scope.defaultScale.length) {
+                //         scope.options.scale = scope.defaultScale[(key + 1)];
+                //     }
+                // break;
             }
         };
         var moveTaskBeginEvent = function(eventName, task) {
@@ -576,15 +576,15 @@ angular.module('HarvardApp')
                 task.createTask = function(task, evt) {
                     taskContextMenuEvent('create', task, evt);
                 };
-                task.zoomIn = function(task, evt) {
-                    taskContextMenuEvent('zoomIn', task, evt);
-                };
-                task.zoomOut = function(task, evt) {
-                    taskContextMenuEvent('zoomOut', task, evt);
-                };
-                task.deleteTask = function(task, evt) {
-                    taskContextMenuEvent('delete', task, evt);
-                };
+                // task.zoomIn = function(task, evt) {
+                //     taskContextMenuEvent('zoomIn', task, evt);
+                // };
+                // task.zoomOut = function(task, evt) {
+                //     taskContextMenuEvent('zoomOut', task, evt);
+                // };
+                // task.deleteTask = function(task, evt) {
+                //     taskContextMenuEvent('delete', task, evt);
+                // };
                 task.moreInformation = function(task, evt) {
                     evt.stopPropagation();
                     var _url = Matt.showMoreInformation(task.model);
@@ -674,28 +674,28 @@ angular.module('HarvardApp')
                         _dropdown[0].classList.remove('open');
                     }
                 };
-                row.zoomIn = function(row, evt) {
-                    evt.stopPropagation();
-                    var key = scope.defaultScale.indexOf(scope.options.scale);
-                    if (key - 1 >= 0) {
-                        scope.options.scale = scope.defaultScale[(key - 1)];
-                    }
-                    var _dropdown = angular.element(document.getElementById('rowmenu-'+row.model.id));
-                    if (_dropdown[0] !== undefined && _dropdown[0].classList !== undefined && _dropdown[0].classList.contains('open')) {
-                        _dropdown[0].classList.remove('open');
-                    }
-                };
-                row.zoomOut = function(row, evt) {
-                    evt.stopPropagation();
-                    var key = scope.defaultScale.indexOf(scope.options.scale);
-                    if (key + 1 < scope.defaultScale.length) {
-                        scope.options.scale = scope.defaultScale[(key + 1)];
-                    }
-                    var _dropdown = angular.element(document.getElementById('rowmenu-'+row.model.id));
-                    if (_dropdown[0] !== undefined && _dropdown[0].classList !== undefined && _dropdown[0].classList.contains('open')) {
-                        _dropdown[0].classList.remove('open');
-                    }
-                };
+                // row.zoomIn = function(row, evt) {
+                //     evt.stopPropagation();
+                //     var key = scope.defaultScale.indexOf(scope.options.scale);
+                //     if (key - 1 >= 0) {
+                //         scope.options.scale = scope.defaultScale[(key - 1)];
+                //     }
+                //     var _dropdown = angular.element(document.getElementById('rowmenu-'+row.model.id));
+                //     if (_dropdown[0] !== undefined && _dropdown[0].classList !== undefined && _dropdown[0].classList.contains('open')) {
+                //         _dropdown[0].classList.remove('open');
+                //     }
+                // };
+                // row.zoomOut = function(row, evt) {
+                //     evt.stopPropagation();
+                //     var key = scope.defaultScale.indexOf(scope.options.scale);
+                //     if (key + 1 < scope.defaultScale.length) {
+                //         scope.options.scale = scope.defaultScale[(key + 1)];
+                //     }
+                //     var _dropdown = angular.element(document.getElementById('rowmenu-'+row.model.id));
+                //     if (_dropdown[0] !== undefined && _dropdown[0].classList !== undefined && _dropdown[0].classList.contains('open')) {
+                //         _dropdown[0].classList.remove('open');
+                //     }
+                // };
             } else if (eventName === 'row-click') {
                 $log.info(row);
             }
