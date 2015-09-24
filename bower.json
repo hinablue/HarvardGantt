@@ -14,6 +14,7 @@
     "angular-moment": ">=0.9.0",
     "angular-ui-tree": "~2.1.5",
     "font-awesome": "~4.2.0",
+    "bootstrap": "~3.3.5",
     "angular-native-dragdrop": "https://github.com/ganarajpr/angular-dragdrop.git#master",
     "ng-context-menu": "https://github.com/ianwalter/ng-context-menu.git#master"
   },

@@ -792,7 +792,7 @@ angular.module('HarvardApp')
                     maxHeight: false,
                     width: false,
                     autoExpand: 'right',
-                    taskOutOfRange: 'expand',
+                    taskOutOfRange: 'truncate',
                     fromDate: undefined,
                     toDate: undefined,
                     labelsEnabled: true,

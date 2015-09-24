@@ -152,7 +152,7 @@ angular.module('HarvardApp')
             editTaskModalOptions: {
                 scope: null,
                 title: 'Task Creator',
-                template: '../app/views/editor.tpl.html',
+                templateUrl: '../app/views/editor.tpl.html',
                 backdrop: false,
                 show: true
             }
