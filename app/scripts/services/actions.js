@@ -806,10 +806,14 @@ angular.module('HarvardApp')
                     filterTask: '',
                     filterRow: '',
                     jumpToDate: moment(),
+                    taskContent: $templateCache.get('../app/views/taskContent.tpl.html'),
+                    // rowContent: '',
                     options: {
-                        taskContent: $templateCache.get('../app/views/taskContent.tpl.html'),
+                        // taskContent: $templateCache.get('../app/views/taskContent.tpl.html'),
                         sideWidth: 200
                     },
+                    // filterTaskComparator: function(actual, expected) {
+                    // },
                     filterRowComparator: function(actual, expected) {
                         if (actual !== undefined && expected !== undefined) {
                             if (_scope.departmentMenuDefault.name !== 'Select' && _scope.subDepartmentMenuDefault.name !== 'Select') {
@@ -841,6 +845,7 @@ angular.module('HarvardApp')
                     },
                     timeFramesNonWorkingMode: 'visible',
                     columnMagnet: '1 minute',
+                    // shiftColumnMagnet: '',
                     timeFramesMagnet: true,
                     canDraw: function(event) {
                         var isLeftMouseButton = event.button === 0 || event.button === 1;

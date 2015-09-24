@@ -7,7 +7,7 @@ Github: https://github.com/angular-gantt/angular-gantt.git
 */
 (function(){
     'use strict';
-    angular.module('gantt', ['gantt.templates', 'angularMoment'])
+    angular.module('gantt', ['gantt.templates', 'angularMoment', 'ng-context-menu'])
         .directive('gantt', ['Gantt', 'ganttEnableNgAnimate', '$timeout', '$templateCache', function(Gantt, enableNgAnimate, $timeout, $templateCache) {
         return {
             restrict: 'A',
@@ -5177,8 +5177,11 @@ angular.module('gantt.templates', []).run(['$templateCache', function($templateC
         '            <gantt-body-rows>\n' +
         '                <gantt-timespan ng-repeat="timespan in gantt.timespansManager.timespans track by timespan.model.id"></gantt-timespan>\n' +
         '                <gantt-row ng-repeat="row in gantt.rowsManager.visibleRows track by row.model.id">\n' +
-        '                    <gantt-task ng-repeat="task in row.visibleTasks track by task.model.id">\n' +
-        '                    </gantt-task>\n' +
+        '                    <div context-menu class="gantt-context-menu gantt-row" data-target="rowmenu-{{row.model.id}}"></div>\n' +
+        '                    <div class="dropdown position-fixed" id="rowmenu-{{row.model.id}}" ng-include="row.model.rowContextMenu"></div>\n' +
+        '                    <div ng-repeat="task in row.visibleTasks track by task.model.id">\n' +
+        '                        <gantt-task></gantt-task>\n' +
+        '                    </div>\n' +
         '                </gantt-row>\n' +
         '            </gantt-body-rows>\n' +
         '        </gantt-body>\n' +
@@ -5264,7 +5267,7 @@ angular.module('gantt.templates', []).run(['$templateCache', function($templateC
         '\n' +
         '    <!-- Timespan template -->\n' +
         '    <script type="text/ng-template" id="template/ganttTimespan.tmpl.html">\n' +
-        '        <div class="gantt-timespan" ng-class="timespan.model.classes">\n' +
+        '        <div class="gantt-timespan" ng-class="timespan..modelclasses">\n' +
         '        </div>\n' +
         '    </script>\n' +
         '\n' +
@@ -5272,8 +5275,8 @@ angular.module('gantt.templates', []).run(['$templateCache', function($templateC
         '    <script type="text/ng-template" id="template/ganttTask.tmpl.html">\n' +
         '        <div class="gantt-task" ng-class="task.model.classes">\n' +
         '            <gantt-task-background></gantt-task-background>\n' +
-        '            <gantt-task-foreground></gantt-task-foreground>\n' +
         '            <gantt-task-content></gantt-task-content>\n' +
+        '            <gantt-task-foreground></gantt-task-foreground>\n' +
         '        </div>\n' +
         '    </script>\n' +
         '\n' +
@@ -5285,12 +5288,18 @@ angular.module('gantt.templates', []).run(['$templateCache', function($templateC
         '        <div class="gantt-task-foreground">\n' +
         '            <div ng-if="task.truncatedRight" class="gantt-task-truncated-right">&gt;</div>\n' +
         '            <div ng-if="task.truncatedLeft" class="gantt-task-truncated-left">&lt;</div>\n' +
+        '            <div context-menu="task.contextMenuOnShow(task)" context-menu-close="task.contextMenuOnClose(task)" class="gantt-context-menu" data-target="taskmenu-{{task.model.id}}"></div>\n' +
+        '            <div class="dropdown position-fixed" id="taskmenu-{{task.model.id}}" ng-include="task.model.taskContextMenu"></div>\n' +
         '        </div>\n' +
         '    </script>\n' +
         '\n' +
         '    <!-- Task content template -->\n' +
         '    <script type="text/ng-template" id="template/ganttTaskContent.tmpl.html">\n' +
-        '        <div class="gantt-task-content" unselectable="on"><span unselectable="on" gantt-bind-compile-html="getTaskContent()"/></div>\n' +
+        '        <div class="gantt-task-content-container" ng-class="task.model.classes" unselectable="on">\n' +
+        '            <div class="gantt-task-content" ng-style="{color: \'{{task.model.textColor}}\'}" unselectable="on">\n' +
+        '                <span unselectable="on" gantt-bind-compile-html="getTaskContent()"></span>\n' +
+        '            </div>\n' +
+        '        </div>\n' +
         '    </script>\n' +
         '\n' +
         '\n' +
@@ -5322,7 +5331,9 @@ angular.module('gantt.templates', []).run(['$templateCache', function($templateC
         '    <script type="text/ng-template" id="template/ganttSideBackground.tmpl.html">\n' +
         '        <div class="gantt-side-background">\n' +
         '            <div class="gantt-side-background-header" ng-style="{height: $parent.ganttHeaderHeight + \'px\'}">\n' +
-        '                <div ng-show="$parent.ganttHeaderHeight" class="gantt-header-row gantt-side-header-row"></div>\n' +
+        '                <div ng-show="gantt.columnsManager.columns.length > 0 && gantt.columnsManager.headers.length > 0">\n' +
+        '                    <div class="gantt-row-height" ng-class="{\'gantt-labels-header-row\': $last, \'gantt-labels-header-row-last\': $last}" ng-repeat="header in gantt.columnsManager.headers"></div>\n' +
+        '                </div>\n' +
         '            </div>\n' +
         '            <div class="gantt-side-background-body" ng-style="getMaxHeightCss()">\n' +
         '                <div gantt-vertical-scroll-receiver>\n' +
