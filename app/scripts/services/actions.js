@@ -8,8 +8,8 @@
  * Service in the HarvardApp.
  */
 angular.module('HarvardApp')
-    .service('Actions', ['$document', '$compile', '$http', '$log', '$timeout', '$modal', '$alert', '$templateCache', 'ganttUtils', 'GanttObjectModel', 'Events', 'Coloured', 'Harvard', 'Matt', 'TaskEditor', 'moment',
-    function Actions($document, $compile, $http, $log, $timeout, $modal, $alert, $templateCache, utils, ObjectModel, Events, Coloured, Harvard, Matt, TaskEditor, moment) {
+    .service('Actions', ['$document', '$compile', '$http', '$log', '$timeout', '$modal', '$alert', '$sce', '$templateCache', 'ganttUtils', 'GanttObjectModel', 'Events', 'Coloured', 'Harvard', 'Matt', 'TaskEditor', 'moment',
+    function Actions($document, $compile, $http, $log, $timeout, $modal, $alert, $sce, $templateCache, utils, ObjectModel, Events, Coloured, Harvard, Matt, TaskEditor, moment) {
 
         var scope, _self = this, saveGanttModal, objectModel, _jumpTrigger = false;
 
