@@ -6,13 +6,10 @@
         <a class="pointer" role="menuitem" tabindex="1" ng-click="task.switchCut(task, $event)">Cut</a>
     </li>
     <li ng-if="!isIndicateWeight(task.model.weight)">
-        <a class="pointer" role="menuitem" tabindex="1" ng-click="task.switchLock(task, $event)">{{ task.model.lock === true && 'Unlock' || 'Lock' }}</a>
+        <a class="pointer" role="menuitem" tabindex="2" ng-click="task.switchLock(task, $event)">{{ task.model.lock === true && 'Unlock' || 'Lock' }}</a>
     </li>
     <li>
-        <a class="pointer" role="menuitem" tabindex="2" ng-click="task.editTask(task, $event)">Edit</a>
-    </li>
-    <li>
-        <a class="pointer" role="menuitem" tabindex="3" ng-click="task.createTask(task, $event)">Create</a>
+        <a class="pointer" role="menuitem" tabindex="3" ng-click="task.editTask(task, $event)">Edit</a>
     </li>
     <li>
         <a class="pointer" role="menuitem" tabindex="4" ng-click="task.moreInformation(task, $event)">More Information</a>

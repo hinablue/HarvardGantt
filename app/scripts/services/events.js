@@ -573,9 +573,9 @@ angular.module('HarvardApp')
                 task.editTask = function(task, evt) {
                     taskContextMenuEvent('edit', task, evt);
                 };
-                task.createTask = function(task, evt) {
-                    taskContextMenuEvent('create', task, evt);
-                };
+                // task.createTask = function(task, evt) {
+                //     taskContextMenuEvent('create', task, evt);
+                // };
                 // task.zoomIn = function(task, evt) {
                 //     taskContextMenuEvent('zoomIn', task, evt);
                 // };
