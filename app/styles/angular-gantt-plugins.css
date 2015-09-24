@@ -1,6 +1,6 @@
 .gantt-task-bounds {
-    height:125%;
-    top:-12.5%;
+    height: 125%;
+    top: -12.5%;
     position: absolute;
     z-index: 99;
     border: 1px dashed;
@@ -10,6 +10,7 @@
 .gantt-task-bounds-in {
     border-color: #2E4F2E;
 }
+
 .gantt-task-bounds-out {
     border-color: #FF6347;
 }
@@ -26,7 +27,8 @@
     margin: auto;
 }
 
-.gantt-task-group-left-main, .gantt-task-group-right-main {
+.gantt-task-group-left-main,
+.gantt-task-group-right-main {
     position: absolute;
 
     width: 12px;
@@ -46,7 +48,8 @@
     right: -6px;
 }
 
-.gantt-task-group-left-symbol, .gantt-task-group-right-symbol {
+.gantt-task-group-left-symbol,
+.gantt-task-group-right-symbol {
     position: absolute;
 
     width: 0;
@@ -71,9 +74,8 @@
 .gantt-task-overview {
     height: 40%;
     top: 40%;
-
     -webkit-filter: grayscale(0.6);
-            filter: grayscale(0.6);
+    filter: grayscale(0.6);
 }
 
 .gantt-task-overview .gantt-task-content {
@@ -84,21 +86,17 @@
     overflow: hidden;
 }
 
-.gantt-labels-header-row  {
-    box-sizing:border-box;
-
+.gantt-labels-header-row {
+    box-sizing: border-box;
     padding-left: 12px;
     padding-right: 12px;
-
     height: 2em;
     white-space: nowrap;
-    border-top: 1px solid #dddddd;
     overflow: hidden;
 }
 
 .gantt-labels-header-row span {
-    box-sizing:border-box;
-
+    box-sizing: border-box;
     display: inline-block;
     height: 2em;
     text-align: center;
@@ -121,13 +119,14 @@
 
 .gantt-task-moving, .gantt-task-resizing {
     z-index: 750 !important;
-
     opacity: 0.6;
     filter: alpha(opacity=60);
-
     -webkit-filter: grayscale(0.7);
+    filter: grayscale(0.7);
+}
 
-            filter: grayscale(0.7);
+.gantt-task-overlaps{
+    border: 2px solid #e00000;
 }
 
 .gantt-task-progress {
@@ -138,7 +137,26 @@
     border-radius: 2px;
 }
 
-.gantt-table-header-row span {
+.gantt-row-label.on-dragging {
+    background-color: #999999 !important;
+}
+
+.gantt-row-label.on-drag-hover {
+    border: 1px solid #999999;
+}
+
+.gantt-table-header {
+    overflow: hidden;
+    position: relative;
+}
+
+.gantt-table-header-row {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+.gantt-table-header-row span.gantt-label-text {
     font-weight: bold;
     white-space: nowrap;
     display: inline-block;
@@ -152,12 +170,8 @@ div.gantt-table-content {
 }
 
 .gantt-side-content-table > div.gantt-table-column {
-    float: left;
+    display: inline-block;
     overflow: hidden;
-}
-
-.gantt-side-content-table > div.gantt-table-column:last-child {
-    float: none;
 }
 
 .gantt-task-info {
@@ -177,10 +191,12 @@ div.gantt-table-content {
     white-space: nowrap;
 }
 
-.gantt-task-infoArrow:before, .gantt-task-infoArrowR:before {
+.gantt-task-infoArrow:before,
+.gantt-task-infoArrowR:before {
     position: absolute;
     top: 100%;
-    width: 0px; height: 0px;
+    width: 0px;
+    height: 0px;
     border-top: 8px solid rgba(0, 0, 0, 0.1);
     border-right: 8px solid transparent;
     border-left: 8px solid transparent;
@@ -195,10 +211,12 @@ div.gantt-table-content {
     right: 10px;
 }
 
-.gantt-task-infoArrow:after, .gantt-task-infoArrowR:after {
+.gantt-task-infoArrow:after,
+.gantt-task-infoArrowR:after {
     position: absolute;
     top: 100%;
-    width: 0px; height: 0px;
+    width: 0px;
+    height: 0px;
     border-top: 7px solid #ffffff;
     border-right: 7px solid transparent;
     border-left: 7px solid transparent;
@@ -225,11 +243,6 @@ div.gantt-table-content {
 .gantt-tree-body .gantt-row-label a.gantt-tree-handle-button {
     padding: 0;
     position: relative;
-    top: -0.50em;
-}
-
-.gantt-tree-body .gantt-row-label a.gantt-tree-handle-button.gantt-tree-expanded {
-    top: -0.40em;
 }
 
 .gantt-tree-body .gantt-row-label span.gantt-tree-handle {
@@ -237,24 +250,26 @@ div.gantt-table-content {
     position: relative;
 }
 
-.gantt-tree-body .gantt-row-label span.gantt-tree-text {
+.gantt-tree-body .gantt-row-label span.gantt-label-text {
     padding-left: 0;
 }
 
 .gantt-tree-header {
     overflow: hidden;
+    position: relative;
 }
 
 .gantt-tree-body {
     overflow: hidden;
 }
 
-.gantt-tree-header-row-last {
-    border-top: 1px solid #dddddd;
-    border-bottom: 1px solid #dddddd;
+.gantt-tree-header-row {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
 }
 
-.gantt-tree-header-row span {
+.gantt-tree-header-row span.gantt-label-text {
     display: inline-block;
     padding-top: 0.5em;
     font-weight: bold;
@@ -273,4 +288,8 @@ div.gantt-table-content {
     font-weight: inherit;
     min-height: inherit;
     line-height: inherit;
+}
+
+.gantt-side-content-tree .gantt-tree-handle-button {
+    pointer-events: auto;
 }

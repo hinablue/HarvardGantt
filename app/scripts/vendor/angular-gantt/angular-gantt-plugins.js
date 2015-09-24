@@ -1557,33 +1557,6 @@ Github: https://github.com/angular-gantt/angular-gantt.git
 
 (function(){
     'use strict';
-    angular.module('gantt').directive('ganttRowHeader', ['GanttDirectiveBuilder', function(Builder) {
-        var builder = new Builder('ganttRowHeader', 'plugins/labels/rowHeader.tmpl.html');
-        return builder.build();
-    }]);
-}());
-
-
-(function(){
-    'use strict';
-    angular.module('gantt').directive('ganttRowLabel', ['GanttDirectiveBuilder', function(Builder) {
-        var builder = new Builder('ganttRowLabel', 'plugins/labels/rowLabel.tmpl.html');
-        return builder.build();
-    }]);
-}());
-
-
-(function(){
-    'use strict';
-    angular.module('gantt').directive('ganttRowLabels', ['GanttDirectiveBuilder', function(Builder) {
-        var builder = new Builder('ganttRowLabels', 'plugins/labels/rowLabels.tmpl.html');
-        return builder.build();
-    }]);
-}());
-
-
-(function(){
-    'use strict';
     angular.module('gantt.labels').directive('ganttSideContentLabels', ['GanttDirectiveBuilder', function(Builder) {
         var builder = new Builder('ganttSideContentLabels', 'plugins/labels/sideContentLabels.tmpl.html');
         return builder.build();
@@ -2378,26 +2351,6 @@ angular.module('gantt.labels.templates', []).run(['$templateCache', function($te
         '            <div class="gantt-row-height" ng-class="{\'gantt-labels-header-row\': $last, \'gantt-labels-header-row-last\': $last}"><span>{{$last ? pluginScope.header : ""}}</span></div>\n' +
         '        </div>\n' +
         '    </div>\n' +
-        '</div>\n' +
-        '');
-    $templateCache.put('plugins/labels/rowHeader.tmpl.html',
-        '<div ng-show="gantt.columnsManager.columns.length > 0 && gantt.columnsManager.headers.length > 0">\n' +
-        '    <div ng-repeat="header in gantt.columnsManager.headers">\n' +
-        '        <div class="gantt-row-height" ng-class="{\'gantt-labels-header-row\': $last, \'gantt-labels-header-row-last\': $last}"><span>{{$last ? pluginScope.header : ""}}</span></div>\n' +
-        '    </div>\n' +
-        '</div>\n' +
-        '');
-    $templateCache.put('plugins/labels/rowLabel.tmpl.html',
-        '<div class="gantt-row-label gantt-row-height"\n' +
-        '     ng-class-odd="\'gantt-background-row\'"\n' +
-        '     ng-class-even="\'gantt-background-row-alt\'"\n' +
-        '     ng-class="row.model.classes" ng-style="::{\'background-color\': row.model.color, \'height\': row.model.height}">\n' +
-        '    <span>{{row.model.name}}</span>\n' +
-        '</div>\n' +
-        '');
-    $templateCache.put('plugins/labels/rowLabels.tmpl.html',
-        '<div ng-repeat="row in gantt.rowsManager.visibleRows track by row.model.id">\n' +
-        '    <gantt-row-label></gantt-row-label>\n' +
         '</div>\n' +
         '');
     $templateCache.put('plugins/labels/sideContentLabels.tmpl.html',
