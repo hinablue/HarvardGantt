@@ -11,7 +11,7 @@ angular.module('HarvardApp')
     .service('Actions', ['$document', '$compile', '$http', '$log', '$timeout', '$modal', '$alert', '$sce', '$templateCache', 'ganttUtils', 'GanttObjectModel', 'Events', 'Coloured', 'Harvard', 'Matt', 'TaskEditor', 'moment',
     function Actions($document, $compile, $http, $log, $timeout, $modal, $alert, $sce, $templateCache, utils, ObjectModel, Events, Coloured, Harvard, Matt, TaskEditor, moment) {
 
-        var scope, _self = this, _ganttAlertBox, saveGanttModal, objectModel, _jumpTrigger = false;
+        var scope, _self = this, objectModel, _jumpTrigger = false;
 
         var canAutoWidth = function(scale) {
             // Always disable auto width
@@ -329,7 +329,7 @@ angular.module('HarvardApp')
         var saveGanttData = function(type) {
             var mattCallback = Matt.saveOrCalcGanttData(), machine = {}, machines = [], _taskModel;
 
-            saveGanttModal = $modal({
+            scope._saveGanttModal = $modal({
                 scope: scope,
                 title: 'Processing',
                 content: 'Waiting for server response...',
@@ -339,7 +339,7 @@ angular.module('HarvardApp')
                 placement: 'center',
                 show: false
             });
-            saveGanttModal.$promise.then(saveGanttModal.show);
+            scope._saveGanttModal.$promise.then(scope._saveGanttModal.show);
             $timeout(function() {
                 for (var i = 0, m = scope.data, l = m.length; i < l; i++) {
                     if (m[i].tasks.length > 0) {
@@ -432,7 +432,7 @@ angular.module('HarvardApp')
                         save: type === 'save' ? true : false
                     }
                 }).then(function(response) {
-                    saveGanttModal.hide();
+                    scope._saveGanttModal.hide();
                     $log.info('[INFO] Success response.');
                     var result = mattCallback.success(response);
                     var content = result.messages.content.replace(/<focusTask>([^<]*)<\/focusTask>/gim, '<a class="highlight-task" ng-click="alertJumpToTask(\'$1\');">$1</a>');
@@ -457,10 +457,10 @@ angular.module('HarvardApp')
                             readyToGo(angular.copy(result.data));
                         });
 
-                        if (_ganttAlertBox !== undefined) {
-                            _ganttAlertBox.hide();
+                        if (scope._ganttAlertBox !== undefined) {
+                            scope._ganttAlertBox.hide();
                         }
-                        _ganttAlertBox = $alert({
+                        scope._ganttAlertBox = $alert({
                             scope: scope,
                             title: result.messages.title,
                             content: content,
@@ -474,11 +474,11 @@ angular.module('HarvardApp')
                             show: true
                         });
                     } else {
-                        saveGanttModal.hide();
-                        if (_ganttAlertBox !== undefined) {
-                            _ganttAlertBox.hide();
+                        scope._saveGanttModal.hide();
+                        if (scope._ganttAlertBox !== undefined) {
+                            scope._ganttAlertBox.hide();
                         }
-                        _ganttAlertBox = $alert({
+                        scope._ganttAlertBox = $alert({
                             scope: scope,
                             title: 'ERROR! '+result.messages.title,
                             content: content,
@@ -493,7 +493,7 @@ angular.module('HarvardApp')
                         });
                     }
                 }, function(response) {
-                    saveGanttModal.hide();
+                    scope._saveGanttModal.hide();
                     $log.info('[INFO] Error response.');
                     var result = mattCallback.error(response);
                     var content = result.messages.content.replace(/<focusTask>([^<]*)<\/focusTask>/gim, '<a class="highlight-task" ng-click="alertJumpToTask(\'$1\')">$1</a>');
@@ -511,10 +511,10 @@ angular.module('HarvardApp')
                         scope.configuration.lastCalculateTime = moment(result.lastCalculateTime, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
                     }
 
-                    if (_ganttAlertBox !== undefined) {
-                        _ganttAlertBox.hide();
+                    if (scope._ganttAlertBox !== undefined) {
+                        scope._ganttAlertBox.hide();
                     }
-                    _ganttAlertBox = $alert({
+                    scope._ganttAlertBox = $alert({
                         scope: scope,
                         title: 'ERROR! '+result.messages.title,
                         content: content,
@@ -540,10 +540,10 @@ angular.module('HarvardApp')
             var obj, task, i, j, l, m, q, t, p;
 
             if (originalData.machines === undefined || originalData.machines.length === 0) {
-                if (saveGanttModal !== undefined) {
-                    saveGanttModal.hide();
+                if (scope._saveGanttModal !== undefined) {
+                    scope._saveGanttModal.hide();
                 }
-                _ganttAlertBox = $alert({
+                scope._ganttAlertBox = $alert({
                     scope: scope,
                     title: 'ERROR!',
                     content: 'The structure of gantt JSON are wrong, cannot render the GUI.',
@@ -757,8 +757,8 @@ angular.module('HarvardApp')
             scope.options.filterRow = 'page-1';
 
             $timeout(function() {
-                if (saveGanttModal !== undefined) {
-                    saveGanttModal.hide();
+                if (scope._saveGanttModal !== undefined) {
+                    scope._saveGanttModal.hide();
                 }
                 scope.$digest();
             }, 1000);

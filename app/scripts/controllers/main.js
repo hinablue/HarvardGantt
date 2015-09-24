@@ -10,7 +10,7 @@
 angular.module('HarvardApp')
     .controller('MainCtrl', ['$scope', '$window', '$document', '$compile', '$element', '$http', '$q', '$sce', '$templateCache', '$timeout', '$log', '$modal', '$alert', '$dropdown', 'ganttUtils', 'moment', 'GanttObjectModel', 'Events', 'Coloured', 'Harvard', 'Matt', 'TaskEditor', 'Actions',
     function($scope, $window, $document, $compile, $element, $http, $q, $sce, $templateCache, $timeout, $log, $modal, $alert, $dropdown, utils, moment, ObjectModel, Events, Coloured, Harvard, Matt, TaskEditor, Actions) {
-        var saveGanttModal, _ganttAlertBox, _jumpTrigger = false;
+        var _jumpTrigger = false;
 
         function fetchTemplate(template) {
             if($templateCache.get(template)) {
@@ -68,6 +68,9 @@ angular.module('HarvardApp')
         $scope.jumpToDate = Actions.jumpToDate;
         $scope.alertJumpToTask = Actions.alertJumpToTask;
         $scope.saveGanttData = Actions.saveGanttData;
+
+        $scope._ganttAlertBox = undefined;
+        $scope._saveGanttModal = undefined;
 
         $scope.$watch('departmentMenuDefault', function(newValue, oldValue) {
             $scope.subDepartmentMenu = [{ name: 'Select', order: 0 }];
@@ -313,7 +316,7 @@ angular.module('HarvardApp')
         $scope.load = function() {
             var mattCallback = Matt.getGanttData();
 
-            saveGanttModal = $modal({
+            $scope._saveGanttModal = $modal({
                 scope: $scope,
                 title: 'Processing',
                 content: 'Prepare your gantt data, please wait one moment...',
@@ -323,7 +326,7 @@ angular.module('HarvardApp')
                 placement: 'center',
                 show: false
             });
-            saveGanttModal.$promise.then(saveGanttModal.show);
+            $scope._saveGanttModal.$promise.then($scope._saveGanttModal.show);
 
             $log.info('[Event] Loading data.');
             $http({
@@ -343,15 +346,15 @@ angular.module('HarvardApp')
                 if (result.state === 'ok' && result.data.machines !== undefined && result.data.machines.length > 0) {
                     var promise = $scope.clear();
                     promise.then(function() {
-                        saveGanttModal.hide();
+                        $scope._saveGanttModal.hide();
                         $log.info('[INFO] Clear and readyToGo.');
                     	Actions.readyToGo(angular.copy(result.data));
                     });
 
-                    if (_ganttAlertBox !== undefined) {
-                        _ganttAlertBox.hide();
+                    if ($scope._ganttAlertBox !== undefined) {
+                        $scope._ganttAlertBox.hide();
                     }
-                    _ganttAlertBox = $alert({
+                    $scope._ganttAlertBox = $alert({
                         scope: $scope,
                         title: result.messages.title+'<br>',
                         content: content,
@@ -365,10 +368,10 @@ angular.module('HarvardApp')
                         show: true
                     });
                 } else {
-                    if (_ganttAlertBox !== undefined) {
-                        _ganttAlertBox.hide();
+                    if ($scope._ganttAlertBox !== undefined) {
+                        $scope._ganttAlertBox.hide();
                     }
-                    _ganttAlertBox = $alert({
+                    $scope._ganttAlertBox = $alert({
                         scope: $scope,
                         title: 'ERROR! '+result.messages.title+'<br>',
                         content: content,
@@ -390,10 +393,10 @@ angular.module('HarvardApp')
                     $scope.options.readOnly = true;
                 }
 
-                if (_ganttAlertBox !== undefined) {
-                    _ganttAlertBox.hide();
+                if ($scope._ganttAlertBox !== undefined) {
+                    $scope._ganttAlertBox.hide();
                 }
-                _ganttAlertBox = $alert({
+                $scope._ganttAlertBox = $alert({
                     scope: $scope,
                     title: result.messages.title+'<br>',
                     content: content,
@@ -408,7 +411,7 @@ angular.module('HarvardApp')
                 });
 
                 Harvard.getGanttData().then(function(response) {
-                    saveGanttModal.hide();
+                    $scope._saveGanttModal.hide();
                     $log.info('[TEST] Original Data', response);
                     Actions.readyToGo(response.data);
                 });
