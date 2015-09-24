@@ -67,6 +67,7 @@ angular.module('HarvardApp')
         $scope.paginationFilter = Actions.paginationFilter;
         $scope.jumpToDate = Actions.jumpToDate;
         $scope.alertJumpToTask = Actions.alertJumpToTask;
+        $scope.saveGanttData = Actions.saveGanttData;
 
         $scope.$watch('departmentMenuDefault', function(newValue, oldValue) {
             $scope.subDepartmentMenu = [{ name: 'Select', order: 0 }];

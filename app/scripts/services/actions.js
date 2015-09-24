@@ -11,7 +11,7 @@ angular.module('HarvardApp')
     .service('Actions', ['$document', '$compile', '$http', '$log', '$timeout', '$modal', '$alert', '$sce', '$templateCache', 'ganttUtils', 'GanttObjectModel', 'Events', 'Coloured', 'Harvard', 'Matt', 'TaskEditor', 'moment',
     function Actions($document, $compile, $http, $log, $timeout, $modal, $alert, $sce, $templateCache, utils, ObjectModel, Events, Coloured, Harvard, Matt, TaskEditor, moment) {
 
-        var scope, _self = this, saveGanttModal, objectModel, _jumpTrigger = false;
+        var scope, _self = this, _ganttAlertBox, saveGanttModal, objectModel, _jumpTrigger = false;
 
         var canAutoWidth = function(scale) {
             // Always disable auto width
@@ -129,7 +129,6 @@ angular.module('HarvardApp')
             scope.editTask = {};
         };
         var checkTaskData = function() {
-            console.log(scope.editTask);
             if (scope.editTask !== undefined) {
                 var i, k, l;
                 // Initialize the datetime with moment.
@@ -329,82 +328,6 @@ angular.module('HarvardApp')
         // Save or Calculate buttons
         var saveGanttData = function(type) {
             var mattCallback = Matt.saveOrCalcGanttData(), machine = {}, machines = [], _taskModel;
-            for (var i = 0, m = scope.data, l = m.length; i < l; i++) {
-                if (m[i].tasks.length > 0) {
-                    machine = {
-                        machine: angular.copy({
-                            id: m[i].id,
-                            settingsMachine: m[i].settingsMachine,
-                            factoryOperation: m[i].factoryOperation,
-                            title: m[i].title.join(scope.configuration.tooltipSeparator),
-                            currentTimeWorks: m[i].currentTimeWorks,
-                            online: m[i].online
-                        }),
-                        operationQueue: []
-                    };
-                    for (var j = 0, t = m[i].tasks, q = t.length; j < q; j++) {
-                        _taskModel = angular.copy(scope.tasksMap['t'+t[j].id].model);
-
-                        /**
-                         * Task Modify Hint.
-                         * 這裡是必須要傳回 Server 的 Task 資料
-                         *
-                         * 例如：
-                         *
-                         * newPriority = _task.model.newPriority;
-                         */
-                        machine.operationQueue.push({
-                            id: _taskModel.id,
-                            oid: _taskModel.oid,
-                            part: _taskModel.part,
-                            operationCode: _taskModel.operationCode,
-                            priority: _taskModel.priority,
-                            job: _taskModel.job,
-                            process: _taskModel.process,
-                            previousOperation: _taskModel.previousOperation,
-                            nextOperations: _taskModel.nextOperations,
-                            runOnMachineId: _taskModel.runOnMachineId,
-                            actualRunOnMachineId: _taskModel.actualRunOnMachineId,
-                            quantity: parseInt(_taskModel.quantity, 10),
-                            actualQuantity: parseInt(_taskModel.actualQuantity, 10),
-                            processingType: _taskModel.processingType,
-                            factoryOperation: _taskModel.factoryOperation,
-                            pin: _taskModel.pin,
-                            capacity: parseInt(_taskModel.capacity, 10),
-                            s2sMins: parseInt(_taskModel.s2sMins, 10),
-                            up: parseInt(_taskModel.up, 10),
-                            sheetUp: parseInt(_taskModel.sheetUp, 10),
-                            face: _taskModel.face,
-                            lock: _taskModel.lock,
-                            pendingMinutes: _taskModel.pendingMinutes,
-                            expectedStartTime: _taskModel.expectedStartTime.utc().format('YYYY-MM-DDTHH:mm:ss'),
-                            expectedSetupFinishTime: _taskModel.expectedSetupFinishTime.utc().format('YYYY-MM-DDTHH:mm:ss'),
-                            expectedFinishTime: _taskModel.expectedFinishTime.utc().format('YYYY-MM-DDTHH:mm:ss'),
-                            actualStartTime: _taskModel.actualStartTime !== null ? _taskModel.actualStartTime.utc().format('YYYY-MM-DDTHH:mm:ss') : null,
-                            actualSetupFinishTime: _taskModel.actualSetupFinishTime !== null ? _taskModel.actualSetupFinishTime.utc().format('YYYY-MM-DDTHH:mm:ss') : null,
-                            actualFinishTime: _taskModel.actualFinishTime !== null ? _taskModel.actualFinishTime.utc().format('YYYY-MM-DDTHH:mm:ss') : null,
-                            finished: _taskModel.finished,
-                            inProcessing: _taskModel.inProcessing,
-                            delete: _taskModel.delete,
-                            parallelCode: _taskModel.parallelCode,
-                            expectedMoldId: _taskModel.expectedMoldId,
-                            tooltip: _taskModel.tooltip.join(scope.configuration.tooltipSeparator),
-                            color: _taskModel.color,
-                            timeclockEmployeeId: parseInt(_taskModel.timeclockEmployeeId, 10),
-                            rounds: parseInt(_taskModel.rounds, 10),
-                            taskGroup: _taskModel.taskGroup,
-                            taskGroupIdsVo: _taskModel.taskGroupIdsVo,
-                            machineShiftLabel: _taskModel.machineShiftLabel,
-                            new: _taskModel.new,
-                            weight: _taskModel.weight,
-                            cut: _taskModel.cut,
-                            cutQuantity: _taskModel.cutQuantity
-
-                        });
-                    }
-                    machines.push(machine);
-                }
-            }
 
             saveGanttModal = $modal({
                 scope: scope,
@@ -417,68 +340,176 @@ angular.module('HarvardApp')
                 show: false
             });
             saveGanttModal.$promise.then(saveGanttModal.show);
+            $timeout(function() {
+                for (var i = 0, m = scope.data, l = m.length; i < l; i++) {
+                    if (m[i].tasks.length > 0) {
+                        machine = {
+                            machine: angular.copy({
+                                id: m[i].id,
+                                settingsMachine: m[i].settingsMachine,
+                                factoryOperation: m[i].factoryOperation,
+                                title: m[i].title.join(scope.configuration.tooltipSeparator),
+                                currentTimeWorks: m[i].currentTimeWorks,
+                                online: m[i].online
+                            }),
+                            operationQueue: []
+                        };
+                        for (var j = 0, t = m[i].tasks, q = t.length; j < q; j++) {
+                            _taskModel = angular.copy(scope.tasksMap['t'+t[j].id].model);
 
-            $http({
-                method: 'post',
-                responseType: 'json',
-                url: scope.configuration.serverLocation + scope.configuration.confirmGanttUrl,
-                timeout: scope.configuration.saveGanttDataTimeout * 1000,
-                data: machines,
-                params: {
-                    calculate: true,
-                    calculateFrom: moment.utc(scope.api.gantt.columnsManager.getFirstColumn().date.format(), 'YYYY-MM-DDTHH:mm:ss').format('YYYY-MM-DDTHH:mm:ss'),
-                    calculateWeeks: scope.configuration.calculateWeeks,
-                    lastCalculateTime: moment.utc(scope.options.lastCalculateTime).format('YYYY-MM-DDTHH:mm:ss'),
-                    solveStrategy: scope.options.solveStrategy,
-                    currentTime: moment.utc(scope.options.currentDateValue).format('YYYY-MM-DDTHH:mm:ss'),
-                    save: type === 'save' ? true : false
-                }
-            }).then(function(response) {
-                // saveGanttModal.hide();
-                $log.info('[INFO] Success response.');
-                var result = mattCallback.success(response);
-                var content = result.messages.content.replace(/<focusTask>([^<]*)<\/focusTask>/gim, '<a class="highlight-task" ng-click="alertJumpToTask(\'$1\');">$1</a>');
-
-                if (result.readonly !== undefined && (result.readonly === true || result.readonly === 'true')) {
-                    scope.options.readOnly = true;
-                }
-                if (result.currentTime !== undefined && result.currentTime !== '') {
-                    scope.options.currentDateValue = moment(result.currentTime, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
-                }
-                if (result.calculateWeeks !== undefined && result.calculateWeeks !== '') {
-                    scope.configuration.calculateWeeks = parseInt(result.calculateWeeks);
-                }
-                if (result.lastCalculateTime !== undefined && result.lastCalculateTime !== '') {
-                    scope.configuration.lastCalculateTime = moment(result.lastCalculateTime, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
-                }
-
-                if (result.state === 'ok' && result.data.machines !== undefined && result.data.machines.length > 0) {
-                    var promise = scope.clear();
-                    promise.then(function() {
-                        $log.info('[INFO] Clear and readyToGo.');
-                        readyToGo(angular.copy(result.data));
-                    });
-
-
-                    if (_ganttAlertBox !== undefined) {
-                        _ganttAlertBox.hide();
+                            /**
+                             * Task Modify Hint.
+                             * 這裡是必須要傳回 Server 的 Task 資料
+                             *
+                             * 例如：
+                             *
+                             * newPriority = _task.model.newPriority;
+                             */
+                            machine.operationQueue.push({
+                                id: _taskModel.id,
+                                oid: _taskModel.oid,
+                                part: _taskModel.part,
+                                operationCode: _taskModel.operationCode,
+                                priority: _taskModel.priority,
+                                job: _taskModel.job,
+                                process: _taskModel.process,
+                                previousOperation: _taskModel.previousOperation,
+                                nextOperations: _taskModel.nextOperations,
+                                runOnMachineId: _taskModel.runOnMachineId,
+                                actualRunOnMachineId: _taskModel.actualRunOnMachineId,
+                                quantity: parseInt(_taskModel.quantity, 10),
+                                actualQuantity: parseInt(_taskModel.actualQuantity, 10),
+                                processingType: _taskModel.processingType,
+                                factoryOperation: _taskModel.factoryOperation,
+                                pin: _taskModel.pin,
+                                capacity: parseInt(_taskModel.capacity, 10),
+                                s2sMins: parseInt(_taskModel.s2sMins, 10),
+                                up: parseInt(_taskModel.up, 10),
+                                sheetUp: parseInt(_taskModel.sheetUp, 10),
+                                face: _taskModel.face,
+                                lock: _taskModel.lock,
+                                pendingMinutes: _taskModel.pendingMinutes,
+                                expectedStartTime: _taskModel.expectedStartTime.utc().format('YYYY-MM-DDTHH:mm:ss'),
+                                expectedSetupFinishTime: _taskModel.expectedSetupFinishTime.utc().format('YYYY-MM-DDTHH:mm:ss'),
+                                expectedFinishTime: _taskModel.expectedFinishTime.utc().format('YYYY-MM-DDTHH:mm:ss'),
+                                actualStartTime: _taskModel.actualStartTime !== null ? _taskModel.actualStartTime.utc().format('YYYY-MM-DDTHH:mm:ss') : null,
+                                actualSetupFinishTime: _taskModel.actualSetupFinishTime !== null ? _taskModel.actualSetupFinishTime.utc().format('YYYY-MM-DDTHH:mm:ss') : null,
+                                actualFinishTime: _taskModel.actualFinishTime !== null ? _taskModel.actualFinishTime.utc().format('YYYY-MM-DDTHH:mm:ss') : null,
+                                finished: _taskModel.finished,
+                                inProcessing: _taskModel.inProcessing,
+                                delete: _taskModel.delete,
+                                parallelCode: _taskModel.parallelCode,
+                                expectedMoldId: _taskModel.expectedMoldId,
+                                tooltip: _taskModel.tooltip.join(scope.configuration.tooltipSeparator),
+                                color: _taskModel.color,
+                                timeclockEmployeeId: parseInt(_taskModel.timeclockEmployeeId, 10),
+                                rounds: parseInt(_taskModel.rounds, 10),
+                                taskGroup: _taskModel.taskGroup,
+                                taskGroupIdsVo: _taskModel.taskGroupIdsVo,
+                                machineShiftLabel: _taskModel.machineShiftLabel,
+                                new: _taskModel.new,
+                                weight: _taskModel.weight,
+                                cut: _taskModel.cut,
+                                cutQuantity: _taskModel.cutQuantity
+                            });
+                        }
+                        machines.push(machine);
                     }
-                    _ganttAlertBox = $alert({
-                        scope: scope,
-                        title: result.messages.title,
-                        content: content,
-                        templateUrl: '../app/views/alert.tpl.html',
-                        placement: 'top',
-                        type: 'info',
-                        duration: scope.configuration.alertTimeout,
-                        dismissable: true,
-                        html: true,
-                        container: '#gantt-chart-alert',
-                        show: true
-                    });
-                } else {
-
+                }
+                $http({
+                    method: 'post',
+                    responseType: 'json',
+                    url: scope.configuration.serverLocation + scope.configuration.confirmGanttUrl,
+                    timeout: scope.configuration.saveGanttDataTimeout * 1000,
+                    data: machines,
+                    params: {
+                        calculate: true,
+                        calculateFrom: moment.utc(scope.api.gantt.columnsManager.getFirstColumn().date.format(), 'YYYY-MM-DDTHH:mm:ss').format('YYYY-MM-DDTHH:mm:ss'),
+                        calculateWeeks: scope.configuration.calculateWeeks,
+                        lastCalculateTime: moment.utc(scope.options.lastCalculateTime).format('YYYY-MM-DDTHH:mm:ss'),
+                        solveStrategy: scope.options.solveStrategy,
+                        currentTime: moment.utc(scope.options.currentDateValue).format('YYYY-MM-DDTHH:mm:ss'),
+                        save: type === 'save' ? true : false
+                    }
+                }).then(function(response) {
                     saveGanttModal.hide();
+                    $log.info('[INFO] Success response.');
+                    var result = mattCallback.success(response);
+                    var content = result.messages.content.replace(/<focusTask>([^<]*)<\/focusTask>/gim, '<a class="highlight-task" ng-click="alertJumpToTask(\'$1\');">$1</a>');
+
+                    if (result.readonly !== undefined && (result.readonly === true || result.readonly === 'true')) {
+                        scope.options.readOnly = true;
+                    }
+                    if (result.currentTime !== undefined && result.currentTime !== '') {
+                        scope.options.currentDateValue = moment(result.currentTime, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
+                    }
+                    if (result.calculateWeeks !== undefined && result.calculateWeeks !== '') {
+                        scope.configuration.calculateWeeks = parseInt(result.calculateWeeks);
+                    }
+                    if (result.lastCalculateTime !== undefined && result.lastCalculateTime !== '') {
+                        scope.configuration.lastCalculateTime = moment(result.lastCalculateTime, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
+                    }
+
+                    if (result.state === 'ok' && result.data.machines !== undefined && result.data.machines.length > 0) {
+                        var promise = scope.clear();
+                        promise.then(function() {
+                            $log.info('[INFO] Clear and readyToGo.');
+                            readyToGo(angular.copy(result.data));
+                        });
+
+                        if (_ganttAlertBox !== undefined) {
+                            _ganttAlertBox.hide();
+                        }
+                        _ganttAlertBox = $alert({
+                            scope: scope,
+                            title: result.messages.title,
+                            content: content,
+                            templateUrl: '../app/views/alert.tpl.html',
+                            placement: 'top',
+                            type: 'info',
+                            duration: scope.configuration.alertTimeout,
+                            dismissable: true,
+                            html: true,
+                            container: '#gantt-chart-alert',
+                            show: true
+                        });
+                    } else {
+                        saveGanttModal.hide();
+                        if (_ganttAlertBox !== undefined) {
+                            _ganttAlertBox.hide();
+                        }
+                        _ganttAlertBox = $alert({
+                            scope: scope,
+                            title: 'ERROR! '+result.messages.title,
+                            content: content,
+                            templateUrl: '../app/views/alert.tpl.html',
+                            placement: 'top',
+                            type: 'danger',
+                            duration: scope.configuration.alertTimeout,
+                            dismissable: true,
+                            html: true,
+                            container: '#gantt-chart-alert',
+                            show: true
+                        });
+                    }
+                }, function(response) {
+                    saveGanttModal.hide();
+                    $log.info('[INFO] Error response.');
+                    var result = mattCallback.error(response);
+                    var content = result.messages.content.replace(/<focusTask>([^<]*)<\/focusTask>/gim, '<a class="highlight-task" ng-click="alertJumpToTask(\'$1\')">$1</a>');
+
+                    if (result.readonly !== undefined && (result.readonly === true || result.readonly === 'true')) {
+                        scope.options.readOnly = true;
+                    }
+                    if (result.currentTime !== undefined && result.currentTime !== '') {
+                        scope.options.currentDateValue = moment(result.currentTime, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
+                    }
+                    if (result.calculateWeeks !== undefined && result.calculateWeeks !== '') {
+                        scope.configuration.calculateWeeks = parseInt(result.calculateWeeks);
+                    }
+                    if (result.lastCalculateTime !== undefined && result.lastCalculateTime !== '') {
+                        scope.configuration.lastCalculateTime = moment(result.lastCalculateTime, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
+                    }
 
                     if (_ganttAlertBox !== undefined) {
                         _ganttAlertBox.hide();
@@ -489,53 +520,18 @@ angular.module('HarvardApp')
                         content: content,
                         templateUrl: '../app/views/alert.tpl.html',
                         placement: 'top',
-                        type: 'danger',
+                        type: 'info',
                         duration: scope.configuration.alertTimeout,
                         dismissable: true,
                         html: true,
                         container: '#gantt-chart-alert',
                         show: true
                     });
-                }
-            }, function(response) {
-                saveGanttModal.hide();
-                $log.info('[INFO] Error response.');
-                var result = mattCallback.error(response);
-                var content = result.messages.content.replace(/<focusTask>([^<]*)<\/focusTask>/gim, '<a class="highlight-task" ng-click="alertJumpToTask(\'$1\')">$1</a>');
 
-                if (result.readonly !== undefined && (result.readonly === true || result.readonly === 'true')) {
-                    scope.options.readOnly = true;
-                }
-                if (result.currentTime !== undefined && result.currentTime !== '') {
-                    scope.options.currentDateValue = moment(result.currentTime, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
-                }
-                if (result.calculateWeeks !== undefined && result.calculateWeeks !== '') {
-                    scope.configuration.calculateWeeks = parseInt(result.calculateWeeks);
-                }
-                if (result.lastCalculateTime !== undefined && result.lastCalculateTime !== '') {
-                    scope.configuration.lastCalculateTime = moment(result.lastCalculateTime, 'YYYY-MM-DDTHH:mm:ss.SSSZ');
-                }
-
-                if (_ganttAlertBox !== undefined) {
-                    _ganttAlertBox.hide();
-                }
-                _ganttAlertBox = $alert({
-                    scope: scope,
-                    title: 'ERROR! '+result.messages.title,
-                    content: content,
-                    templateUrl: '../app/views/alert.tpl.html',
-                    placement: 'top',
-                    type: 'info',
-                    duration: scope.configuration.alertTimeout,
-                    dismissable: true,
-                    html: true,
-                    container: '#gantt-chart-alert',
-                    show: true
-                });
-
-                Harvard.getGanttDataCalc().then(function(response) {
-                    $log.info('[TEST] Original Calc Data', response);
-                    readyToGo(response.data);
+                    Harvard.getGanttDataCalc().then(function(response) {
+                        $log.info('[TEST] Original Calc Data', response);
+                        readyToGo(response.data);
+                    });
                 });
             });
         };
