@@ -283,6 +283,7 @@ angular.module('HarvardApp')
                         task.gangLinkSide = '';
                         task.cut = false;
                         task.cutQuantity = 0;
+                        task.dataOutOfDate = false;
                     } else {
                         task.taskGroupIdsVo = scope.tasksMap['t' + scope.editTask.id].model.taskGroupIdsVo;
                         task.taskGroup = scope.tasksMap['t' + scope.editTask.id].model.taskGroup;
@@ -290,6 +291,7 @@ angular.module('HarvardApp')
                         task.gangLinkSide = scope.tasksMap['t' + scope.editTask.id].model.gangLinkSide;
                         task.cut = scope.tasksMap['t' + scope.editTask.id].model.cut;
                         task.cutQuantity = scope.tasksMap['t' + scope.editTask.id].model.cutQuantity;
+                        task.dataOutOfDate = scope.tasksMap['t' + scope.editTask.id].model.dataOutOfDate;
                     }
 
                     scope.editTask.check = true;
@@ -410,7 +412,8 @@ angular.module('HarvardApp')
                                 new: _taskModel.new,
                                 weight: _taskModel.weight,
                                 cut: _taskModel.cut,
-                                cutQuantity: _taskModel.cutQuantity
+                                cutQuantity: _taskModel.cutQuantity,
+                                dataOutOfDate: _taskModel.dataOutOfDate
                             });
                         }
                         machines.push(machine);
@@ -672,6 +675,7 @@ angular.module('HarvardApp')
                             gangLinkCode: t[j].gangLinkCode,
                             gangLinkSide: t[j].gangLinkSide,
                             cutQuantity: t[j].cutQuantity,
+                            dataOutOfDate: t[j].dataOutOfDate
                         };
 
                         // Prepare processesMap
