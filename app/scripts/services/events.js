@@ -592,7 +592,7 @@ angular.module('HarvardApp')
                     $modal({
                         scope: scope,
                         title: 'More Information',
-                        content: '<iframe src="'+_url+'" style="width:100%;height:'+(angular.element(window).innerHeight * 0.75)+'px;border:0 none;"></iframe>',
+                        content: '<iframe src="'+_url+'" style="width:100%;height:'+(angular.element(window)[0].innerHeight * 0.75)+'px;border:0 none;"></iframe>',
                         templateUrl: '../app/views/moreInformation.tpl.html',
                         backdrop: false,
                         placement: 'center',
