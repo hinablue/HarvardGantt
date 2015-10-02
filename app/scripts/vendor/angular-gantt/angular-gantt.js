@@ -5177,7 +5177,7 @@ angular.module('gantt.templates', []).run(['$templateCache', function($templateC
         '            <gantt-body-rows>\n' +
         '                <gantt-timespan ng-repeat="timespan in gantt.timespansManager.timespans track by timespan.model.id"></gantt-timespan>\n' +
         '                <gantt-row ng-repeat="row in gantt.rowsManager.visibleRows track by row.model.id">\n' +
-        '                    <div context-menu class="gantt-context-menu gantt-row" data-target="rowmenu-{{row.model.id}}"></div>\n' +
+        '                    <div context-menu class="gantt-context-menu" data-target="rowmenu-{{row.model.id}}"></div>\n' +
         '                    <div class="dropdown position-fixed" id="rowmenu-{{row.model.id}}" ng-include="row.model.rowContextMenu"></div>\n' +
         '                    <div ng-repeat="task in row.visibleTasks track by task.model.id">\n' +
         '                        <gantt-task></gantt-task>\n' +
