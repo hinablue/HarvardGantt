@@ -27,7 +27,7 @@
                             <span class="column pin" ng-if="(false === readOnly(task.model) && false === task.model.lock && false === isIndicateWeight(task.model.weight))">
                                 <a class="btn {{ task.model.pin === true && 'btn-warning' || 'btn-default' }} pin" ng-model="task.model.pin" bs-checkbox><i class="fa {{ task.model.pin === true && 'fa-check' || 'fa-close' }}"></i></a>
                             </span>
-                            <span class="column weight"><input type="number" class="form-control" value="{{task.model.weight}}" style="width:90%;" ng-model="task.model.weight" ng-disabled="(readOnly(task.model) || task.model.lock === true || task.model.pin === true)"></span>
+                            <span class="column weight"><input type="text" onkeydown="return event.keyCode>=8&&event.keyCode<=9||event.keyCode>=35&&event.keyCode<=40||event.keyCode>=48&&event.keyCode<=57||event.keyCode>=96&&event.keyCode<=105||event.keyCode==110||event.keyCode==46||event.keyCode==190" class="form-control" value="{{task.model.weight}}" style="width:90%;" ng-model="task.model.weight" ng-disabled="(readOnly(task.model) || task.model.lock === true || task.model.pin === true)"></span>
                             <span class="column data" ng-repeat="data in task.model.tooltip track by $index">
                                 <span ng-bind-html="renderHtml(data)"></span>
                             </span>

@@ -187,7 +187,7 @@ angular.module('HarvardApp')
                 dataChecking = false;
                 errorMessage.push('Pin can\'t use on locked task');
             }
-            if(taskData.weight != 0 && taskData.weight != 999 && (taskData.isPin === '1' || taskData.isLock === '1')) {
+            if(taskData.weight != null && parseFloat(taskData.weight) != 0 && parseFloat(taskData.weight) != 9999 && (taskData.isPin === '1' || taskData.isLock === '1')) {
                 dataChecking = false;
                 errorMessage.push('Pin and Lock can\'t use on task has weight');
             }
@@ -472,7 +472,7 @@ angular.module('HarvardApp')
 .controller('SoftleaderCtrl', ['$scope', 'Matt', '$alert', function ($scope, Matt, $alert) {
     //weight check
     $scope.isIndicateWeight = function(weight) {
-        return weight !== null && weight !== 0 && weight !== 9999;
+        return weight !== null && parseFloat(weight) !== 0 && parseFloat(weight) !== 9999;
     };
     $scope.cancelCutModal = function() {
         $scope.cutModal.hide();
