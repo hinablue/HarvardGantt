@@ -671,7 +671,7 @@ angular.module('HarvardApp')
                             taskContextMenu: '../app/views/taskContextMenu.tpl.html',
                             taskInfoContent: '../app/views/taskTooltip.tpl.html',
                             taskGroupIdsVo: t[j].taskGroupIdsVo,
-                            weight: t[j].weight != null && parseFloat(t[j].weight) >= 0 ? parseFloat(t[j].weight) : 9999,
+                            weight: t[j].weight,
                             gangLinkCode: t[j].gangLinkCode,
                             gangLinkSide: t[j].gangLinkSide,
                             cutQuantity: t[j].cutQuantity,
